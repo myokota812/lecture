@@ -1,11 +1,11 @@
 
 
 
-　#課題
-　![enter image description here](https://github.com/myokota812/lecture/blob/master/123.png)
+　##課題
+　
 
 > 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjkxNzQzMzY3LDExOTc5NDE1NDVdfQ==
+eyJoaXN0b3J5IjpbNjAyNjU2MTAsMTE5Nzk0MTU0NV19
 -->
