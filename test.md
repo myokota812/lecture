@@ -24,9 +24,10 @@
 - 水の密度: 1.00 $\times$ 10$^{3}$ kg  m$^{-3}$
 - 水の粘度: 1.00 $\times$ 10$^{-3}$ Pa S
 
-のとき、問１から問３に答えなさい  
+のとき、問１から問３に答えなさい。  
 
 ### 問1 
+平均線流速を求めなさい。
 
 ### 問2　
 下図のように傾斜固定された、内径が一定の円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
@@ -41,9 +42,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEwNzE5NDY4MjEsODg0OTU3NDQxLDIwNj
-U5MzQ4Miw3NjQ4MTIxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1
-LDE5ODA2NzEyMzgsLTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OT
-UyNDg3MTgsMjQyNzQ4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0
-NV19
+eyJoaXN0b3J5IjpbMTkzOTkxMDQ3OSw4ODQ5NTc0NDEsMjA2NT
+kzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUs
+MTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NT
+I0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1
+XX0=
 -->
