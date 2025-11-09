@@ -12,6 +12,7 @@
 :::note info 
 　インフォメーション infoは省略可能です。 
 :::　
+```ruby:qiita.rb puts 'The best way to log and share programmers knowledge.'  ```
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
 
@@ -23,8 +24,8 @@ bernoulli1.png
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNzY0ODEyMTU4LC0xNjc3OTEzMTQzLDkzNj
-gwOTY0NSwxOTgwNjcxMjM4LC0xNTIwODc5NTI3LC02NDM2NzE3
-NywtOTk1MjQ4NzE4LDI0Mjc0ODI0MywtNjU2ODAwNTg5LDExOT
-c5NDE1NDVdfQ==
+eyJoaXN0b3J5IjpbMjA2NTkzNDgyLDc2NDgxMjE1OCwtMTY3Nz
+kxMzE0Myw5MzY4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUy
+NywtNjQzNjcxNzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1Nj
+gwMDU4OSwxMTk3OTQxNTQ1XX0=
 -->
