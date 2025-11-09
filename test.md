@@ -26,13 +26,9 @@
 
 のとき、問１から問３に答えなさい。
 
-normal ***bold*** normal
+**問1**　平均線流速[m/s]を求め、解答欄に数値のみ記入しなさい。
 
- 
-
-normal*** 問1***normal \平均線流速[m/s]を求め、解答欄に数値のみ記入しなさい。
-
-### 問2
+#問2
 問１のとき、Re数を求め解答欄に数値のみ記入しなさい。
 
 **問３**
@@ -51,9 +47,9 @@ normal*** 問1***normal \平均線流速[m/s]を求め、解答欄に数値の�
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTE0NDQxMjU1LDkwOTY4NTI3LDg4NDk1Nz
-Q0MSwyMDY1OTM0ODIsNzY0ODEyMTU4LC0xNjc3OTEzMTQzLDkz
-NjgwOTY0NSwxOTgwNjcxMjM4LC0xNTIwODc5NTI3LC02NDM2Nz
-E3NywtOTk1MjQ4NzE4LDI0Mjc0ODI0MywtNjU2ODAwNTg5LDEx
-OTc5NDE1NDVdfQ==
+eyJoaXN0b3J5IjpbMTA1MjI5ODg2OCw5MDk2ODUyNyw4ODQ5NT
+c0NDEsMjA2NTkzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5
+MzY4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNj
+cxNzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwx
+MTk3OTQxNTQ1XX0=
 -->
