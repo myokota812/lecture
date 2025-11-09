@@ -20,7 +20,8 @@
 ---
 　水平におかれた円管に水が流れている。
 - 円管内径: 10.0 cm
-- 体積流量: 3.00 $\times$ 10$^{-3}$ m$^3
+- 体積流量: 3.00 $\times$ 10$^{-3}$ m$^3$ 
+- 水の密度　1.00 $\times$ 10$^{3}$ kg$ m$^3$
 | 項目    | 記号       | 値                  | 単位    |
 | ----- | -------- | ------------------ | ----- |
 | パイプ内径 | ( D )    | 0.10               | m     |
@@ -43,7 +44,7 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA1NDEzNjc0Niw4ODQ5NTc0NDEsMjA2NT
+eyJoaXN0b3J5IjpbLTY2NzcwNzI3NCw4ODQ5NTc0NDEsMjA2NT
 kzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUs
 MTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NT
 I0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1
