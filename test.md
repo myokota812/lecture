@@ -32,13 +32,14 @@
 ### 問2
 問１のとき、Re数を求め解答欄に数値のみ記入しなさい。
 
-### 問３**strong text**
+**問３**
 問２のとき、層流から乱流か選びなさい。
 
+### 問4
 下図のように傾斜固定された、内径が一定の円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
-### 問２
+
 
 
 
@@ -47,9 +48,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDg0MzcwOTk0LDg4NDk1NzQ0MSwyMDY1OT
-M0ODIsNzY0ODEyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwx
-OTgwNjcxMjM4LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1Mj
-Q4NzE4LDI0Mjc0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVd
-fQ==
+eyJoaXN0b3J5IjpbOTA5Njg1MjcsODg0OTU3NDQxLDIwNjU5Mz
+Q4Miw3NjQ4MTIxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1LDE5
+ODA2NzEyMzgsLTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OTUyND
+g3MTgsMjQyNzQ4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0NV19
+
 -->
