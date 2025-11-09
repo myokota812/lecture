@@ -22,7 +22,7 @@
 - 円管内径: 10.0 cm
 - 体積流量: 3.00 $\times$ 10$^{-3}$ m$^3$ 
 - 水の密度: 1.00 $\times$ 10$^{3}$ kg  m$^{-3}$
-- 水の動粘度: 1.00 $\times$ 10$^{-6}$ m²/s  
+- 水の粘度: 1.00 $\times$ 10$^{-3}$ Pa S  
 
 ### 問1 
 
@@ -39,7 +39,7 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3MDM0ODA0NDAsODg0OTU3NDQxLDIwNj
+eyJoaXN0b3J5IjpbLTE0NDM3NDIwMDUsODg0OTU3NDQxLDIwNj
 U5MzQ4Miw3NjQ4MTIxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1
 LDE5ODA2NzEyMzgsLTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OT
 UyNDg3MTgsMjQyNzQ4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0
