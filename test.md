@@ -21,13 +21,8 @@
 　水平におかれた円管に水が流れている。
 - 円管内径: 10.0 cm
 - 体積流量: 3.00 $\times$ 10$^{-3}$ m$^3$ 
-- 水の密度　1.00 $\times$ 10$^{3}$ kg$ m$^3$
-| 項目    | 記号       | 値                  | 単位    |
-| ----- | -------- | ------------------ | ----- |
-| パイプ内径 | ( D )    | 0.10               | m     |
-| 体積流量  | ( Q )    | 0.003              | m³/s  |
-| 水の密度  | ( \rho ) | 1000               | kg/m³ |
-| 水の動粘度 | ( \nu )  | (1.0\times10^{-6}) | m²/s  |
+- 水の密度:　1.00 $\times$ 10$^{3}$ kg  m$^{-3}$
+- 水の動粘度 (1.00 $\times$10$^{-6}$) | m²/s  |
 | 重力加速度 | ( g )    | 9.8                | m/s²  |
 ### 問1 
 
@@ -44,9 +39,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY2NzcwNzI3NCw4ODQ5NTc0NDEsMjA2NT
-kzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUs
-MTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NT
-I0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1
-XX0=
+eyJoaXN0b3J5IjpbLTI3MTY1MDE0LDg4NDk1NzQ0MSwyMDY1OT
+M0ODIsNzY0ODEyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwx
+OTgwNjcxMjM4LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1Mj
+Q4NzE4LDI0Mjc0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVd
+fQ==
 -->
