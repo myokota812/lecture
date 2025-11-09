@@ -15,7 +15,7 @@
 >で理解しておいた方が良いかもしれません。
 
 この２つの保存則を使ったテストを行います。以下の問にすべて解答してください。解答はWebClassの所定の場所にお願いします。
-
+　いずれの問題も、流体の質量やエネルギーは損失（もしくは）
 
 ### 問1
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
@@ -28,8 +28,8 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTkxNTQ2MDk5MywyMDY1OTM0ODIsNzY0OD
-EyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwxOTgwNjcxMjM4
-LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1MjQ4NzE4LDI0Mj
-c0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVdfQ==
+eyJoaXN0b3J5IjpbODA3MTQxNDM3LDIwNjU5MzQ4Miw3NjQ4MT
+IxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1LDE5ODA2NzEyMzgs
+LTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OTUyNDg3MTgsMjQyNz
+Q4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0NV19
 -->
