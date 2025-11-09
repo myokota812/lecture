@@ -17,7 +17,7 @@
 それでは、以下の問に解答してください。解答はWebClassの所定の場所にお願いします。
 　いずれの問題も、流体の質量やエネルギー損失（もしくは増加）はないものとします。上記の保存則の式に基づいて、考えてください。
 
-### 問1　
+### 問2　
 下図のように傾斜固定された、内径が一定の円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
@@ -30,8 +30,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODg0OTU3NDQxLDIwNjU5MzQ4Miw3NjQ4MT
-IxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1LDE5ODA2NzEyMzgs
-LTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OTUyNDg3MTgsMjQyNz
-Q4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0NV19
+eyJoaXN0b3J5IjpbLTExNjA5ODQzMCw4ODQ5NTc0NDEsMjA2NT
+kzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUs
+MTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NT
+I0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1
+XX0=
 -->
