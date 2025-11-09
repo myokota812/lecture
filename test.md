@@ -3,7 +3,7 @@
 流体の質量保存則とエネルギー保存則に関する復習のテストを実施します。
 
 #### 簡単な復習
-配管内の任意の２点間において、系外からの流出入がない限り、質量とエネルギーは保存される。
+配管内の任意の２点間において、系外からの流出入がない限り、質量とエネルギーは保存される。(使用記号は
 * 質量保存則
 	$$S_1 \bar {u}_1 \rho_1 = S_2 \bar {u}_2 \rho_2$$
 * エネルギー保存則
@@ -18,9 +18,10 @@
 　いずれの問題も、流体の質量やエネルギー損失（もしくは増加）はないものとします。上記の保存則の式に基づいて、考えてください。
 
 ### 問1　
-下図のように傾斜固定されたカンケイ円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
+下図のように傾斜固定された、内径が一定の円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
+### 問２
 
 
 
@@ -29,8 +30,8 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzNzc3NDAzMjAsMjA2NTkzNDgyLDc2ND
-gxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUsMTk4MDY3MTIz
-OCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NTI0ODcxOCwyND
-I3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1XX0=
+eyJoaXN0b3J5IjpbMTkxODMwNjYyMCwyMDY1OTM0ODIsNzY0OD
+EyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwxOTgwNjcxMjM4
+LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1MjQ4NzE4LDI0Mj
+c0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVdfQ==
 -->
