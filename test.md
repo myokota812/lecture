@@ -2,7 +2,7 @@
 
 流体の質量保存則とエネルギー保存則に関する復習のテストを実施します。
 
-#### 簡単な復習
+#### 復習
 配管内の任意の２点間において、系外からの流出入がない限り、質量とエネルギーは保存される。(使用記号は省略します）
 * 質量保存則
 	$$S_1 \bar {u}_1 \rho_1 = S_2 \bar {u}_2 \rho_2$$
@@ -48,9 +48,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTA5Njg1MjcsODg0OTU3NDQxLDIwNjU5Mz
-Q4Miw3NjQ4MTIxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1LDE5
-ODA2NzEyMzgsLTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OTUyND
-g3MTgsMjQyNzQ4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0NV19
-
+eyJoaXN0b3J5IjpbLTQ0NjEzNTk3Niw5MDk2ODUyNyw4ODQ5NT
+c0NDEsMjA2NTkzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5
+MzY4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNj
+cxNzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwx
+MTk3OTQxNTQ1XX0=
 -->
