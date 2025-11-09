@@ -15,7 +15,9 @@
 >で理解しておいた方が良いかもしれません。
 
 それでは、以下の問に解答してください。解答はWebClassの所定の場所にお願いします。
-　必要な場合、流体の質量やエネルギー損失（もしくは増加）はないものとします。上記の保存則の式に基づいて、考えてください。
+　なお、流体の質量やエネルギー損失（もしくは増加）はないものとします。上記の保存則は必要な場合に使ってください。
+　
+### 問1 
 
 ### 問2　
 下図のように傾斜固定された、内径が一定の円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
@@ -30,9 +32,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNzA5NzY0Njk1LDg4NDk1NzQ0MSwyMDY1OT
-M0ODIsNzY0ODEyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwx
-OTgwNjcxMjM4LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1Mj
-Q4NzE4LDI0Mjc0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVd
-fQ==
+eyJoaXN0b3J5IjpbMTgxODMyNTQzMSw4ODQ5NTc0NDEsMjA2NT
+kzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUs
+MTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NT
+I0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1
+XX0=
 -->
