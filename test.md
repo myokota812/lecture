@@ -21,9 +21,9 @@
 　水平におかれた円管に水が流れている。
 - 円管内径: 10.0 cm
 - 体積流量: 3.00 $\times$ 10$^{-3}$ m$^3$ 
-- 水の密度:　1.00 $\times$ 10$^{3}$ kg  m$^{-3}$
-- 水の動粘度 (1.00 $\times$10$^{-6}$) | m²/s  |
-| 重力加速度 | ( g )    | 9.8                | m/s²  |
+- 水の密度: 1.00 $\times$ 10$^{3}$ kg  m$^{-3}$
+- 水の動粘度: 1.00 $\times$ 10$^{-6}$ m²/s  
+
 ### 問1 
 
 ### 問2　
@@ -39,9 +39,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTI3MTY1MDE0LDg4NDk1NzQ0MSwyMDY1OT
-M0ODIsNzY0ODEyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwx
-OTgwNjcxMjM4LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1Mj
-Q4NzE4LDI0Mjc0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVd
-fQ==
+eyJoaXN0b3J5IjpbLTE3MDM0ODA0NDAsODg0OTU3NDQxLDIwNj
+U5MzQ4Miw3NjQ4MTIxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1
+LDE5ODA2NzEyMzgsLTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OT
+UyNDg3MTgsMjQyNzQ4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0
+NV19
 -->
