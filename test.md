@@ -14,7 +14,9 @@
 >$$P+ \frac{\rho \bar {u}^2}{2} + \rho g Z = constant$$
 >で理解しておいた方が良いかもしれません。
 
-この２つのほぞ
+この２つの保存則を使ったテストを行います。以下の問にすべて解答してください。解答はWebClassの所定の場所に。
+
+### 問1
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
 
@@ -25,7 +27,7 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1NTI4NDUxODUsMjA2NTkzNDgyLDc2ND
+eyJoaXN0b3J5IjpbLTEwMzgxOTcwOTcsMjA2NTkzNDgyLDc2ND
 gxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUsMTk4MDY3MTIz
 OCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NTI0ODcxOCwyND
 I3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1XX0=
