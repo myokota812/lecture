@@ -19,7 +19,14 @@
 
 ---
 　水平におかれた円管に水が流れている。
-次の条件のもとで
+- 円管内径: 10.0 cm
+| 項目    | 記号       | 値                  | 単位    |
+| ----- | -------- | ------------------ | ----- |
+| パイプ内径 | ( D )    | 0.10               | m     |
+| 体積流量  | ( Q )    | 0.003              | m³/s  |
+| 水の密度  | ( \rho ) | 1000               | kg/m³ |
+| 水の動粘度 | ( \nu )  | (1.0\times10^{-6}) | m²/s  |
+| 重力加速度 | ( g )    | 9.8                | m/s²  |
 ### 問1 
 
 ### 問2　
@@ -35,9 +42,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0ODU0OTU1NjksODg0OTU3NDQxLDIwNj
-U5MzQ4Miw3NjQ4MTIxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1
-LDE5ODA2NzEyMzgsLTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OT
-UyNDg3MTgsMjQyNzQ4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0
-NV19
+eyJoaXN0b3J5IjpbLTM3NTExNjg1Myw4ODQ5NTc0NDEsMjA2NT
+kzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUs
+MTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NT
+I0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1
+XX0=
 -->
