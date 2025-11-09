@@ -18,7 +18,7 @@
 　いずれの問題も、流体の質量やエネルギー損失（もしくは増加）はないものとします。
 
 ### 問1　
-下図のように傾斜固定された円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線
+下図のように傾斜固定された円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
 
@@ -29,8 +29,8 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg4MjExODY1LDIwNjU5MzQ4Miw3NjQ4MT
-IxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1LDE5ODA2NzEyMzgs
-LTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OTUyNDg3MTgsMjQyNz
-Q4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0NV19
+eyJoaXN0b3J5IjpbMTUwODE4NDE3MiwyMDY1OTM0ODIsNzY0OD
+EyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwxOTgwNjcxMjM4
+LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1MjQ4NzE4LDI0Mj
+c0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVdfQ==
 -->
