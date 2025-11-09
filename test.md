@@ -16,7 +16,6 @@
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
 
-bernoulli1.png
 
 
 
@@ -24,8 +23,8 @@ bernoulli1.png
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA2NTkzNDgyLDc2NDgxMjE1OCwtMTY3Nz
-kxMzE0Myw5MzY4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUy
-NywtNjQzNjcxNzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1Nj
-gwMDU4OSwxMTk3OTQxNTQ1XX0=
+eyJoaXN0b3J5IjpbMTQxNDg5MTQ0MCwyMDY1OTM0ODIsNzY0OD
+EyMTU4LC0xNjc3OTEzMTQzLDkzNjgwOTY0NSwxOTgwNjcxMjM4
+LC0xNTIwODc5NTI3LC02NDM2NzE3NywtOTk1MjQ4NzE4LDI0Mj
+c0ODI0MywtNjU2ODAwNTg5LDExOTc5NDE1NDVdfQ==
 -->
