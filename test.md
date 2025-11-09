@@ -16,7 +16,10 @@
 
 それでは、以下の問に解答してください。解答はWebClassの所定の場所にお願いします。
 　なお、流体の質量やエネルギー損失（もしくは増加）はないものとします。上記の保存則は必要な場合に使ってください。
-　
+
+---
+　水平におかれた円管に水が流れている。
+次の条件のもとで
 ### 問1 
 
 ### 問2　
@@ -32,9 +35,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTgxODMyNTQzMSw4ODQ5NTc0NDEsMjA2NT
-kzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5MzY4MDk2NDUs
-MTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcxNzcsLTk5NT
-I0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMTk3OTQxNTQ1
-XX0=
+eyJoaXN0b3J5IjpbLTE0ODU0OTU1NjksODg0OTU3NDQxLDIwNj
+U5MzQ4Miw3NjQ4MTIxNTgsLTE2Nzc5MTMxNDMsOTM2ODA5NjQ1
+LDE5ODA2NzEyMzgsLTE1MjA4Nzk1MjcsLTY0MzY3MTc3LC05OT
+UyNDg3MTgsMjQyNzQ4MjQzLC02NTY4MDA1ODksMTE5Nzk0MTU0
+NV19
 -->
