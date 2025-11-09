@@ -26,15 +26,13 @@
 
 のとき、問１から問３に答えなさい。
 
-**問1**　平均線流速[m/s]を求め、解答欄に数値のみ記入しなさい。
+**問1:**　平均線流速[m/s]を求め、解答欄に数値のみ記入しなさい。
 
-#問2
-問１のとき、Re数を求め解答欄に数値のみ記入しなさい。
+**問2:**　問１のとき、Re数を求め解答欄に数値のみ記入しなさい。
 
-**問３**
-問２のとき、層流から乱流か選びなさい。
+**問３**　問２のとき、層流から乱流か選びなさい。
 
-### 問4
+**問4**
 下図のように傾斜固定された、内径が一定の円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
@@ -47,7 +45,7 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA1MjI5ODg2OCw5MDk2ODUyNyw4ODQ5NT
+eyJoaXN0b3J5IjpbMTc1NDI3MzkyNCw5MDk2ODUyNyw4ODQ5NT
 c0NDEsMjA2NTkzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5
 MzY4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNj
 cxNzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwx
