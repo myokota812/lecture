@@ -9,7 +9,9 @@
 * エネルギー保存則
 　$$P_1 + \frac{\rho \bar {u}_1^2}{2} + \rho g Z_1 =P_2 + \frac{\rho \bar {u}_2^2}{2} + \rho g Z_2$$
 
-
+:::note info 
+　インフォメーション infoは省略可能です。 
+:::　
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
 
 
@@ -21,8 +23,8 @@ bernoulli1.png
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg0MDU4ODIzNiwtMTY3NzkxMzE0Myw5Mz
-Y4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNjcx
-NzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwxMT
-k3OTQxNTQ1XX0=
+eyJoaXN0b3J5IjpbNzY0ODEyMTU4LC0xNjc3OTEzMTQzLDkzNj
+gwOTY0NSwxOTgwNjcxMjM4LC0xNTIwODc5NTI3LC02NDM2NzE3
+NywtOTk1MjQ4NzE4LDI0Mjc0ODI0MywtNjU2ODAwNTg5LDExOT
+c5NDE1NDVdfQ==
 -->
