@@ -24,7 +24,7 @@
 - 水の密度: 1.00 $\times$ 10$^{3}$ kg  m$^{-3}$
 - 水の粘度: 1.00 $\times$ 10$^{-3}$ Pa S
 
-のとき、問１から問３に答えなさい。
+のとき、問１から問３に答えなさい。（別問4もありますので注意）
 
 **問1:**　平均線流速[m/s]を求め、解答欄に数値のみ記入しなさい。
 
@@ -32,6 +32,7 @@
 
 **問３**　問２のとき、層流から乱流か選びなさい。
 
+最後にもう一問
 **問4**
 下図のように傾斜固定された、内径が一定の円管内を流体が流れています。断面①からの距離$d$ と、任意の位置の圧力$P$の曲線（直線）としてふさわしいものは、A-Eのどれか。
 ![enter image description here](https://raw.githubusercontent.com/myokota812/lecture/master/bernoulli1.png)
@@ -45,9 +46,9 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc1NDI3MzkyNCw5MDk2ODUyNyw4ODQ5NT
-c0NDEsMjA2NTkzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5
-MzY4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNj
-cxNzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwx
-MTk3OTQxNTQ1XX0=
+eyJoaXN0b3J5IjpbMjE2ODMzNjU0LDE3NTQyNzM5MjQsOTA5Nj
+g1MjcsODg0OTU3NDQxLDIwNjU5MzQ4Miw3NjQ4MTIxNTgsLTE2
+Nzc5MTMxNDMsOTM2ODA5NjQ1LDE5ODA2NzEyMzgsLTE1MjA4Nz
+k1MjcsLTY0MzY3MTc3LC05OTUyNDg3MTgsMjQyNzQ4MjQzLC02
+NTY4MDA1ODksMTE5Nzk0MTU0NV19
 -->
