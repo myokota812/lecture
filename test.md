@@ -20,14 +20,13 @@
 ---
 　水平におかれた円管に水が流れている。
 - 円管内径: 10.0 cm
-- 体積流量: 3.00 $\times$ 10$^{-3}$ m$^3$ 
+- 体積流量: 3.00 $\times$ 10$^{-3}$ m$^3$ S$^{-1}$
 - 水の密度: 1.00 $\times$ 10$^{3}$ kg  m$^{-3}$
 - 水の粘度: 1.00 $\times$ 10$^{-3}$ Pa S
 
 のとき、問１から問３に答えなさい。  
 
-### 問1 
-平均線流速[m/s]を求め、解答欄に数値のみ記入しなさい。
+問1##  平均線流速[m/s]を求め、解答欄に数値のみ記入しなさい。
 
 ### 問2
 問１のとき、Re数を求め解答欄に数値のみ記入しなさい。
@@ -48,7 +47,7 @@
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ0NjEzNTk3Niw5MDk2ODUyNyw4ODQ5NT
+eyJoaXN0b3J5IjpbMTgyODI2MjAyOCw5MDk2ODUyNyw4ODQ5NT
 c0NDEsMjA2NTkzNDgyLDc2NDgxMjE1OCwtMTY3NzkxMzE0Myw5
 MzY4MDk2NDUsMTk4MDY3MTIzOCwtMTUyMDg3OTUyNywtNjQzNj
 cxNzcsLTk5NTI0ODcxOCwyNDI3NDgyNDMsLTY1NjgwMDU4OSwx
