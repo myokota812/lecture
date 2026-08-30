@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200"
+     height="500"
+     viewBox="0 0 1200 500">
+
+  <defs>
+    <!-- Small arrowhead -->
+    <marker id="arrowhead"
+            markerWidth="8"
+            markerHeight="6"
+            refX="7"
+            refY="3"
+            orient="auto">
+      <polygon points="0 0, 8 3, 0 6"
+               fill="#4F86C6"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="white"/>
+
+  <!-- Feed arrow -->
+  <line x1="40" y1="180"
+        x2="300" y2="180"
+        stroke="#4F86C6"
+        stroke-width="4"
+        marker-end="url(#arrowhead)"/>
+
+  <!-- Product arrow -->
+  <line x1="820" y1="180"
+        x2="1120" y2="180"
+        stroke="#4F86C6"
+        stroke-width="4"
+        marker-end="url(#arrowhead)"/>
+
+  <!-- Reactor block -->
+  <rect x="300" y="70"
+        width="520"
+        height="220"
+        rx="25"
+        ry="25"
+        fill="#5D8FC2"
+        stroke="#3A6EA5"
+        stroke-width="3"/>
+
+  <!-- Reactor title -->
+  <text x="560"
+        y="120"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="28"
+        font-weight="bold"
+        text-anchor="middle"
+        fill="white">
+    Reactor
+  </text>
+
+  <!-- Reaction -->
+  <text x="560"
+        y="190"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="24"
+        font-weight="bold"
+        text-anchor="middle"
+        fill="#FFF060">
+    H₂S + ½O₂ → S + H₂O (B)
+  </text>
+
+  <!-- Feed -->
+  <text x="95"
+        y="270"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="26"
+        font-weight="bold">
+    Feed
+  </text>
+
+  <text x="70"
+        y="320"
+        font-family="Times New Roman"
+        font-size="26"
+        font-style="italic">
+    n₁,i (i = 1, ...)
+  </text>
+
+  <!-- Products -->
+  <text x="930"
+        y="270"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="26"
+        font-weight="bold">
+    Products
+  </text>
+
+  <text x="860"
+        y="320"
+        font-family="Times New Roman"
+        font-size="26"
+        font-style="italic">
+    n₂,i (i = 1, ...)
+  </text>
+
+  <!-- Conversion -->
+  <text x="560"
+        y="390"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="26"
+        text-anchor="middle">
+    Conversion = 96%
+  </text>
+
+</svg>
