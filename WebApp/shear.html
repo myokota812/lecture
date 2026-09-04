@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>せん断応力の理解</title>
+
+<style>
+body {
+    font-family: sans-serif;
+    text-align: center;
+    background: #f5f5f5;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+.controls {
+    margin: 20px;
+}
+
+label {
+    margin: 0 10px;
+}
+
+svg {
+    background: white;
+    border: 1px solid #ccc;
+}
+
+#tauText {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<h2>せん断応力の理解</h2>
+
+<div class="controls">
+
+<label>
+上板速度 u [m/s]
+<input type="range"
+       id="velocity"
+       min="0"
+       max="5"
+       step="0.1"
+       value="1">
+</label>
+
+<span id="uValue">1.0</span>
+
+<br><br>
+
+<label>
+粘度 μ [Pa·s]
+<input type="number"
+       id="mu"
+       value="1.0"
+       min="0.1"
+       step="0.1">
+</label>
+
+<label>
+流体厚さ h [m]
+<input type="number"
+       id="h"
+       value="1.0"
+       min="0.1"
+       step="0.1">
+</label>
+
+</div>
+
+<div id="tauText"></div>
+
+<svg width="900" height="450">
+
+    <defs>
+
+        <!-- 汎用矢印（進行方向に合わせて自動回転する定義） -->
+        <marker id="arrow"
+                markerWidth="8"
+                markerHeight="8"
+                refX="7"
+                refY="4"
+                orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z"
+                  fill="red"/>
+        </marker>
+
+    </defs>
+
+    <!-- 下板 -->
+    <rect id="bottomPlate"
+          x="200"
+          y="350"
+          width="400"
+          height="30"
+          fill="#555" />
+
+    <!-- 流体 -->
+    <polygon id="fluid"
+             points="200,350 600,350 600,250 200,250"
+             fill="#8fd3ff"
+             opacity="0.7" />
+
+    <!-- 上板 -->
+    <rect id="topPlate"
+          x="200"
+          y="220"
+          width="400"
+          height="30"
+          fill="#555" />
+
+    <!-- 上板下面のせん断応力（左向き抵抗力） -->
+    <line id="tauTop"
+          stroke="red"
+          stroke-width="4"
+          marker-end="url(#arrow)" />
+
+    <!-- 下板上面のせん断応力（右向き剪断力） -->
+    <line id="tauBottom"
+          stroke="red"
+          stroke-width="4"
+          marker-end="url(#arrow)" />
+
+</svg>
+
+<script>
+
+const velocity = document.getElementById("velocity");
+const mu = document.getElementById("mu");
+const h = document.getElementById("h");
+
+function update() {
+
+    const u = Number(velocity.value);
+    const viscosity = Math.max(0.01, Number(mu.value));
+    const thickness = Math.max(0.1, Number(h.value));
+
+    const tau = viscosity * u / thickness;
+
+    document.getElementById("uValue").textContent = u.toFixed(1);
+
+    document.getElementById("tauText").innerHTML =
+        `せん断応力 τ = μ·(u/h) = ${tau.toFixed(2)} Pa`;
+
+    const shift = 25 * u;
+    const baseBottomY = 350;
+    const scaleY = 100;
+    const fluidHeight = thickness * scaleY;
+    const topY = baseBottomY - fluidHeight;
+
+    const topPlate = document.getElementById("topPlate");
+    topPlate.setAttribute("x", 200 + shift);
+    topPlate.setAttribute("y", topY - 30);
+
+    document.getElementById("fluid")
+        .setAttribute(
+            "points",
+            `200,${baseBottomY}
+             600,${baseBottomY}
+             ${600 + shift},${topY}
+             ${200 + shift},${topY}`
+        );
+
+    const tauTop = document.getElementById("tauTop");
+    const tauBottom = document.getElementById("tauBottom");
+
+    if (u <= 0) {
+        tauTop.style.display = "none";
+        tauBottom.style.display = "none";
+        return;
+    }
+
+    tauTop.style.display = "block";
+    tauBottom.style.display = "block";
+
+    const L = Math.min(200, 20 + 10 * tau);
+
+    // 上板下面のせん断応力：右(x1)から左(x2)へ線を引くことで「左向き矢印」にする
+    tauTop.setAttribute("x1", 500 + shift);
+    tauTop.setAttribute("y1", topY + 5);
+    tauTop.setAttribute("x2", 500 + shift - L);
+    tauTop.setAttribute("y2", topY + 5);
+
+    // 下板上面のせん断応力：左(x1)から右(x2)へ線を引くことで「右向き矢印」にする
+    tauBottom.setAttribute("x1", 300);
+    tauBottom.setAttribute("y1", baseBottomY - 5);
+    tauBottom.setAttribute("x2", 300 + L);
+    tauBottom.setAttribute("y2", baseBottomY - 5);
+}
+
+velocity.addEventListener("input", update);
+mu.addEventListener("input", update);
+h.addEventListener("input", update);
+
+update();
+
+</script>
+
+</body>
+</html>
