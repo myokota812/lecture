@@ -62,12 +62,12 @@
   <text x="257" y="136"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">x</text>
+        font-size="22">z</text>
 
   <text x="310" y="136"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">x + dx</text>
+        font-size="22">z + dz</text>
 
   <text x="620" y="136"
         font-family="Times New Roman"
