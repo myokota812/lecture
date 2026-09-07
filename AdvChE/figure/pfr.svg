@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="665"
+     height="154"
+     viewBox="0 0 665 154">
+
+  <rect x="25" y="40" width="600" height="68"
+        fill="white" stroke="black" stroke-width="2"/>
+
+  <rect x="266" y="40" width="76" height="68"
+        fill="#c7dfea" stroke="black" stroke-width="1.5"/>
+
+  <line x1="205" y1="74" x2="255" y2="74"
+        stroke="#2a6f97" stroke-width="2"/>
+  <polygon points="255,74 247,70 247,78"
+           fill="#2a6f97"/>
+
+  <line x1="350" y1="78" x2="400" y2="78"
+        stroke="#2a6f97" stroke-width="2"/>
+  <polygon points="400,78 392,74 392,82"
+           fill="#2a6f97"/>
+
+  <text x="20" y="30"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">C<tspan dy="6" font-size="70%">A0</tspan></text>
+
+  <text x="285" y="30"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">C<tspan dy="6" font-size="70%">A</tspan></text>
+  <text x="345" y="30"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">C<tspan dy="6" font-size="70%">A</tspan>+ dC<tspan dy="6" font-size="70%">A</tspan></text>
+
+  <text x="605" y="30"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">C<tspan dy="6" font-size="70%">AL</tspan></text>
+
+  <text x="140" y="87"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">F [m³/s]</text>
+
+  <text x="410" y="87"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">F</text>
+
+  <text x="288" y="82"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">dV</text>
+
+  <text x="22" y="136"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">0</text>
+
+  <text x="257" y="136"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">x</text>
+
+  <text x="310" y="136"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">x + dx</text>
+
+  <text x="620" y="136"
+        font-family="Times New Roman"
+        font-style="italic"
+        font-size="22">L</text>
+
+</svg>
