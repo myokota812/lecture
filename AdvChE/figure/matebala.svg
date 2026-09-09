@@ -132,7 +132,7 @@
         y="390"
         font-size="26"
         font-family="Arial">
-    Accumulation = In − Out + Generation
+    Accumulation = In − Out + (+)Generation/(-)consumption
   </text>
 
 </svg>
