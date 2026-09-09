@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="700"
+     height="500"
+     viewBox="0 0 700 500">
+
+  <!-- Reactor -->
+  <rect x="180" y="120"
+        width="360"
+        height="320"
+        fill="none"
+        stroke="black"
+        stroke-width="3"/>
+
+<!-- Inlet -->
+<line x1="40" y1="80"
+      x2="220" y2="80"
+      stroke="black"
+      stroke-width="3"/>
+
+<line x1="220" y1="80"
+      x2="220" y2="120"
+      stroke="black"
+      stroke-width="3"/>
+
+<polygon points="220,120 212,104 228,104"
+         fill="black"/>
+
+
+
+  <!-- Outlet -->
+  <line x1="540" y1="410"
+        x2="680" y2="410"
+        stroke="black"
+        stroke-width="3"/>
+
+  <polygon points="680,410 665,402 665,418"
+           fill="black"/>
+
+  <!-- Labels -->
+<text x="90"
+      y="65"
+      font-size="28"
+      font-family="Arial">
+  F<tspan dy="8" font-size="18">A0</tspan>
+</text>
+
+  <text x="600"
+        y="390"
+        font-size="28"
+        font-family="Arial">
+    F<tspan dy="8" font-size="18">A</tspan>
+  </text>
+  <!-- volume -->
+  <text x="230"
+        y="230"
+        font-size="40"
+        font-family="Arial">
+    V
+  </text>
+  <!-- Inventory -->
+  <text x="230"
+        y="280"
+        font-size="40"
+        font-family="Arial">
+    N<tspan dy="10" font-size="24">A</tspan>
+  </text>
+
+  <!-- Reaction rate -->
+  <text x="230"
+        y="330"
+        font-size="40"
+        font-family="Arial">
+    r<tspan dy="10" font-size="24">A</tspan>
+  </text>
+
+
+<!-- Shaft -->
+<line x1="385"
+      y1="70"
+      x2="385"
+      y2="330"
+      stroke="black"
+      stroke-width="3"/>
+
+<!-- Impeller -->
+<line x1="355"
+      y1="300"
+      x2="415"
+      y2="360"
+      stroke="black"
+      stroke-width="3"/>
+
+<line x1="415"
+      y1="300"
+      x2="355"
+      y2="360"
+      stroke="black"
+      stroke-width="3"/>
+
+</svg>
