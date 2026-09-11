@@ -31,23 +31,23 @@
         font-style="italic"
         font-size="22">F<tspan dy="6" font-size="70%">A</tspan> [mol/s]</text>
 
-  <text x="285" y="90"
+  <text x="385" y="90"
         font-family="Times New Roman"
         font-style="italic"
         font-size="22">F<tspan dy="6" font-size="70%">A</tspan></text>
-  <text x="345" y="90"
+  <text x="445" y="90"
        font-family="Times New Roman"
        font-size="22"
        font-style="italic">F</text>
-     <text x="358" y="96"
+     <text x="458" y="96"
           font-family="Times New Roman"
           font-size="14"
           font-style="italic">A</text>
-     <text x="375" y="90"
+     <text x="475" y="90"
           font-family="Times New Roman"
           font-size="22"
           font-style="italic">+ dF</text>
-     <text x="430" y="96"
+     <text x="530" y="96"
           font-family="Times New Roman"
           font-size="14"
           font-style="italic">A</text>
