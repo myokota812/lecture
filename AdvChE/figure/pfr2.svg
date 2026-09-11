@@ -38,7 +38,7 @@
 
   <!-- 矢印とテキスト -->
   <line x1="50" y1="110" x2="110" y2="110" class="arrow-line" />
-  <text x="20" y="118" class="text">F<tspan baseline-shift="sub" class="sub">j,0</tspan></text>
+  <text x="20" y="118" class="text">F<tspan baseline-shift="sub" class="sub">j0</tspan></text>
 
   <line x1="210" y1="110" x2="260" y2="110" class="arrow-line" />
   <text x="175" y="118" class="text">F<tspan baseline-shift="sub" class="sub">j</tspan></text>
@@ -47,7 +47,7 @@
   <text x="395" y="118" class="text">F<tspan baseline-shift="sub" class="sub">j</tspan> + dF<tspan baseline-shift="sub" class="sub">j</tspan></text>
 
   <line x1="535" y1="110" x2="585" y2="110" class="arrow-line" />
-  <text x="595" y="118" class="text">F<tspan baseline-shift="sub" class="sub">j,f</tspan></text>
+  <text x="595" y="118" class="text">F<tspan baseline-shift="sub" class="sub">jf</tspan></text>
 
   <!-- 下部の指定線とテキスト -->
   <line x1="300" y1="185" x2="330" y2="185" class="draw-line" />
