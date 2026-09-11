@@ -31,11 +31,11 @@
         font-style="italic"
         font-size="22">F<tspan dy="6" font-size="70%">A</tspan> [mol/s]</text>
 
-  <text x="285" y="130"
+  <text x="285" y="30"
         font-family="Times New Roman"
         font-style="italic"
         font-size="22">F<tspan dy="6" font-size="70%">A</tspan></text>
-  <text x="345" y="130"
+  <text x="345" y="30"
        font-family="Times New Roman"
        font-size="22"
        font-style="italic">F</text>
