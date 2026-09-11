@@ -48,7 +48,8 @@
   <text x="410" y="87"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">F<tspan dy="6" font-size="70%">A</tspan></text>
+        font-size="22">F<tspan dy="6" font-size="70%">A</tspan>
+                       + dF<tspan dy="6" font-size="70%">A</tspan></text>
 
   <text x="288" y="82"
         font-family="Times New Roman"
