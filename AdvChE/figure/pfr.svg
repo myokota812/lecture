@@ -38,17 +38,17 @@
   <text x="605" y="30"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">C<tspan dy="6" font-size="70%">AL</tspan></text>
+        font-size="22">F<tspan dy="6" font-size="70%">A2</tspan></text>
 
   <text x="140" y="87"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">F [m³/s]</text>
+        font-size="22">F<tspan dy="6" font-size="70%">A</tspan> [mol/s]</text>
 
   <text x="410" y="87"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">F</text>
+        font-size="22">F<tspan dy="6" font-size="70%">A</tspan></text>
 
   <text x="288" y="82"
         font-family="Times New Roman"
@@ -63,12 +63,12 @@
   <text x="257" y="136"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">z</text>
+        font-size="22">v</text>
 
   <text x="310" y="136"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">z + dz</text>
+        font-size="22">v + dv</text>
 
   <text x="620" y="136"
         font-family="Times New Roman"
