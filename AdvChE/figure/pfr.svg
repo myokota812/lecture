@@ -21,10 +21,10 @@
            fill="#2a6f97"/>
 
      
-     <text x="605" y="30"
+     <text x="105" y="30"
         font-family="Times New Roman"
         font-style="italic"
-        font-size="22">F<tspan dy="6" font-size="70%">A2</tspan></text>
+        font-size="22">F<tspan dy="6" font-size="70%">A0</tspan></text>
      
   <text x="140" y="87"
         font-family="Times New Roman"
