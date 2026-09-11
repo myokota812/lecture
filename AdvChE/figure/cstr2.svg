@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480" width="100%" height="100%">
+  <defs>
+    <!-- 矢印の定義 -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#000000" />
+    </marker>
+  </defs>
+
+  <style>
+    .draw-line { stroke: #000000; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .arrow-line { stroke: #000000; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    .text { font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 32px; font-style: italic; fill: #000000; }
+    .sub { font-size: 22px; font-style: italic; }
+  </style>
+
+  <!-- 反応器本体（リアクター） -->
+  <rect x="180" y="120" width="360" height="320" class="draw-line" rx="10" ry="10" />
+
+  <!-- 流入配管（左から） -->
+  <line x1="40" y1="200" x2="180" y2="200" class="arrow-line" />
+  <text x="70" y="175" class="text">F<tspan baseline-shift="sub" class="sub">A0</tspan></text>
+
+  <!-- 流出配管（右へ） -->
+  <line x1="540" y1="360" x2="660" y2="360" class="arrow-line" />
+  <text x="575" y="335" class="text">F<tspan baseline-shift="sub" class="sub">A</tspan></text>
+
+  <!-- 反応器内の変数指定 -->
+  <text x="240" y="210" class="text">V</text>
+  <text x="240" y="270" class="text">N<tspan baseline-shift="sub" class="sub">A</tspan></text>
+  <text x="240" y="330" class="text">r<tspan baseline-shift="sub" class="sub">A</tspan></text>
+
+  <!-- 攪拌機（シャフト） -->
+  <line x1="360" y1="60" x2="360" y2="330" class="draw-line" />
+  
+  <!-- 上部モーター -->
+  <rect x="340" y="30" width="40" height="30" class="draw-line" fill="#ffffff" />
+
+  <!-- インペラ（翼） -->
+  <line x1="320" y1="300" x2="400" y2="360" class="draw-line" />
+  <line x1="400" y1="300" x2="320" y2="360" class="draw-line" />
+</svg>
