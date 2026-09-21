@@ -53,44 +53,4 @@
       Ptotal = PA + PB + ...
     </text>
   </g>
-
-  <!-- Section 2: モル分率と分圧 -->
-  <g transform="translate(25, 285)">
-    <rect width="700" height="190" rx="8" fill="#ffffff" stroke="#dee2e6" stroke-width="2" />
-    <text x="20" y="30" font-family="sans-serif" font-size="16" font-weight="bold" fill="#0d6efd">
-      2. モル分率（存在割合）と分圧の関係
-    </text>
-
-    <!-- 説明エリア -->
-    <g transform="translate(30, 50)">
-      <rect width="280" height="115" rx="5" fill="#f8f9fa" stroke="#ced4da" stroke-width="1" />
-      <text x="15" y="30" font-family="sans-serif" font-size="14" font-weight="bold" fill="#212529">
-        成分 A のモル分率 (XA)
-      </text>
-      <text x="15" y="55" font-family="sans-serif" font-size="13" fill="#495057">
-        全体分子数に対する成分Aの割合
-      </text>
-      <text x="140" y="90" font-family="sans-serif" font-size="16" font-weight="bold" fill="#0d6efd" text-anchor="middle">
-        XA = nA / ntotal
-      </text>
-    </g>
-
-    <!-- 矢印 -->
-    <path d="M 330,105 L 370,105" stroke="#6c757d" stroke-width="3" fill="none" />
-    <polygon points="370,98 382,105 370,112" fill="#6c757d" />
-
-    <!-- 公式大枠 -->
-    <g transform="translate(400, 50)">
-      <rect width="270" height="115" rx="5" fill="#d1e7dd" stroke="#198754" stroke-width="2" />
-      <text x="135" y="40" font-family="sans-serif" font-size="14" font-weight="bold" fill="#0f5132" text-anchor="middle">
-        【 分圧の計算 】
-      </text>
-      <text x="135" y="75" font-family="sans-serif" font-size="20" font-weight="bold" fill="#0f5132" text-anchor="middle">
-        PA = XA × Ptotal
-      </text>
-      <text x="135" y="100" font-family="sans-serif" font-size="12" fill="#146c43" text-anchor="middle">
-        (Aの分圧 ＝ Aの割合 × 全体の圧力)
-      </text>
-    </g>
-  </g>
 </svg>
