@@ -1,1 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 450" width="100%" height="100%" font-family="'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif">
+  <defs>
+    <!-- 矢印のマーカー定義 -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#111111"/>
+    </marker>
+    <!-- 分子（粒子）のデザイン -->
+    <g id="particle">
+      <circle cx="0" cy="0" r="9" fill="#222222" stroke="#000000" stroke-width="1.5"/>
+      <circle cx="0" cy="0" r="4" fill="#ffffff"/>
+    </g>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="100%" height="100%" fill="#ffffff"/>
+
+  <!-- タイトル -->
+  <text x="20" y="55" font-size="32" font-weight="bold" fill="#000000">気体の圧力</text>
+
+  <!-- メインフレーム（容器） -->
+  <rect x="250" y="30" width="300" height="380" fill="none" stroke="#000000" stroke-width="2.5"/>
+
+  <!-- 粒子と運動ベクトル（矢印）  -->
+
+  <!-- 左上周辺 -->
+  <use href="#particle" x="275" y="70"/>
+  <line x1="275" y1="70" x2="315" y2="70" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- 壁での反射（左上壁） -->
+  <line x1="285" y1="175" x2="250" y2="150" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="250" y1="150" x2="285" y2="125" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <use href="#particle" x="290" y="175"/>
+
+  <!-- 壁での反射（左下壁） -->
+  <line x1="290" y1="330" x2="250" y2="300" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="250" y1="300" x2="285" y2="265" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <use href="#particle" x="290" y="330"/>
+
+  <!-- 中央上付近 -->
+  <use href="#particle" x="345" y="130"/>
+  <line x1="345" y1="130" x2="310" y2="105" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="360" y="65"/>
+  <line x1="360" y1="65" x2="390" y2="140" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- 中央付近 -->
+  <use href="#particle" x="342" y="245"/>
+  <line x1="342" y1="245" x2="370" y2="295" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="382" y="295"/>
+  <line x1="382" y1="295" x2="410" y2="235" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="378" y="190"/>
+  <line x1="378" y1="190" x2="340" y2="190" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="435" y="180"/>
+  <line x1="435" y1="180" x2="435" y2="130" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="435" y="255"/>
+  <line x1="435" y1="255" x2="435" y2="340" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- 右上付近 -->
+  <use href="#particle" x="470" y="115"/>
+  <line x1="470" y1="115" x2="485" y2="145" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="505" y="60"/>
+  <line x1="505" y1="60" x2="525" y2="35" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="505" y1="60" x2="525" y2="80" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="515" y="165"/>
+  <line x1="515" y1="165" x2="540" y2="105" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- 右下付近 -->
+  <use href="#particle" x="495" y="250"/>
+  <line x1="495" y1="250" x2="525" y2="215" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="480" y="325"/>
+  <line x1="480" y1="325" x2="500" y2="340" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <use href="#particle" x="522" y="305"/>
+
+  <!-- 底面での反射 -->
+  <line x1="495" y1="380" x2="485" y2="350" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="495" y1="380" x2="505" y2="335" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- 右壁での反射（重要部分） -->
+  <line x1="520" y1="285" x2="550" y2="250" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="550" y1="250" x2="525" y2="195" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- 注釈・テキスト枠 -->
+
+  <!-- 1. 反作用による運動 -->
+  <g transform="translate(585, 210)">
+    <rect x="0" y="0" width="105" height="26" rx="10" ry="10" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+    <text x="52.5" y="17" font-size="11" font-weight="bold" text-anchor="middle" fill="#000000">反作用による運動</text>
+    <!-- 左向き白抜き矢印 -->
+    <path d="M -5 13 L -20 5 L -20 9 L -32 9 L -32 17 L -20 17 L -20 21 Z" fill="#ffffff" stroke="#000000" stroke-width="1.2"/>
+  </g>
+
+  <!-- 2. 圧力になる運動 -->
+  <g transform="translate(585, 270)">
+    <rect x="0" y="0" width="105" height="26" rx="10" ry="10" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+    <text x="52.5" y="17" font-size="11" font-weight="bold" text-anchor="middle" fill="#000000">圧力になる運動</text>
+    <!-- 右向き白抜き矢印 -->
+    <path d="M -5 13 L -20 5 L -20 9 L -32 9 L -32 17 L -20 17 L -20 21 Z" transform="rotate(180, -18.5, 13)" fill="#ffffff" stroke="#000000" stroke-width="1.2"/>
+  </g>
+
+</svg>
 
