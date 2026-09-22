@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200"
+     height="720"
+     viewBox="0 0 1200 720">
+
+  <defs>
+
+    <!-- 双方向矢印用 -->
+    <marker id="arrow"
+            markerWidth="12"
+            markerHeight="12"
+            refX="6"
+            refY="3"
+            orient="auto-start-reverse">
+      <path d="M0,0 L0,6 L10,3 z"
+            fill="black"/>
+    </marker>
+
+    <!-- 分子グラデーション -->
+    <radialGradient id="mol"
+                    cx="35%"
+                    cy="35%">
+      <stop offset="0%"
+            stop-color="#ffffff"/>
+      <stop offset="100%"
+            stop-color="#4f81d9"/>
+    </radialGradient>
+
+  </defs>
+
+  <!-- タイトル -->
+  <text x="600"
+        y="60"
+        text-anchor="middle"
+        font-size="36"
+        font-family="sans-serif"
+        font-weight="bold">
+    実在気体の体積効果（排除体積）
+  </text>
+
+  <text x="600"
+        y="100"
+        text-anchor="middle"
+        font-size="22"
+        font-family="sans-serif">
+    分子は有限の体積をもつため，運動可能な体積は V より小さくなる
+  </text>
+
+  <!-- 容器 -->
+  <rect x="150"
+        y="180"
+        width="800"
+        height="350"
+        fill="none"
+        stroke="black"
+        stroke-width="4"/>
+
+  <!-- 有効体積 -->
+  <rect x="150"
+        y="180"
+        width="650"
+        height="350"
+        fill="#b9efb3"
+        opacity="0.85"/>
+
+  <!-- 排除体積 -->
+  <rect x="800"
+        y="180"
+        width="150"
+        height="350"
+        fill="#ffb3b3"
+        opacity="0.90"/>
+
+  <!-- 境界 -->
+  <line x1="800"
+        y1="180"
+        x2="800"
+        y2="530"
+        stroke="#b00000"
+        stroke-width="4"
+        stroke-dasharray="10 6"/>
+
+  <!-- 分子 -->
+  <circle cx="250" cy="260" r="22"
+          fill="url(#mol)" stroke="#1f4e79" stroke-width="2"/>
+
+  <circle cx="380" cy="240" r="22"
+          fill="url(#mol)" stroke="#1f4e79" stroke-width="2"/>
+
+  <circle cx="520" cy="320" r="22"
+          fill="url(#mol)" stroke="#1f4e79" stroke-width="2"/>
+
+  <circle cx="680" cy="250" r="22"
+          fill="url(#mol)" stroke="#1f4e79" stroke-width="2"/>
+
+  <circle cx="710" cy="420" r="22"
+          fill="url(#mol)" stroke="#1f4e79" stroke-width="2"/>
+
+  <circle cx="320" cy="430" r="22"
+          fill="url(#mol)" stroke="#1f4e79" stroke-width="2"/>
+
+  <circle cx="490" cy="460" r="22"
+          fill="url(#mol)" stroke="#1f4e79" stroke-width="2"/>
+
+  <!-- ラベル -->
+  <text x="475"
+        y="355"
+        text-anchor="middle"
+        font-size="34"
+        font-family="sans-serif"
+        font-weight="bold"
+        fill="#006400">
+    有効体積 V − nb
+  </text>
+
+  <text x="875"
+        y="330"
+        text-anchor="middle"
+        font-size="28"
+        font-family="sans-serif"
+        font-weight="bold"
+        fill="#a00000">
+    排除体積
+  </text>
+
+  <text x="875"
+        y="385"
+        text-anchor="middle"
+        font-size="40"
+        font-family="serif"
+        fill="#a00000">
+    nb
+  </text>
+
+  <!-- 実際の体積 -->
+  <line x1="150"
+        y1="140"
+        x2="950"
+        y2="140"
+        stroke="black"
+        stroke-width="3"
+        marker-start="url(#arrow)"
+        marker-end="url(#arrow)"/>
+
+  <text x="550"
+        y="125"
+        text-anchor="middle"
+        font-size="32"
+        font-family="serif">
+    実際の体積 V
+  </text>
+
+  <!-- 有効体積 -->
+  <line x1="150"
+        y1="590"
+        x2="800"
+        y2="590"
+        stroke="#006400"
+        stroke-width="4"
+        marker-start="url(#arrow)"
+        marker-end="url(#arrow)"/>
+
+  <text x="475"
+        y="635"
+        text-anchor="middle"
+        font-size="32"
+        font-family="serif"
+        fill="#006400">
+    有効体積 V − nb
+  </text>
+
+  <!-- 排除体積の寸法 -->
+  <line x1="800"
+        y1="560"
+        x2="950"
+        y2="560"
+        stroke="#a00000"
+        stroke-width="3"
+        marker-start="url(#arrow)"
+        marker-end="url(#arrow)"/>
+
+  <text x="875"
+        y="605"
+        text-anchor="middle"
+        font-size="28"
+        font-family="serif"
+        fill="#a00000">
+    nb
+  </text>
+
+  <!-- 数式 -->
+  <rect x="180"
+        y="660"
+        width="740"
+        height="45"
+        rx="8"
+        fill="#f8f8f8"
+        stroke="#cccccc"/>
+
+  <text x="550"
+        y="692"
+        text-anchor="middle"
+        font-size="26"
+        font-family="serif">
+    V = (V − nb) + nb
+  </text>
+
+</svg>
