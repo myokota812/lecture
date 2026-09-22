@@ -1,0 +1,93 @@
+<svg viewBox="0 0 750 360" width="100%" height="100%">
+  <!-- 背景 -->
+  <rect width="750" height="360" fill="#f8f9fa" rx="10" />
+
+  <!-- 矢印マーカー定義 -->
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0d6efd" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc3545" />
+    </marker>
+  </defs>
+
+  <!-- タイトル -->
+  <text x="375" y="32" font-family="sans-serif" font-size="18" font-weight="bold" fill="#212529" text-anchor="middle">
+    分子間力による圧力減少モデル ( -a · n²/V² )
+  </text>
+
+  <!-- 左側：理想気体（分子間力なし） -->
+  <g transform="translate(25, 50)">
+    <rect width="330" height="240" rx="8" fill="#ffffff" stroke="#0d6efd" stroke-width="2" />
+    <text x="165" y="28" font-family="sans-serif" font-size="15" font-weight="bold" fill="#0d6efd" text-anchor="middle">
+      理想気体 (分子間力＝0)
+    </text>
+
+    <!-- 右の壁 -->
+    <line x1="328" y1="40" x2="328" y2="230" stroke="#0d6efd" stroke-width="5" />
+
+    <!-- 内部の分子 -->
+    <circle cx="50" cy="80" r="10" fill="#6c757d" opacity="0.5" />
+    <circle cx="120" cy="180" r="10" fill="#6c757d" opacity="0.5" />
+    <circle cx="180" cy="70" r="10" fill="#6c757d" opacity="0.5" />
+    <circle cx="210" cy="160" r="10" fill="#6c757d" opacity="0.5" />
+
+    <!-- 注目分子と速度ベクトル -->
+    <circle cx="305" cy="120" r="12" fill="#0d6efd" />
+    <line x1="240" y1="120" x2="290" y2="120" stroke="#0d6efd" stroke-width="4" marker-end="url(#arrow-blue)" />
+
+    <!-- キャプション -->
+    <rect x="20" y="190" width="290" height="38" rx="5" fill="#e7f1ff" />
+    <text x="165" y="206" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0d6efd" text-anchor="middle">
+      周囲から引かれないため
+    </text>
+    <text x="165" y="222" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0d6efd" text-anchor="middle">
+      最大速度で壁に強く衝突！ ( P_ideal )
+    </text>
+  </g>
+
+  <!-- 右側：実在気体（分子間力あり） -->
+  <g transform="translate(395, 50)">
+    <rect width="330" height="240" rx="8" fill="#ffffff" stroke="#dc3545" stroke-width="2" />
+    <text x="165" y="28" font-family="sans-serif" font-size="15" font-weight="bold" fill="#dc3545" text-anchor="middle">
+      実在気体 (分子間力が働く)
+    </text>
+
+    <!-- 右の壁 -->
+    <line x1="328" y1="40" x2="328" y2="230" stroke="#dc3545" stroke-width="5" />
+
+    <!-- 後方の分子 -->
+    <circle cx="170" cy="75" r="11" fill="#198754" />
+    <circle cx="160" cy="120" r="11" fill="#198754" />
+    <circle cx="180" cy="165" r="11" fill="#198754" />
+
+    <!-- 引力線 -->
+    <line x1="305" y1="120" x2="185" y2="80" stroke="#dc3545" stroke-width="2" stroke-dasharray="4" />
+    <line x1="305" y1="120" x2="175" y2="120" stroke="#dc3545" stroke-width="2.5" stroke-dasharray="4" />
+    <line x1="305" y1="120" x2="195" y2="160" stroke="#dc3545" stroke-width="2" stroke-dasharray="4" />
+
+    <!-- 注目分子とベクトル -->
+    <circle cx="305" cy="120" r="12" fill="#0d6efd" />
+    <line x1="265" y1="120" x2="290" y2="120" stroke="#0d6efd" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+    <line x1="305" y1="120" x2="230" y2="120" stroke="#dc3545" stroke-width="3" marker-end="url(#arrow-red)" />
+    <text x="260" y="110" font-family="sans-serif" font-size="11" font-weight="bold" fill="#dc3545">引力(ブレーキ)</text>
+
+    <!-- キャプション -->
+    <rect x="20" y="190" width="290" height="38" rx="5" fill="#ffe2e5" />
+    <text x="165" y="206" font-family="sans-serif" font-size="12" font-weight="bold" fill="#dc3545" text-anchor="middle">
+      後ろの分子に引っ張られて減速！
+    </text>
+    <text x="165" y="222" font-family="sans-serif" font-size="13" font-weight="bold" fill="#dc3545" text-anchor="middle">
+  壁を押す圧力が低下する ( P_real &lt; P_ideal )
+</text>
+  </g>
+
+  <!-- 下部：補足 -->
+  <g transform="translate(25, 305)">
+    <rect width="700" height="42" rx="6" fill="#fff3cd" stroke="#ffc107" stroke-width="1.5" />
+    <text x="350" y="26" font-family="sans-serif" font-size="14" font-weight="bold" fill="#664d03" text-anchor="middle">
+      理想的な圧力に補正する式： P_ideal = P_real + a · (n / V)²
+    </text>
+  </g>
+</svg>
