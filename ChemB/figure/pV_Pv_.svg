@@ -1,0 +1,118 @@
+<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 430" width="100%" height="100%">
+  <!-- 背景 -->
+  <rect width="750" height="430" fill="#f8f9fa" rx="10" />
+
+  <!-- タイトル -->
+  <text x="375" y="35" font-family="sans-serif" font-size="20" font-weight="bold" fill="#212529" text-anchor="middle">
+    混合気体の2つの捉え方（分圧モデル vs 分体積モデル）
+  </text>
+
+  <!-- ==================== 上段：ダルトンの分圧の法則 ==================== -->
+  <g transform="translate(25, 55)">
+    <rect width="700" height="165" rx="8" fill="#ffffff" stroke="#0d6efd" stroke-width="2" />
+    <text x="20" y="28" font-family="sans-serif" font-size="15" font-weight="bold" fill="#0d6efd">
+      【パターン1】分圧モデル（ダルトンの法則）：体積 V を固定 ➔ 圧力を足し算
+    </text>
+
+    <!-- 容器A -->
+    <g transform="translate(30, 42)">
+      <rect width="110" height="75" rx="5" fill="#e7f1ff" stroke="#0d6efd" stroke-width="2" />
+      <circle cx="30" cy="25" r="6" fill="#0d6efd" /><circle cx="80" cy="30" r="6" fill="#0d6efd" />
+      <circle cx="50" cy="55" r="6" fill="#0d6efd" /><circle cx="90" cy="58" r="6" fill="#0d6efd" />
+      <text x="55" y="98" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0d6efd" text-anchor="middle">体積 V</text>
+      <text x="55" y="114" font-family="sans-serif" font-size="12" fill="#495057" text-anchor="middle">圧力: PA</text>
+    </g>
+
+    <text x="162" y="85" font-family="sans-serif" font-size="24" font-weight="bold" fill="#6c757d">+</text>
+
+    <!-- 容器B -->
+    <g transform="translate(185, 42)">
+      <rect width="110" height="75" rx="5" fill="#ffe2e5" stroke="#dc3545" stroke-width="2" />
+      <polygon points="40,20 47,33 33,33" fill="#dc3545" />
+      <polygon points="75,45 82,58 68,58" fill="#dc3545" />
+      <text x="55" y="98" font-family="sans-serif" font-size="13" font-weight="bold" fill="#dc3545" text-anchor="middle">体積 V</text>
+      <text x="55" y="114" font-family="sans-serif" font-size="12" fill="#495057" text-anchor="middle">圧力: PB</text>
+    </g>
+
+    <text x="317" y="85" font-family="sans-serif" font-size="24" font-weight="bold" fill="#6c757d">=</text>
+
+    <!-- 混合容器 -->
+    <g transform="translate(340, 42)">
+      <rect width="110" height="75" rx="5" fill="#ffffff" stroke="#212529" stroke-width="2.5" />
+      <circle cx="25" cy="25" r="6" fill="#0d6efd" /><circle cx="85" cy="30" r="6" fill="#0d6efd" />
+      <circle cx="45" cy="55" r="6" fill="#0d6efd" /><circle cx="95" cy="58" r="6" fill="#0d6efd" />
+      <polygon points="65,20 72,33 58,33" fill="#dc3545" />
+      <polygon points="25,45 32,58 18,58" fill="#dc3545" />
+      <text x="55" y="98" font-family="sans-serif" font-size="13" font-weight="bold" fill="#212529" text-anchor="middle">体積 V</text>
+      <text x="55" y="114" font-family="sans-serif" font-size="12" font-weight="bold" fill="#212529" text-anchor="middle">全圧: Ptotal</text>
+    </g>
+
+    <!-- 式の解説枠 -->
+    <rect x="475" y="52" width="205" height="60" rx="5" fill="#e7f1ff" stroke="#0d6efd" stroke-width="1.5" />
+    <text x="577" y="77" font-family="sans-serif" font-size="14" font-weight="bold" fill="#0d6efd" text-anchor="middle">
+      Ptotal = PA + PB
+    </text>
+    <text x="577" y="97" font-family="sans-serif" font-size="12" fill="#495057" text-anchor="middle">
+      (PA V = nA RT, PB V = nB RT)
+    </text>
+  </g>
+
+  <!-- ==================== 下段：アガマの分体積の法則 ==================== -->
+  <g transform="translate(25, 235)">
+    <rect width="700" height="175" rx="8" fill="#ffffff" stroke="#198754" stroke-width="2" />
+    <text x="20" y="28" font-family="sans-serif" font-size="15" font-weight="bold" fill="#198754">
+      【パターン2】分体積モデル（アガマの法則）：圧力 Ptotal を固定 ➔ 体積を足し算
+    </text>
+
+    <!-- 容器A（体積VA） -->
+    <g transform="translate(30, 42)">
+      <rect width="80" height="75" rx="5" fill="#e7f1ff" stroke="#0d6efd" stroke-width="2" />
+      <circle cx="25" cy="25" r="6" fill="#0d6efd" /><circle cx="60" cy="30" r="6" fill="#0d6efd" />
+      <circle cx="35" cy="55" r="6" fill="#0d6efd" /><circle cx="65" cy="58" r="6" fill="#0d6efd" />
+      <text x="40" y="98" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0d6efd" text-anchor="middle">体積 VA</text>
+      <text x="40" y="114" font-family="sans-serif" font-size="12" fill="#495057" text-anchor="middle">圧力: Ptotal</text>
+    </g>
+
+    <text x="130" y="85" font-family="sans-serif" font-size="24" font-weight="bold" fill="#6c757d">+</text>
+
+    <!-- 容器B（体積VB） -->
+    <g transform="translate(150, 42)">
+      <rect width="50" height="75" rx="5" fill="#ffe2e5" stroke="#dc3545" stroke-width="2" />
+      <polygon points="25,20 32,33 18,33" fill="#dc3545" />
+      <polygon points="25,48 32,61 18,61" fill="#dc3545" />
+      <text x="25" y="98" font-family="sans-serif" font-size="13" font-weight="bold" fill="#dc3545" text-anchor="middle">体積 VB</text>
+      <text x="25" y="114" font-family="sans-serif" font-size="12" fill="#495057" text-anchor="middle">圧力: Ptotal</text>
+    </g>
+
+    <text x="222" y="85" font-family="sans-serif" font-size="24" font-weight="bold" fill="#6c757d">=</text>
+
+    <!-- 合体容器（体積V = VA + VB） -->
+    <g transform="translate(245, 42)">
+      <!-- 全体枠 -->
+      <rect width="180" height="75" rx="5" fill="#ffffff" stroke="#212529" stroke-width="2.5" />
+      <!-- VA領域（点線仕切り） -->
+      <rect width="110" height="75" rx="5 0 0 5" fill="#e7f1ff" opacity="0.5" />
+      <line x1="110" y1="0" x2="110" y2="75" stroke="#6c757d" stroke-dasharray="4" stroke-width="1.5" />
+      <!-- VB領域 -->
+      <rect x="110" width="70" height="75" rx="0 5 5 0" fill="#ffe2e5" opacity="0.5" />
+
+      <!-- 気体粒子 -->
+      <circle cx="25" cy="25" r="6" fill="#0d6efd" /><circle cx="85" cy="30" r="6" fill="#0d6efd" />
+      <circle cx="45" cy="55" r="6" fill="#0d6efd" /><circle cx="95" cy="58" r="6" fill="#0d6efd" />
+      <polygon points="140,20 147,33 133,33" fill="#dc3545" />
+      <polygon points="150,48 157,61 143,61" fill="#dc3545" />
+
+      <text x="90" y="98" font-family="sans-serif" font-size="13" font-weight="bold" fill="#212529" text-anchor="middle">全体積 V (＝VA + VB)</text>
+      <text x="90" y="114" font-family="sans-serif" font-size="12" font-weight="bold" fill="#212529" text-anchor="middle">圧力: Ptotal</text>
+    </g>
+
+    <!-- 式の解説枠 -->
+    <rect x="475" y="52" width="205" height="60" rx="5" fill="#d1e7dd" stroke="#198754" stroke-width="1.5" />
+    <text x="577" y="77" font-family="sans-serif" font-size="14" font-weight="bold" fill="#198754" text-anchor="middle">
+      V = VA + VB
+    </text>
+    <text x="577" y="97" font-family="sans-serif" font-size="12" fill="#495057" text-anchor="middle">
+      (Ptotal VA = nA RT, Ptotal VB = nB RT)
+    </text>
+  </g>
+</svg>
