@@ -1,0 +1,99 @@
+<svg viewBox="0 0 900 320" width="100%" height="100%" style="background-color: #f8fafc; font-family: sans-serif;">
+  
+
+  <!-- Section 1: 分散力 (Dispersion Force) -->
+  <g transform="translate(15, 10)">
+    <rect x="0" y="0" width="275" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="137" y="30" class="title" text-anchor="middle">(1) 分散力（ロンドン力）</text>
+    <text x="137" y="48" class="subtitle" text-anchor="middle">瞬間的な偏り（誘発双極子）</text>
+
+    <!-- Molecule A -->
+    <ellipse cx="85" cy="125" rx="45" ry="35" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+    <!-- Electron Cloud shift -->
+    <path d="M 60,105 Q 105,125 60,145" fill="#bae6fd" opacity="0.6" />
+    <text x="60" y="129" class="charge" fill="#0369a1">δ-</text>
+    <text x="105" y="129" class="charge" fill="#b91c1c">δ+</text>
+    <text x="85" y="175" class="desc" text-anchor="middle">瞬間的な極性</text>
+
+    <!-- Attraction Line -->
+    <path d="M 115,125 L 155,125" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4,3" />
+
+    <!-- Molecule B -->
+    <ellipse cx="190" cy="125" rx="45" ry="35" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+    <text x="165" y="129" class="charge" fill="#0369a1">δ-</text>
+    <text x="210" y="129" class="charge" fill="#b91c1c">δ+</text>
+    <text x="190" y="175" class="desc" text-anchor="middle">誘発された極性</text>
+
+    <text x="137" y="225" class="desc" text-anchor="middle">• すべての分子に働く</text>
+    <text x="137" y="245" class="desc" text-anchor="middle">• 電子雲の偏りが原因</text>
+    <text x="137" y="265" class="desc" text-anchor="middle" font-weight="bold" fill="#0369a1">強度: 0.1 〜 10 kJ/mol</text>
+  </g>
+
+  <!-- Section 2: 双極子-双極子相互作用 (Dipole-Dipole) -->
+  <g transform="translate(312, 10)">
+    <rect x="0" y="0" width="275" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="137" y="30" class="title" text-anchor="middle">(2) 双極子-双極子相互作用</text>
+    <text x="137" y="48" class="subtitle" text-anchor="middle">永久双極子間の静電気引力</text>
+
+    <!-- Polar Molecule 1 -->
+    <g transform="translate(40, 125)">
+      <circle cx="-20" cy="0" r="22" fill="#fecdd3" stroke="#f43f5e" stroke-width="2" />
+      <text x="-20" y="4" class="charge" fill="#9f1239" text-anchor="middle">δ-</text>
+      <circle cx="20" cy="0" r="18" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+      <text x="20" y="4" class="charge" fill="#1e40af" text-anchor="middle">δ+</text>
+    </g>
+
+    <!-- Attraction Line -->
+    <path d="M 80,125 L 190,125" stroke="#f59e0b" stroke-width="3" stroke-dasharray="5,4" />
+
+    <!-- Polar Molecule 2 -->
+    <g transform="translate(210, 125)">
+      <circle cx="-20" cy="0" r="22" fill="#fecdd3" stroke="#f43f5e" stroke-width="2" />
+      <text x="-20" y="4" class="charge" fill="#9f1239" text-anchor="middle">δ-</text>
+      <circle cx="20" cy="0" r="18" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+      <text x="20" y="4" class="charge" fill="#1e40af" text-anchor="middle">δ+</text>
+    </g>
+
+    <text x="137" y="225" class="desc" text-anchor="middle">• 極性分子（永久双極子）に働く</text>
+    <text x="137" y="245" class="desc" text-anchor="middle">• 正荷電(δ+)と負荷電(δ-)の引き合い</text>
+    <text x="137" y="265" class="desc" text-anchor="middle" font-weight="bold" fill="#0369a1">強度: 2 〜 10 kJ/mol</text>
+  </g>
+
+  <!-- Section 3: 水素結合 (Hydrogen Bonding) -->
+  <g transform="translate(610, 10)">
+    <rect x="0" y="0" width="275" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="137" y="30" class="title" text-anchor="middle">(3) 水素結合</text>
+    <text x="137" y="48" class="subtitle" text-anchor="middle">強烈な極性と非共有電子対</text>
+
+    <!-- Water Molecule 1 -->
+    <g transform="translate(60, 125)">
+      <!-- O Atom -->
+      <circle cx="-10" cy="0" r="24" fill="#fda4af" stroke="#e11d48" stroke-width="2" />
+      <text x="-10" y="4" class="label" fill="#881337" text-anchor="middle">O (δ-)</text>
+      <!-- Lone Pairs -->
+      <circle cx="-10" cy="-30" r="3" fill="#e11d48" />
+      <circle cx="-2" cy="-30" r="3" fill="#e11d48" />
+      <!-- H Atom -->
+      <line x1="-10" y1="0" x2="25" y2="0" stroke="#475569" stroke-width="3" />
+      <circle cx="25" cy="0" r="14" fill="#e0e7ff" stroke="#6366f1" stroke-width="2" />
+      <text x="25" y="4" class="charge" fill="#3730a3" text-anchor="middle">H (δ+)</text>
+    </g>
+
+    <!-- Hydrogen Bond -->
+    <path d="M 100,125 L 160,125" stroke="#dc2626" stroke-width="4" stroke-dasharray="4,3" />
+    <text x="130" y="115" font-size="10" font-weight="bold" fill="#dc2626" text-anchor="middle">水素結合</text>
+
+    <!-- Water Molecule 2 (Oxygen) -->
+    <g transform="translate(185, 125)">
+      <circle cx="0" cy="0" r="24" fill="#fda4af" stroke="#e11d48" stroke-width="2" />
+      <text x="0" y="4" class="label" fill="#881337" text-anchor="middle">O (δ-)</text>
+      <!-- Lone Pair interacting -->
+      <circle cx="-28" cy="-4" r="3" fill="#dc2626" />
+      <circle cx="-28" cy="4" r="3" fill="#dc2626" />
+    </g>
+
+    <text x="137" y="225" class="desc" text-anchor="middle">• F, O, N に結合した H 原子が関与</text>
+    <text x="137" y="245" class="desc" text-anchor="middle">• 分子間力の中で際立って強力</text>
+    <text x="137" y="265" class="desc" text-anchor="middle" font-weight="bold" fill="#dc2626">強度: 10 〜 40 kJ/mol</text>
+  </g>
+</svg>
