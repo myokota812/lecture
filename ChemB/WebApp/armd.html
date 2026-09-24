@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Argon NPT MD</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:#000;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+canvas{
+    display:block;
+}
+
+#ui{
+    position:absolute;
+    right:10px;
+    top:10px;
+    width:260px;
+    background:rgba(0,0,0,0.8);
+    padding:15px;
+    border-radius:10px;
+}
+
+input{
+    width:100%;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div id="ui">
+
+<h3>Lennard-Jones Ar</h3>
+
+Temperature
+
+<input
+id="tempSlider"
+type="range"
+min="0.05"
+max="3.0"
+step="0.01"
+value="2.0">
+
+<div id="tempValue"></div>
+
+<br>
+
+Pressure
+
+<input
+id="pressSlider"
+type="range"
+min="0.2"
+max="5.0"
+step="0.01"
+value="0.5">
+
+<div id="pressValue"></div>
+
+<hr>
+
+<div id="phase"></div>
+<div id="density"></div>
+<div id="energy"></div>
+
+</div>
+
+<script>
+
+const canvas =
+document.getElementById("canvas");
+
+const ctx =
+canvas.getContext("2d");
+
+function resize(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize",resize);
+
+const N=500;
+
+const sigma=1.0;
+const epsilon=1.0;
+const cutoff=2.5;
+
+const dt=0.002;
+
+let density=0.30;
+let L=Math.sqrt(N/density);
+
+const atoms=[];
+
+function initializeGas(){
+
+    atoms.length=0;
+
+    let nx=Math.ceil(Math.sqrt(N));
+
+    let spacing=L/nx;
+
+    for(let i=0;i<N;i++){
+
+        let x=(i%nx)*spacing;
+        let y=Math.floor(i/nx)*spacing;
+
+        atoms.push({
+
+            x:x,
+            y:y,
+
+            vx:(Math.random()-0.5)*10,
+            vy:(Math.random()-0.5)*10,
+
+            fx:0,
+            fy:0
+
+        });
+    }
+}
+
+initializeGas();
+
+function pbc(a){
+
+    if(a.x<0) a.x+=L;
+    if(a.x>=L) a.x-=L;
+
+    if(a.y<0) a.y+=L;
+    if(a.y>=L) a.y-=L;
+}
+
+let virial=0;
+let potentialEnergy=0;
+
+function forceCalculation(){
+
+    virial=0;
+    potentialEnergy=0;
+
+    for(const a of atoms){
+
+        a.fx=0;
+        a.fy=0;
+    }
+
+    for(let i=0;i<N-1;i++){
+
+        const ai=atoms[i];
+
+        for(let j=i+1;j<N;j++){
+
+            const aj=atoms[j];
+
+            let dx=ai.x-aj.x;
+            let dy=ai.y-aj.y;
+
+            if(dx>L/2) dx-=L;
+            if(dx<-L/2) dx+=L;
+
+            if(dy>L/2) dy-=L;
+            if(dy<-L/2) dy+=L;
+
+            let r2=dx*dx+dy*dy;
+
+            if(r2<0.20) r2=0.20;
+
+            if(r2<cutoff*cutoff){
+
+                let invr2=1/r2;
+
+                let sr6=invr2*invr2*invr2;
+                let sr12=sr6*sr6;
+
+                let f=
+                24*
+                (2*sr12-sr6)*
+                invr2;
+
+                let fx=f*dx;
+                let fy=f*dy;
+
+                ai.fx+=fx;
+                ai.fy+=fy;
+
+                aj.fx-=fx;
+                aj.fy-=fy;
+
+                potentialEnergy+=
+                4*(sr12-sr6);
+
+                virial += dx*fx+dy*fy;
+            }
+        }
+    }
+}
+
+forceCalculation();
+
+function integrate(){
+
+    for(const a of atoms){
+
+        a.x +=
+        a.vx*dt +
+        0.5*a.fx*dt*dt;
+
+        a.y +=
+        a.vy*dt +
+        0.5*a.fy*dt*dt;
+
+        a.vx +=
+        0.5*a.fx*dt;
+
+        a.vy +=
+        0.5*a.fy*dt;
+
+        pbc(a);
+    }
+
+    forceCalculation();
+
+    for(const a of atoms){
+
+        a.vx +=
+        0.5*a.fx*dt;
+
+        a.vy +=
+        0.5*a.fy*dt;
+    }
+}
+
+function kineticEnergy(){
+
+    let ke=0;
+
+    for(const a of atoms){
+
+        ke +=
+        0.5*
+        (
+        a.vx*a.vx+
+        a.vy*a.vy
+        );
+    }
+
+    return ke;
+}
+
+function temperature(){
+
+    return kineticEnergy()/N;
+}
+
+function thermostat(){
+
+    const Ttarget=
+    parseFloat(
+    document.getElementById(
+    "tempSlider").value);
+
+    const T=temperature();
+
+    const scale=
+    Math.sqrt(
+    1+0.02*
+    (Ttarget/T-1)
+    );
+
+    for(const a of atoms){
+
+        a.vx*=scale;
+        a.vy*=scale;
+    }
+}
+
+function pressure(){
+
+    const area=L*L;
+
+    const T=temperature();
+
+    return (
+    N*T +
+    0.5*virial
+    ) / area;
+}
+
+function barostat(){
+
+    const Ptarget=
+    parseFloat(
+    document.getElementById(
+    "pressSlider").value);
+
+    const P=pressure();
+
+    const change=
+    1-
+    0.0005*
+    (Ptarget-P);
+
+    const oldL=L;
+
+    L*=change;
+
+    const scale=L/oldL;
+
+    for(const a of atoms){
+
+        a.x*=scale;
+        a.y*=scale;
+    }
+
+    density=N/(L*L);
+}
+
+function draw(){
+
+    ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height);
+
+    const size=
+    Math.min(
+    canvas.width,
+    canvas.height
+    )*0.90;
+
+    const scale=size/L;
+
+    const ox=
+    (canvas.width-size)/2;
+
+    const oy=
+    (canvas.height-size)/2;
+
+    ctx.strokeStyle="#666";
+    ctx.strokeRect(
+    ox,
+    oy,
+    size,
+    size);
+
+    for(const a of atoms){
+
+        const x=
+        ox+a.x*scale;
+
+        const y=
+        oy+a.y*scale;
+
+        const v=
+        Math.sqrt(
+        a.vx*a.vx+
+        a.vy*a.vy);
+
+        const r=
+        Math.min(
+        255,
+        v*40);
+
+        ctx.fillStyle=
+        `rgb(${r},100,255)`;
+
+        ctx.beginPath();
+
+        ctx.arc(
+        x,
+        y,
+        2.5,
+        0,
+        2*Math.PI);
+
+        ctx.fill();
+    }
+}
+
+function info(){
+
+    const T=
+    temperature();
+
+    const P=
+    pressure();
+
+    document.getElementById(
+    "tempValue").innerHTML=
+    "T = "+
+    T.toFixed(2);
+
+    document.getElementById(
+    "pressValue").innerHTML=
+    "P = "+
+    P.toFixed(2);
+
+    document.getElementById(
+    "density").innerHTML=
+    "ρ = "+
+    density.toFixed(2);
+
+    document.getElementById(
+    "energy").innerHTML=
+    "PE = "+
+    potentialEnergy.toFixed(0);
+
+    let phase="Gas";
+
+    if(density>0.6)
+        phase="Liquid";
+
+    if(density>1.0 &&
+       T<0.5)
+        phase="Crystal";
+
+    document.getElementById(
+    "phase").innerHTML=
+    "<b>"+phase+"</b>";
+}
+
+function animate(){
+
+    for(let k=0;k<4;k++){
+
+        integrate();
+
+        thermostat();
+
+        barostat();
+    }
+
+    draw();
+
+    info();
+
+    requestAnimationFrame(
+    animate);
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
