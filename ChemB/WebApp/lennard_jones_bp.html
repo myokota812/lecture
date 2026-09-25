@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molecular Interaction Simulator - Improved</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#000;
+    color:white;
+    font-family:Arial,"Noto Sans JP",sans-serif;
+}
+
+.container{
+    display:flex;
+    padding:20px;
+    gap:20px;
+    max-width:1200px;
+    margin:auto;
+}
+
+.left{
+    flex:1;
+    min-width:0;
+}
+
+.right{
+    width:310px;
+    background:#d8d3ff;
+    color:#111;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 0 12px rgba(255,255,255,.12);
+}
+
+canvas{
+    display:block;
+    width:100%;
+    background:#111;
+    border:1px solid #555;
+    border-radius:5px;
+}
+
+#graph{
+    aspect-ratio:700/400;
+}
+
+#mol{
+    margin-top:12px;
+    aspect-ratio:700/240;
+}
+
+h2{
+    margin:0 0 6px;
+    font-size:22px;
+}
+
+h3{
+    margin:8px 0;
+}
+
+.section{
+    margin-bottom:15px;
+    padding-bottom:12px;
+    border-bottom:1px solid rgba(0,0,0,.2);
+}
+
+label{
+    display:block;
+    margin:8px 0 4px;
+    font-weight:bold;
+}
+
+input[type=range],
+select{
+    width:100%;
+}
+
+input[type=range]{
+    accent-color:#5555cc;
+}
+
+button{
+    width:100%;
+    margin-top:7px;
+    padding:8px;
+    border:0;
+    border-radius:5px;
+    cursor:pointer;
+    background:#444;
+    color:white;
+}
+
+button:hover{
+    background:#222;
+}
+
+.check{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-weight:normal;
+}
+
+.check input{
+    width:auto;
+}
+
+.value{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px 10px;
+    font-size:14px;
+}
+
+.info-grid div:nth-child(odd){
+    font-weight:bold;
+}
+
+.legend{
+    font-size:13px;
+    line-height:1.5;
+}
+
+.note{
+    font-size:12px;
+    line-height:1.45;
+    color:#222;
+}
+
+.formula{
+    background:#eee;
+    padding:7px;
+    border-radius:5px;
+    font-family:serif;
+    font-size:14px;
+    margin-top:7px;
+}
+
+@media(max-width:850px){
+    .container{
+        flex-direction:column;
+    }
+    .right{
+        width:100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left">
+
+<canvas id="graph" width="700" height="400"></canvas>
+<canvas id="mol" width="700" height="240"></canvas>
+
+</div>
+
+<div class="right">
+
+<h2>Molecular Interaction</h2>
+
+<div class="section">
+<h3>Model</h3>
+
+<select id="model">
+<option value="Ar">Ar</option>
+<option value="CH4">CH₄</option>
+<option value="CO2">CO₂</option>
+<option value="H2O">H₂O</option>
+</select>
+
+<p>
+Distance r =
+<span id="distanceText" class="value">5.00</span> Å
+</p>
+
+<input
+    id="distance"
+    type="range"
+    min="2.0"
+    max="10"
+    step="0.01"
+    value="5">
+
+<button id="resetDistance">Reset distance</button>
+</div>
+
+<div class="section">
+
+<h3>Interaction terms</h3>
+
+<label class="check">
+<input type="checkbox" id="showLJ" checked>
+Lennard–Jones
+</label>
+
+<label class="check">
+<input type="checkbox" id="showDipole" checked>
+Dipole interaction
+</label>
+
+<label class="check">
+<input type="checkbox" id="showHB" checked>
+Hydrogen bond
+</label>
+
+</div>
+
+<div class="section">
+
+<h3>Graph</h3>
+
+<select id="energyMode">
+<option value="auto">Auto scale</option>
+<option value="actual">Actual energy</option>
+<option value="normalized">Normalized U / ε</option>
+</select>
+
+<div class="legend">
+<span style="color:red">●</span>
+Lennard–Jones<br>
+
+<span style="color:cyan">●</span>
+Total potential<br>
+
+<span style="color:yellow">●</span>
+Current distance
+</div>
+
+<div class="formula">
+U<sub>LJ</sub>(r)
+= 4ε[(σ/r)<sup>12</sup> − (σ/r)<sup>6</sup>]
+</div>
+
+<div class="note" style="margin-top:7px">
+<b>Auto scale:</b> 各モデルの井戸が見やすい倍率に自動調整します。<br>
+<b>Normalized:</b> U/ε としてポテンシャルの形を比較します。
+</div>
+
+<div class="formula">
+r<sub>min</sub> = 2<sup>1/6</sup>σ
+</div>
+
+</div>
+
+<div class="section">
+
+<h3>Parameters</h3>
+
+<div id="info"></div>
+
+</div>
+
+<div class="section note">
+
+<b>Educational note</b><br>
+The Lennard–Jones parameters σ and ε are used for the
+model interaction. For H₂O, additional empirical dipole and
+hydrogen-bond terms are included to illustrate how different
+interactions can modify the potential-energy curve.
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+"use strict";
+
+/* =========================================================
+   Molecular parameters
+   ε is expressed in K in the model data.
+   The simulation energy scale below uses ε/100, as in the
+   original educational model, so that the graph remains
+   readable on the screen.
+   ========================================================= */
+
+const MODELS = {
+
+    Ar:{
+        name:"Ar",
+        sigma:3.405,
+        epsilon:119.8
+    },
+
+    CH4:{
+        name:"CH4",
+        sigma:3.73,
+        epsilon:148
+    },
+
+    CO2:{
+        name:"CO2",
+        sigma:3.94,
+        epsilon:195
+    },
+
+    H2O:{
+        name:"H2O",
+        sigma:3.15,
+        epsilon:78
+    }
+
+};
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+const graph = document.getElementById("graph");
+const g = graph.getContext("2d");
+
+const mol = document.getElementById("mol");
+const m = mol.getContext("2d");
+
+const modelSelect = document.getElementById("model");
+const distanceSlider = document.getElementById("distance");
+const distanceText = document.getElementById("distanceText");
+const info = document.getElementById("info");
+const energyMode = document.getElementById("energyMode");
+
+const showLJ = document.getElementById("showLJ");
+const showDipole = document.getElementById("showDipole");
+const showHB = document.getElementById("showHB");
+
+const resetDistance = document.getElementById("resetDistance");
+
+let angle = 0;
+let animationRunning = true;
+
+
+/* =========================================================
+   Lennard-Jones potential
+   ========================================================= */
+
+function LJ(r,sigma,epsilon){
+
+    return 4 * epsilon *
+        (
+            Math.pow(sigma/r,12)
+            -
+            Math.pow(sigma/r,6)
+        );
+
+}
+
+
+/* =========================================================
+   H-bond educational model
+   ========================================================= */
+
+function HydrogenBond(r){
+
+    const r0 = 2.8;
+
+    return -20.0 *
+        Math.exp(
+            -Math.pow(r-r0,2)/0.15
+        );
+
+}
+
+
+/* =========================================================
+   Dipole educational model
+   ========================================================= */
+
+function DipolePotential(r){
+
+    return -15.0 /
+        Math.pow(r/2.8,3);
+
+}
+
+
+/* =========================================================
+   Total potential
+   ========================================================= */
+
+function TotalPotential(model,r){
+
+    const epsilon = model.epsilon/100;
+
+    let U = 0;
+
+    if(showLJ.checked){
+        U += LJ(r,model.sigma,epsilon);
+    }
+
+    if(model.name === "H2O"){
+
+        if(showHB.checked){
+            U += HydrogenBond(r);
+        }
+
+        if(showDipole.checked){
+            U += DipolePotential(r);
+        }
+
+    }
+
+    return U;
+
+}
+
+
+/* =========================================================
+   Graph utilities
+   ========================================================= */
+
+function xFromR(r){
+
+    return 65 + (r-2)/8 * 585;
+
+}
+
+function rFromX(x){
+
+    return 2 + (x-65)/585 * 8;
+
+}
+
+
+/* =========================================================
+   Draw graph
+   ========================================================= */
+
+function drawGraph(model,r){
+
+    const W = graph.width;
+    const H = graph.height;
+
+    g.clearRect(0,0,W,H);
+
+    /*
+      -------------------------------------------------------
+      Display scaling
+      -------------------------------------------------------
+      The physical potential is NOT changed.
+      Only the vertical display scale is changed.
+
+      auto       : zoom around the LJ well
+      actual     : fixed physical-energy display
+      normalized : U / epsilon
+    */
+
+    const epsilon = model.epsilon / 100;
+
+    function rawLJ(rr){
+        return LJ(rr,model.sigma,epsilon);
+    }
+
+    function rawTotal(rr){
+        return TotalPotential(model,rr);
+    }
+
+    function displayEnergy(U){
+
+        if(energyMode.value === "normalized"){
+            return U / epsilon;
+        }
+
+        return U;
+    }
+
+    /*
+      Find characteristic minimum.
+      For LJ, rmin = 2^(1/6) sigma.
+      For H2O with additional terms, determine the
+      minimum numerically in the displayed range.
+    */
+
+    let minU = 0;
+    let maxU = 0;
+    let minR = 2;
+
+    for(let rr=2;rr<=10;rr+=0.01){
+
+        const U = rawTotal(rr);
+
+        if(Number.isFinite(U)){
+
+            if(U < minU){
+                minU = U;
+                minR = rr;
+            }
+
+            maxU = Math.max(maxU,Math.min(U,100));
+
+        }
+    }
+
+    /*
+      Vertical range.
+
+      Auto:
+        show the attractive well clearly while retaining
+        enough space for the repulsive side.
+
+      Actual:
+        use a common physical scale.
+
+      Normalized:
+        U/epsilon gives approximately -1 at the LJ minimum.
+    */
+
+    let yMin, yMax;
+
+    if(energyMode.value === "normalized"){
+
+        yMin = Math.min(-1.35, minU/epsilon*1.15);
+        yMax = Math.max(1.0, Math.min(maxU/epsilon,10));
+
+    }
+    else if(energyMode.value === "actual"){
+
+        /*
+          Actual-energy mode uses a model-specific scale,
+          but reports the real numerical energy values.
+        */
+        const well = Math.abs(minU);
+
+        yMin = -Math.max(well*1.35,0.5);
+        yMax = Math.max(well*1.0,1.0);
+
+    }
+    else{
+
+        /*
+          Auto scale:
+          make the attractive well occupy a substantial
+          part of the graph.
+        */
+        const well = Math.max(Math.abs(minU),0.2);
+
+        yMin = -well*1.35;
+
+        /*
+          Do not let the huge r -> 0 repulsive wall
+          determine the whole graph.
+        */
+        yMax = Math.max(well*1.0,1.0);
+
+    }
+
+    const plotTop = 30;
+    const plotBottom = H-45;
+    const plotHeight = plotBottom-plotTop;
+
+    function yFromU(U){
+
+        const value=displayEnergy(U);
+
+        return plotBottom -
+            (value-yMin)/(yMax-yMin)*plotHeight;
+
+    }
+
+    function xFromRLocal(rr){
+        return 65 + (rr-2)/8 * 585;
+    }
+
+
+    /* Grid */
+
+    g.strokeStyle="#282828";
+    g.lineWidth=1;
+
+    for(let rr=2;rr<=10;rr+=1){
+
+        const x=xFromRLocal(rr);
+
+        g.beginPath();
+        g.moveTo(x,plotTop);
+        g.lineTo(x,plotBottom);
+        g.stroke();
+
+    }
+
+
+    /*
+      Horizontal grid lines
+    */
+
+    const nGrid=6;
+
+    for(let i=0;i<=nGrid;i++){
+
+        const value =
+            yMin+(yMax-yMin)*i/nGrid;
+
+        const y=yFromU(
+            value*(
+                energyMode.value==="normalized"
+                ? epsilon
+                : 1
+            )
+        );
+
+        g.strokeStyle="#222";
+
+        g.beginPath();
+        g.moveTo(55,y);
+        g.lineTo(W-20,y);
+        g.stroke();
+
+        g.fillStyle="#aaa";
+        g.font="11px Arial";
+
+        let label;
+
+        if(energyMode.value==="normalized"){
+            label=value.toFixed(2);
+        }
+        else{
+            label=value.toFixed(2);
+        }
+
+        g.fillText(label,8,y+4);
+
+    }
+
+
+    /* U = 0 */
+
+    const zeroY=yFromU(0);
+
+    g.strokeStyle="#888";
+    g.setLineDash([6,4]);
+
+    g.beginPath();
+    g.moveTo(55,zeroY);
+    g.lineTo(W-20,zeroY);
+    g.stroke();
+
+    g.setLineDash([]);
+
+
+    /* Axes */
+
+    g.strokeStyle="#ddd";
+    g.lineWidth=1.5;
+
+    g.beginPath();
+    g.moveTo(55,plotTop);
+    g.lineTo(55,plotBottom);
+    g.lineTo(W-20,plotBottom);
+    g.stroke();
+
+
+    /* Axis labels */
+
+    g.fillStyle="white";
+    g.font="13px Arial";
+
+    if(energyMode.value==="normalized"){
+        g.fillText("U / ε",18,20);
+    }
+    else{
+        g.fillText("U",25,20);
+    }
+
+    g.fillText("Potential energy",80,20);
+    g.fillText("r (Å)",W-60,H-15);
+
+
+    /* x labels */
+
+    for(let rr=2;rr<=10;rr++){
+
+        const x=xFromRLocal(rr);
+
+        g.fillText(
+            rr.toString(),
+            x-5,
+            H-27
+        );
+
+    }
+
+
+    /*
+      Draw curve helper
+    */
+
+    function drawCurve(getU,style,width){
+
+        g.strokeStyle=style;
+        g.lineWidth=width;
+        g.beginPath();
+
+        let first=true;
+
+        for(let rr=2;rr<=10;rr+=0.02){
+
+            let U=getU(rr);
+
+            if(!Number.isFinite(U)){
+                first=true;
+                continue;
+            }
+
+            let y=yFromU(U);
+
+            /*
+              Clip the displayed repulsive wall.
+            */
+            y=Math.max(
+                plotTop,
+                Math.min(plotBottom,y)
+            );
+
+            const x=xFromRLocal(rr);
+
+            if(first){
+                g.moveTo(x,y);
+                first=false;
+            }
+            else{
+                g.lineTo(x,y);
+            }
+
+        }
+
+        g.stroke();
+
+    }
+
+
+    /* LJ curve */
+
+    if(showLJ.checked){
+
+        drawCurve(
+            rawLJ,
+            "red",
+            2
+        );
+
+    }
+
+
+    /* Total curve */
+
+    drawCurve(
+        rawTotal,
+        "cyan",
+        3
+    );
+
+
+    /*
+      LJ theoretical minimum
+    */
+
+    const rmin =
+        Math.pow(2,1/6)*model.sigma;
+
+    if(rmin>=2 && rmin<=10){
+
+        const Umin =
+            rawLJ(rmin);
+
+        const xmin=xFromRLocal(rmin);
+        const ymin=yFromU(Umin);
+
+        g.strokeStyle="#777";
+        g.setLineDash([3,3]);
+
+        g.beginPath();
+        g.moveTo(xmin,plotBottom);
+        g.lineTo(xmin,ymin);
+        g.stroke();
+
+        g.setLineDash([]);
+
+        g.fillStyle="orange";
+
+        g.beginPath();
+        g.arc(
+            xmin,
+            ymin,
+            5,
+            0,
+            Math.PI*2
+        );
+        g.fill();
+
+        g.fillStyle="orange";
+        g.font="12px Arial";
+
+        g.fillText(
+            `rmin = ${rmin.toFixed(2)} Å`,
+            Math.min(xmin+7,W-150),
+            Math.max(ymin-8,42)
+        );
+
+    }
+
+
+    /*
+      Actual minimum of the total potential
+    */
+
+    const minX=xFromRLocal(minR);
+    const minY=yFromU(minU);
+
+    g.fillStyle="lime";
+
+    g.beginPath();
+    g.arc(
+        minX,
+        minY,
+        4,
+        0,
+        Math.PI*2
+    );
+    g.fill();
+
+
+    /*
+      Current position
+    */
+
+    const currentU=rawTotal(r);
+
+    const px=xFromRLocal(r);
+    const py=Math.max(
+        plotTop,
+        Math.min(plotBottom,yFromU(currentU))
+    );
+
+    g.strokeStyle="yellow";
+    g.lineWidth=1;
+
+    g.beginPath();
+    g.moveTo(px,plotTop);
+    g.lineTo(px,plotBottom);
+    g.stroke();
+
+
+    g.fillStyle="white";
+
+    g.beginPath();
+    g.arc(px,py,8,0,Math.PI*2);
+    g.fill();
+
+    g.fillStyle="magenta";
+
+    g.beginPath();
+    g.arc(px,py,5,0,Math.PI*2);
+    g.fill();
+
+
+    /* Current value */
+
+    const labelX=Math.min(px+12,W-180);
+    const labelY=py<100 ? py+25 : py-15;
+
+    g.fillStyle="yellow";
+    g.font="14px Arial";
+
+    g.fillText(
+        `r = ${r.toFixed(2)} Å`,
+        labelX,
+        labelY
+    );
+
+    g.fillText(
+        `U = ${currentU.toFixed(3)}`,
+        labelX,
+        labelY+18
+    );
+
+    /*
+      Display-mode information
+    */
+
+    g.fillStyle="#aaa";
+    g.font="11px Arial";
+
+    let modeText;
+
+    if(energyMode.value==="normalized"){
+        modeText="Display: U / ε";
+    }
+    else if(energyMode.value==="actual"){
+        modeText="Display: actual energy";
+    }
+    else{
+        modeText="Display: auto scale";
+    }
+
+    g.fillText(
+        modeText,
+        W-160,
+        20
+    );
+
+}
+
+/* =========================================================
+   Molecule drawing
+   ========================================================= */
+
+function atom(x,y,r,c){
+
+    m.fillStyle=c;
+
+    m.beginPath();
+    m.arc(x,y,r,0,Math.PI*2);
+    m.fill();
+
+    m.strokeStyle="#aaa";
+    m.lineWidth=1;
+    m.stroke();
+
+}
+
+
+function bond(x1,y1,x2,y2){
+
+    m.strokeStyle="white";
+    m.lineWidth=3;
+
+    m.beginPath();
+    m.moveTo(x1,y1);
+    m.lineTo(x2,y2);
+    m.stroke();
+
+}
+
+
+function arrow(x1,y1,x2,y2){
+
+    const a=Math.atan2(
+        y2-y1,
+        x2-x1
+    );
+
+    m.strokeStyle="cyan";
+    m.fillStyle="cyan";
+    m.lineWidth=2;
+
+    m.beginPath();
+    m.moveTo(x1,y1);
+    m.lineTo(x2,y2);
+    m.stroke();
+
+    m.beginPath();
+    m.moveTo(x2,y2);
+
+    m.lineTo(
+        x2-10*Math.cos(a-0.3),
+        y2-10*Math.sin(a-0.3)
+    );
+
+    m.lineTo(
+        x2-10*Math.cos(a+0.3),
+        y2-10*Math.sin(a+0.3)
+    );
+
+    m.fill();
+
+}
+
+
+function drawWater(x,t){
+
+    const th=104.5*Math.PI/180;
+
+    const h1x=x+45*Math.cos(t-th/2);
+    const h1y=120+45*Math.sin(t-th/2);
+
+    const h2x=x+45*Math.cos(t+th/2);
+    const h2y=120+45*Math.sin(t+th/2);
+
+    bond(x,120,h1x,h1y);
+    bond(x,120,h2x,h2y);
+
+    atom(x,120,15,"red");
+    atom(h1x,h1y,8,"white");
+    atom(h2x,h2y,8,"white");
+
+    arrow(
+        x,
+        120,
+        x+60*Math.cos(t),
+        120+60*Math.sin(t)
+    );
+
+    return{
+        ox:x,
+        oy:120,
+        hx:h2x,
+        hy:h2y
+    };
+
+}
+
+
+/* =========================================================
+   Molecule canvas
+   ========================================================= */
+
+function drawMolecules(name,r){
+
+    m.clearRect(
+        0,
+        0,
+        mol.width,
+        mol.height
+    );
+
+    const x1=220;
+    const x2=x1+r*35;
+
+
+    if(name==="Ar"){
+
+        atom(x1,120,35,"violet");
+        atom(x2,120,35,"violet");
+
+    }
+
+
+    if(name==="CH4"){
+
+        drawMethane(x1);
+        drawMethane(x2);
+
+    }
+
+
+    if(name==="CO2"){
+
+        drawCO2(x1);
+        drawCO2(x2);
+
+    }
+
+
+    if(name==="H2O"){
+
+        const w1=drawWater(x1,angle);
+        const w2=drawWater(
+            x2,
+            Math.PI-angle
+        );
+
+        if(r<4.5){
+
+            m.setLineDash([8,6]);
+            m.strokeStyle="yellow";
+            m.lineWidth=2;
+
+            m.beginPath();
+            m.moveTo(w1.hx,w1.hy);
+            m.lineTo(w2.ox,w2.oy);
+            m.stroke();
+
+            m.setLineDash([]);
+
+            m.fillStyle="yellow";
+            m.font="13px Arial";
+            m.fillText(
+                "H-bond",
+                (w1.hx+w2.ox)/2,
+                (w1.hy+w2.oy)/2-8
+            );
+
+        }
+
+    }
+
+
+    /* distance marker */
+
+    const y=205;
+
+    m.strokeStyle="#aaa";
+    m.lineWidth=1;
+
+    m.beginPath();
+    m.moveTo(x1,y);
+    m.lineTo(x2,y);
+    m.stroke();
+
+    m.beginPath();
+    m.moveTo(x1,y-5);
+    m.lineTo(x1,y+5);
+    m.moveTo(x2,y-5);
+    m.lineTo(x2,y+5);
+    m.stroke();
+
+    m.fillStyle="white";
+    m.font="14px Arial";
+
+    m.fillText(
+        `r = ${r.toFixed(2)} Å`,
+        (x1+x2)/2-35,
+        y-8
+    );
+
+}
+
+
+/* =========================================================
+   Simple CH4 drawing
+   ========================================================= */
+
+function drawMethane(x){
+
+    const d=25;
+
+    atom(x,120,14,"gray");
+
+    const pts=[
+        [x-d,120],
+        [x+d,120],
+        [x,120-d],
+        [x,120+d]
+    ];
+
+    pts.forEach(([hx,hy])=>{
+        bond(x,120,hx,hy);
+        atom(hx,hy,7,"white");
+    });
+
+}
+
+
+/* =========================================================
+   Simple CO2 drawing
+   ========================================================= */
+
+function drawCO2(x){
+
+    const d=38;
+
+    bond(x-d,x*0+120,x,120);
+    bond(x,120,x+d,120);
+
+    atom(x-d,120,12,"red");
+    atom(x,120,10,"gray");
+    atom(x+d,120,12,"red");
+
+}
+
+
+/* =========================================================
+   Information panel
+   ========================================================= */
+
+function updateInfo(model,r){
+
+    const epsilon=model.epsilon/100;
+
+    const Ulj=
+        LJ(
+            r,
+            model.sigma,
+            epsilon
+        );
+
+    const Uhb=
+        model.name==="H2O" && showHB.checked
+        ? HydrogenBond(r)
+        : 0;
+
+    const Ud=
+        model.name==="H2O" && showDipole.checked
+        ? DipolePotential(r)
+        : 0;
+
+    const Ut=
+        Ulj*(showLJ.checked?1:0)
+        +Ud
+        +Uhb;
+
+    const rmin=
+        Math.pow(2,1/6)*model.sigma;
+
+    const Umin=
+        -epsilon;
+
+    info.innerHTML=`
+
+        <div class="info-grid">
+
+            <div>σ</div>
+            <div>${model.sigma.toFixed(3)} Å</div>
+
+            <div>ε</div>
+            <div>${model.epsilon.toFixed(1)} K</div>
+
+            <div>r<sub>min</sub></div>
+            <div>${rmin.toFixed(3)} Å</div>
+
+            <div>U<sub>min,LJ</sub></div>
+            <div>${Umin.toFixed(3)}</div>
+
+            <div>U<sub>LJ</sub></div>
+            <div>${(showLJ.checked?Ulj:0).toFixed(3)}</div>
+
+            <div>U<sub>dipole</sub></div>
+            <div>${Ud.toFixed(3)}</div>
+
+            <div>U<sub>H-bond</sub></div>
+            <div>${Uhb.toFixed(3)}</div>
+
+        </div>
+
+        <hr>
+
+        <b>Total potential = ${Ut.toFixed(3)}</b>
+
+        <br><span class="note">
+        Graph display: ${energyMode.value==="normalized"
+            ? "U / ε"
+            : energyMode.value==="actual"
+            ? "actual energy"
+            : "auto scale"}
+        </span>
+
+    `;
+
+}
+
+
+/* =========================================================
+   Main update
+   ========================================================= */
+
+function update(){
+
+    const name=modelSelect.value;
+
+    const model=MODELS[name];
+
+    const r=parseFloat(
+        distanceSlider.value
+    );
+
+    distanceText.textContent=
+        r.toFixed(2);
+
+    drawGraph(model,r);
+
+    drawMolecules(name,r);
+
+    updateInfo(model,r);
+
+}
+
+
+/* =========================================================
+   Animation
+   Only the molecular orientation is animated.
+   Graph calculation is still synchronized with the
+   current distance.
+   ========================================================= */
+
+function animate(){
+
+    if(animationRunning){
+
+        angle+=0.01;
+
+        if(
+            modelSelect.value==="H2O"
+        ){
+            drawMolecules(
+                "H2O",
+                parseFloat(distanceSlider.value)
+            );
+        }
+
+    }
+
+    requestAnimationFrame(animate);
+
+}
+
+
+/* =========================================================
+   Events
+   ========================================================= */
+
+modelSelect.addEventListener(
+    "change",
+    update
+);
+
+distanceSlider.addEventListener(
+    "input",
+    update
+);
+
+showLJ.addEventListener(
+    "change",
+    update
+);
+
+showDipole.addEventListener(
+    "change",
+    update
+);
+
+showHB.addEventListener(
+    "change",
+    update
+);
+
+energyMode.addEventListener(
+    "change",
+    update
+);
+
+resetDistance.addEventListener(
+    "click",
+    ()=>{
+        distanceSlider.value=5;
+        update();
+    }
+);
+
+
+/* =========================================================
+   Start
+   ========================================================= */
+
+update();
+animate();
+
+</script>
+
+</body>
+</html>
