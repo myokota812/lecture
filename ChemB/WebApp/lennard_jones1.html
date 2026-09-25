@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Lennard-Jones Simulator</title>
+
+<style>
+body{
+    margin:0;
+    background:black;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+.container{
+    display:flex;
+    padding:20px;
+    gap:20px;
+}
+
+.left{
+    flex:1;
+}
+
+.right{
+    width:280px;
+    background:#d8d3ff;
+    color:black;
+    padding:15px;
+    border-radius:10px;
+}
+
+.right input{
+    width:100%;
+}
+
+canvas{
+    background:#111;
+    border:1px solid #555;
+}
+
+.atomArea{
+    position:relative;
+    width:700px;
+    height:220px;
+    background:#111;
+    border:1px solid #555;
+    margin-top:20px;
+}
+
+.atom{
+    position:absolute;
+    border-radius:50%;
+    background:
+    radial-gradient(circle,
+    #ff9cff 0%,
+    #8b2f8b 45%,
+    #300030 100%);
+    box-shadow:
+    0 0 30px #ff66ff;
+}
+
+#atom1{
+    left:80px;
+}
+
+.info{
+    margin-top:15px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left">
+
+<canvas id="graph" width="700" height="450">
+</canvas>
+
+<div class="atomArea">
+
+<div id="atom1" class="atom" style="width: 77.5px; height: 77.5px; top: 60px;"></div>
+<div id="atom2" class="atom" style="width: 77.5px; height: 77.5px; top: 60px; left: 377.5px;"></div>
+
+</div>
+
+</div>
+
+<div class="right">
+
+<h3>Parameters</h3>
+
+<p>
+σ =
+<span id="sigmaText">3.10</span>
+</p>
+
+<input id="sigma" type="range" min="2" max="6" step="0.1" value="3.1">
+
+<p>
+ε =
+<span id="epsilonText">1.10</span>
+</p>
+
+<input id="epsilon" type="range" min="0.2" max="5" step="0.1" value="1.1">
+
+<p>
+r =
+<span id="distanceText">5.95</span>
+</p>
+
+<input id="distance" type="range" min="2.2" max="10" step="0.05" value="5.95">
+
+<div class="info" id="info">
+    U(r) = -0.086
+    <br>
+    r<sub>m</sub> =
+    3.48
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+const canvas =
+document.getElementById("graph");
+
+const ctx =
+canvas.getContext("2d");
+
+function LJ(r,sigma,epsilon){
+
+    return (
+        4*epsilon*
+        (
+            Math.pow(sigma/r,12)
+            -
+            Math.pow(sigma/r,6)
+        )
+    );
+}
+
+function drawGraph(
+    sigma,
+    epsilon,
+    distance
+){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.strokeStyle="#666";
+
+    for(let i=0;i<=5;i++){
+
+        let x=i*140;
+
+        ctx.beginPath();
+        ctx.moveTo(x,0);
+        ctx.lineTo(x,450);
+        ctx.stroke();
+    }
+
+    for(let i=0;i<=4;i++){
+
+        let y=i*112;
+
+        ctx.beginPath();
+        ctx.moveTo(0,y);
+        ctx.lineTo(700,y);
+        ctx.stroke();
+    }
+
+    ctx.strokeStyle="red";
+    ctx.lineWidth=3;
+
+    ctx.beginPath();
+
+    let first=true;
+
+    for(let r=2;r<=12;r+=0.02){
+
+        let U=LJ(
+            r,
+            sigma,
+            epsilon
+        );
+
+        let x=
+        70+
+        (r-2)/10*580;
+
+        let y=
+        220-U*50;
+
+        if(first){
+
+            ctx.moveTo(x,y);
+            first=false;
+
+        }else{
+
+            ctx.lineTo(x,y);
+        }
+    }
+
+    ctx.stroke();
+
+    let currentU=
+    LJ(
+        distance,
+        sigma,
+        epsilon
+    );
+
+    let px=
+    70+
+    (distance-2)/10*580;
+
+    let py=
+    220-currentU*50;
+
+    ctx.fillStyle="magenta";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        px,
+        py,
+        8,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="white";
+    ctx.font="24px Arial";
+
+    ctx.fillText(
+        "Distance Between Atoms",
+        180,
+        430
+    );
+
+    ctx.save();
+
+    ctx.translate(
+        30,
+        320
+    );
+
+    ctx.rotate(
+        -Math.PI/2
+    );
+
+    ctx.fillText(
+        "Potential Energy",
+        0,
+        0
+    );
+
+    ctx.restore();
+}
+
+function update(){
+
+    let sigma=
+    parseFloat(
+        document
+        .getElementById("sigma")
+        .value
+    );
+
+    let epsilon=
+    parseFloat(
+        document
+        .getElementById("epsilon")
+        .value
+    );
+
+    let distance=
+    parseFloat(
+        document
+        .getElementById("distance")
+        .value
+    );
+
+    document
+    .getElementById("sigmaText")
+    .textContent=
+    sigma.toFixed(2);
+
+    document
+    .getElementById("epsilonText")
+    .textContent=
+    epsilon.toFixed(2);
+
+    document
+    .getElementById("distanceText")
+    .textContent=
+    distance.toFixed(2);
+
+    drawGraph(
+        sigma,
+        epsilon,
+        distance
+    );
+
+    let diameter=
+    sigma*25;
+
+    const atom1=
+    document
+    .getElementById("atom1");
+
+    const atom2=
+    document
+    .getElementById("atom2");
+
+    atom1.style.width=
+    diameter+"px";
+
+    atom1.style.height=
+    diameter+"px";
+
+    atom1.style.top=
+    "60px";
+
+    atom2.style.width=
+    diameter+"px";
+
+    atom2.style.height=
+    diameter+"px";
+
+    atom2.style.top=
+    "60px";
+
+    atom2.style.left=
+    (80+distance*50)
+    +"px";
+
+    let U=
+    LJ(
+        distance,
+        sigma,
+        epsilon
+    );
+
+    let rm=
+    Math.pow(2,1/6)
+    *sigma;
+
+    document
+    .getElementById("info")
+    .innerHTML=
+    `
+    U(r) = ${U.toFixed(3)}
+    <br>
+    r<sub>m</sub> =
+    ${rm.toFixed(2)}
+    `;
+}
+
+document
+.querySelectorAll("input")
+.forEach(el=>{
+
+    el.addEventListener(
+        "input",
+        update
+    );
+
+});
+
+update();
+
+</script>
+
+
+</body></html>
