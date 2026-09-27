@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ギブス自由エネルギー理解アプリ：水の蒸発編</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --liquid: #0284c7;
+      --vapor: #e11d48;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: #334155;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e293b;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    .equation-card {
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .equation {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #1e40af;
+      margin-bottom: 6px;
+    }
+
+    .equation-desc {
+      font-size: 0.85rem;
+      color: #3b82f6;
+    }
+
+    /* コントローラー */
+    .control-section {
+      background: #f1f5f9;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .temp-display {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #0f172a;
+    }
+
+    .slider {
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(to right, #38bdf8, #f59e0b, #ef4444);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #2563eb;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    /* ビジュアル＆ステータス */
+    .vis-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .vis-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .state-box {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      position: relative;
+    }
+
+    .state-box.active {
+      border-color: #2563eb;
+      background-color: #f0f9ff;
+    }
+
+    .state-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .canvas-container {
+      height: 140px;
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .energy-list {
+      font-size: 0.85rem;
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    .energy-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    /* 比較メーター */
+    .comparison-section {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .status-liquid { background-color: var(--liquid); }
+    .status-equilibrium { background-color: #10b981; }
+    .status-vapor { background-color: var(--vapor); }
+
+    .explanation {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #475569;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>ギブス自由エネルギー体験アプリ</h1>
+  <div class="subtitle">水の蒸発（液体 ⇌ 気体）における G = H - TS の関係を学ぼう</div>
+
+  <div class="equation-card">
+    <div class="equation">G = H − TS</div>
+    <div class="equation-desc">
+      ［手取りエネルギー G］ = ［分子を引き離す熱 H］ − ［自由度を保つ代償 TS］<br>
+      <strong>自然界のルール：G がより小さい状態へ変化する！</strong>
+    </div>
+  </div>
+
+  <!-- コントローラー -->
+  <div class="control-section">
+    <div class="slider-header">
+      <label for="tempSlider" style="font-weight: bold;">設定温度 (T):</label>
+      <div class="temp-display"><span id="tempValue">25</span> °C <span style="font-size: 1rem; color: #64748b;">(<span id="tempKValue">298</span> K)</span></div>
+    </div>
+    <input type="range" id="tempSlider" class="slider" min="0" max="150" value="25" step="1">
+  </div>
+
+  <!-- ビジュアル表示 -->
+  <div class="vis-container">
+    <!-- 水（液体） -->
+    <div class="state-box" id="boxLiquid">
+      <div class="state-title" style="color: var(--liquid);">水（液体）</div>
+      <div class="canvas-container">
+        <canvas id="canvasLiquid"></canvas>
+      </div>
+      <div class="energy-list">
+        <div class="energy-item"><span>総熱量 (H):</span> <strong>約 0 kJ/mol</strong></div>
+        <div class="energy-item"><span>維持費 (TS):</span> <strong id="tsLiquid">0 kJ/mol</strong></div>
+        <div class="energy-item" style="border-top: 1px dashed #ccc; padding-top: 4px;">
+          <span>自由エネルギー (G):</span> <strong id="gLiquid" style="color: var(--liquid);">0 kJ/mol</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- 水蒸気（気体） -->
+    <div class="state-box" id="boxVapor">
+      <div class="state-title" style="color: var(--vapor);">水蒸気（気体）</div>
+      <div class="canvas-container">
+        <canvas id="canvasVapor"></canvas>
+      </div>
+      <div class="energy-list">
+        <div class="energy-item"><span>総熱量 (H):</span> <strong>約 44 kJ/mol</strong></div>
+        <div class="energy-item"><span>維持費 (TS):</span> <strong id="tsVapor">0 kJ/mol</strong></div>
+        <div class="energy-item" style="border-top: 1px dashed #ccc; padding-top: 4px;">
+          <span>自由エネルギー (G):</span> <strong id="gVapor" style="color: var(--vapor);">0 kJ/mol</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 総合判定 -->
+  <div class="comparison-section" style="text-align: center;">
+    <div>判定結果：<span id="statusBadge" class="status-badge status-liquid">水（液体）が安定</span></div>
+    <div class="explanation" id="expText">
+      温度が低いため、気体になるための巨大なコスト (TS) を支払うメリットがありません。<br>
+      分子同士が手をつないだ <strong>水（液体）</strong> の方が G が小さく安定します。
+    </div>
+  </div>
+</div>
+
+<script>
+  // 簡易モデル設定値 (水 1mol あたりの近似値)
+  // 液体を基準 (H_liquid = 0, S_liquid = 0) とした相対変化
+  const H_vap = 44.0; // kJ/mol (蒸発熱)
+  const S_vap = 0.118; // kJ/(mol·K) (蒸発エントロピー変化)
+
+  const tempSlider = document.getElementById('tempSlider');
+  const tempValue = document.getElementById('tempValue');
+  const tempKValue = document.getElementById('tempKValue');
+
+  const tsLiquidEl = document.getElementById('tsLiquid');
+  const gLiquidEl = document.getElementById('gLiquid');
+  const tsVaporEl = document.getElementById('tsVapor');
+  const gVaporEl = document.getElementById('gVapor');
+
+  const boxLiquid = document.getElementById('boxLiquid');
+  const boxVapor = document.getElementById('boxVapor');
+  const statusBadge = document.getElementById('statusBadge');
+  const expText = document.getElementById('expText');
+
+  // アニメーション用 Canvas
+  const canvasL = document.getElementById('canvasLiquid');
+  const ctxL = canvasL.getContext('2d');
+  const canvasV = document.getElementById('canvasVapor');
+  const ctxV = canvasV.getContext('2d');
+
+  let particlesL = [];
+  let particlesV = [];
+
+  function initParticles() {
+    canvasL.width = canvasL.clientWidth;
+    canvasL.height = canvasL.clientHeight;
+    canvasV.width = canvasV.clientWidth;
+    canvasV.height = canvasV.clientHeight;
+
+    particlesL = [];
+    particlesV = [];
+
+    // 液体の分子（密集・まとまり）
+    for (let i = 0; i < 20; i++) {
+      particlesL.push({
+        x: Math.random() * (canvasL.width - 20) + 10,
+        y: canvasL.height - 15 - Math.random() * 20,
+        vx: (Math.random() - 0.5) * 1,
+        vy: (Math.random() - 0.5) * 1
+      });
+    }
+
+    // 気体の分子（広散・激しい動き）
+    for (let i = 0; i < 20; i++) {
+      particlesV.push({
+        x: Math.random() * (canvasV.width - 20) + 10,
+        y: Math.random() * (canvasV.height - 20) + 10,
+        vx: (Math.random() - 0.5) * 3,
+        vy: (Math.random() - 0.5) * 3
+      });
+    }
+  }
+
+  function update() {
+    const tC = parseFloat(tempSlider.value);
+    const tK = tC + 273.15;
+
+    tempValue.textContent = tC;
+    tempKValue.textContent = tK.toFixed(0);
+
+    // エネルギー計算 (液体基準)
+    const gLiquid = 0;
+    const tsVapor = tK * S_vap;
+    const gVapor = H_vap - tsVapor;
+
+    // 表示更新
+    tsLiquidEl.textContent = '0.0 kJ/mol';
+    gLiquidEl.textContent = '0.0 kJ/mol';
+
+    tsVaporEl.textContent = tsVapor.toFixed(1) + ' kJ/mol';
+    gVaporEl.textContent = gVapor.toFixed(1) + ' kJ/mol';
+
+    // 安定相判定 (差が小さければ平衡)
+    const diff = Math.abs(gVapor - gLiquid);
+
+    if (diff < 1.0) {
+      // 100℃ 付近 (相平衡)
+      boxLiquid.className = 'state-box active';
+      boxVapor.className = 'state-box active';
+      statusBadge.className = 'status-badge status-equilibrium';
+      statusBadge.textContent = '100℃：相平衡 (G_liquid = G_vapor)';
+      expText.innerHTML = `蒸発のエネルギーコスト (<span class="highlight">H = 44 kJ</span>) と、気体が自由を得るメリット (<span class="highlight">TS = ${tsVapor.toFixed(1)} kJ</span>) がちょうど拮抗しています！<br>どちらの G も等しいため、<strong>液体と気体が共存</strong>します。`;
+    } else if (gLiquid < gVapor) {
+      // 低温 (液体安定)
+      boxLiquid.className = 'state-box active';
+      boxVapor.className = 'state-box';
+      statusBadge.className = 'status-badge status-liquid';
+      statusBadge.textContent = '水（液体）が安定 (G_liquid < G_vapor)';
+      expText.innerHTML = `温度が低いため、気体になる維持費 (<span class="highlight">TS = ${tsVapor.toFixed(1)} kJ</span>) が不足し、G_vapor (${gVapor.toFixed(1)}) が高くなってしまいます。<br>分子同士がまとまった <strong>水（液体）</strong> の方が G が小さく安定します。`;
+    } else {
+      // 高温 (気体安定)
+      boxLiquid.className = 'state-box';
+      boxVapor.className = 'state-box active';
+      statusBadge.className = 'status-badge status-vapor';
+      statusBadge.textContent = '水蒸気（気体）が安定 (G_vapor < G_liquid)';
+      expText.innerHTML = `温度が高くなったことで、気体が自由を得るメリット (<span class="highlight">TS = ${tsVapor.toFixed(1)} kJ</span>) が爆発的に増大！<br>H のコスト分を差し引いても <strong>水蒸気（気体）</strong> の方が G が小さくなるため、自発的に沸騰・蒸発します。`;
+    }
+  }
+
+  // アニメーション描画
+  function animate() {
+    const speedFactor = parseFloat(tempSlider.value) / 50 + 0.5;
+
+    // 液体描画
+    ctxL.clearRect(0, 0, canvasL.width, canvasL.height);
+    ctxL.fillStyle = '#0284c7';
+    particlesL.forEach(p => {
+      p.x += p.vx * speedFactor;
+      p.y += p.vy * speedFactor;
+
+      // 簡易境界チェック
+      if (p.x < 10 || p.x > canvasL.width - 10) p.vx *= -1;
+      if (p.y < canvasL.height - 35 || p.y > canvasL.height - 10) p.vy *= -1;
+
+      ctxL.beginPath();
+      ctxL.arc(p.x, p.y, 6, 0, Math.PI * 2);
+      ctxL.fill();
+    });
+
+    // 気体描画
+    ctxV.clearRect(0, 0, canvasV.width, canvasV.height);
+    ctxV.fillStyle = '#e11d48';
+    particlesV.forEach(p => {
+      p.x += p.vx * speedFactor;
+      p.y += p.vy * speedFactor;
+
+      if (p.x < 10 || p.x > canvasV.width - 10) p.vx *= -1;
+      if (p.y < 10 || p.y > canvasV.height - 10) p.vy *= -1;
+
+      ctxV.beginPath();
+      ctxV.arc(p.x, p.y, 5, 0, Math.PI * 2);
+      ctxV.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', initParticles);
+  tempSlider.addEventListener('input', update);
+
+  // 初期化
+  initParticles();
+  update();
+  animate();
+</script>
+
+</body>
+</html>
