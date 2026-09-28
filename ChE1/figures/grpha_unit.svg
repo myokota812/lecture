@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="650" viewBox="0 0 800 650">
-
+<svg xmlns="http://www.w3.org/2000/svg" 
+    width="800" 
+    height="650" 
+    viewBox="0 0 800 650">
   <style>
     .axis { stroke:#6d97d1; stroke-width:4; fill:none; }
     .tick { stroke:#8fb0df; stroke-width:3; }
