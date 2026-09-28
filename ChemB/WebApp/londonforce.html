@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ロンドン分散力（追従モデル）</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    text-align:center;
+    background:white;
+}
+
+canvas{
+    border:1px solid #ccc;
+}
+
+.info{
+    width:1000px;
+    margin:auto;
+    text-align:left;
+    line-height:1.8;
+    font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>ロンドン分散力（瞬間双極子 → 誘起双極子）</h2>
+
+<canvas id="canvas" width="1100" height="650"></canvas>
+
+<div class="info">
+電子密度分布が瞬間的に偏ることで瞬間双極子が生じる。
+その電場によって隣の分子の電子密度も変形し、
+少し遅れて誘起双極子が形成される。
+</div>
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let t = 0;
+
+// =====================
+// 右側誘起双極子
+// =====================
+
+let induced = 0;
+
+// =====================
+// 原子描画
+// =====================
+
+function drawAtom(x,y,value,label){
+
+    const shift = 20*value;
+
+    const grad = ctx.createRadialGradient(
+        x+shift,y,
+        5,
+        x+shift,y,
+        90
+    );
+
+    grad.addColorStop(
+        0,
+        "rgba(0,120,255,0.65)"
+    );
+
+    grad.addColorStop(
+        0.5,
+        "rgba(0,120,255,0.25)"
+    );
+
+    grad.addColorStop(
+        1,
+        "rgba(0,120,255,0)"
+    );
+
+    ctx.fillStyle = grad;
+
+    const rx = 80 + 15*Math.abs(value);
+    const ry = 70 - 8*Math.abs(value);
+
+    ctx.beginPath();
+    ctx.ellipse(
+        x+shift,
+        y,
+        rx,
+        ry,
+        0,
+        0,
+        2*Math.PI
+    );
+
+    ctx.fill();
+
+    // 原子核
+
+    ctx.fillStyle = "black";
+
+    ctx.beginPath();
+    ctx.arc(
+        x,
+        y,
+        10,
+        0,
+        2*Math.PI
+    );
+
+    ctx.fill();
+
+    // 電子密度重心
+
+    ctx.fillStyle="navy";
+
+    ctx.beginPath();
+    ctx.arc(
+        x+shift,
+        y,
+        5,
+        0,
+        2*Math.PI
+    );
+
+    ctx.fill();
+
+    // 重心線
+
+    ctx.strokeStyle="gray";
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.lineTo(x+shift,y);
+    ctx.stroke();
+
+    // δ判定
+
+    ctx.font="34px Arial";
+
+    if(shift>0){
+
+        ctx.fillStyle="red";
+        ctx.fillText(
+            "δ+",
+            x-110,
+            y+10
+        );
+
+        ctx.fillStyle="blue";
+        ctx.fillText(
+            "δ−",
+            x+80,
+            y+10
+        );
+
+    }else{
+
+        ctx.fillStyle="blue";
+        ctx.fillText(
+            "δ−",
+            x-110,
+            y+10
+        );
+
+        ctx.fillStyle="red";
+        ctx.fillText(
+            "δ+",
+            x+80,
+            y+10
+        );
+    }
+
+    ctx.fillStyle="black";
+    ctx.font="28px Arial";
+
+    ctx.fillText(
+        label,
+        x-80,
+        y-120
+    );
+}
+
+// =====================
+// アニメーション
+// =====================
+
+function animate(){
+
+    ctx.clearRect(
+        0,0,
+        canvas.width,
+        canvas.height
+    );
+
+    // 左分子の揺らぎ
+
+    const source = Math.sin(t);
+
+    // 追従モデル
+    induced += 0.035*(source-induced);
+
+    drawAtom(
+        320,
+        260,
+        source,
+        "瞬間双極子"
+    );
+
+    drawAtom(
+        780,
+        260,
+        induced,
+        "誘起双極子"
+    );
+
+    // 分散力
+
+    ctx.strokeStyle="orange";
+    ctx.lineWidth=4;
+
+    ctx.setLineDash([10,10]);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        420,
+        260
+    );
+
+    ctx.lineTo(
+        680,
+        260
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    ctx.fillStyle="orange";
+    ctx.font="32px Arial";
+
+    ctx.fillText(
+        "ロンドン分散力",
+        470,
+        230
+    );
+
+    // 矢印
+
+    ctx.strokeStyle="green";
+    ctx.lineWidth=3;
+
+    ctx.beginPath();
+    ctx.moveTo(500,420);
+    ctx.lineTo(600,420);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(600,420);
+    ctx.lineTo(585,410);
+    ctx.lineTo(585,430);
+    ctx.closePath();
+    ctx.fillStyle="green";
+    ctx.fill();
+
+    // 説明
+
+    ctx.fillStyle="black";
+    ctx.font="28px Arial";
+
+    ctx.fillText(
+        "① 左側で電子密度が揺らぐ",
+        250,
+        500
+    );
+
+    ctx.fillText(
+        "② 電場が発生",
+        420,
+        550
+    );
+
+    ctx.fillText(
+        "③ 少し遅れて右側の電子雲が変形",
+        280,
+        600
+    );
+
+    t += 0.04;
+
+    requestAnimationFrame(
+        animate
+    );
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
