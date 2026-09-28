@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="650" viewBox="0 0 800 650">
+
+  <style>
+    .axis { stroke:#6d97d1; stroke-width:4; fill:none; }
+    .tick { stroke:#8fb0df; stroke-width:3; }
+    .num  { fill:#7aa0e8; font-size:56px; font-family:Arial, sans-serif; }
+    .green { fill:#33cc33; font-size:72px; font-family:Arial, sans-serif; }
+    .red   { fill:#ff0000; font-size:72px; font-family:Arial, sans-serif; }
+    .italic { font-style:italic; }
+  </style>
+
+  <!-- 上段 -->
+  <rect x="60" y="20" width="640" height="115" class="axis"/>
+
+  <line x1="180" y1="130" x2="180" y2="95" class="tick"/>
+  <line x1="300" y1="130" x2="300" y2="95" class="tick"/>
+  <line x1="420" y1="130" x2="420" y2="95" class="tick"/>
+  <line x1="540" y1="130" x2="540" y2="95" class="tick"/>
+
+  <text x="40"  y="200" class="num">0</text>
+  <text x="160" y="200" class="num">1</text>
+  <text x="280" y="200" class="num">2</text>
+  <text x="400" y="200" class="num">3</text>
+  <text x="520" y="200" class="num">4</text>
+  <text x="640" y="200" class="num">5</text>
+
+  <text x="170" y="280" class="green">
+    mass,
+    <tspan dx="15" class="italic">m</tspan>
+  </text>
+  <text x="460" y="280" class="red">/kg</text>
+
+  <!-- 下段 -->
+  <rect x="60" y="360" width="640" height="115" class="axis"/>
+
+  <line x1="180" y1="440" x2="180" y2="475" class="tick"/>
+  <line x1="300" y1="440" x2="300" y2="475" class="tick"/>
+  <line x1="420" y1="440" x2="420" y2="475" class="tick"/>
+  <line x1="540" y1="440" x2="540" y2="475" class="tick"/>
+
+  <text x="40"  y="560" class="num">0</text>
+  <text x="160" y="560" class="num">1</text>
+  <text x="280" y="560" class="num">2</text>
+  <text x="400" y="560" class="num">3</text>
+  <text x="520" y="560" class="num">4</text>
+  <text x="640" y="560" class="num">5</text>
+
+  <text x="170" y="620" class="green">
+    mass,
+    <tspan dx="15" class="italic">m</tspan>
+  </text>
+  <text x="480" y="620" class="red">[kg]</text>
+
+</svg>
