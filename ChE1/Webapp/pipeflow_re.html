@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipe Flow Reynolds Visualizer</title>
+
+<style>
+body{
+    margin:0;
+    padding:20px;
+    font-family:Segoe UI,sans-serif;
+    background:#f4f6f8;
+}
+
+.container{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:20px;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+input[type=range],select{
+    width:100%;
+}
+
+.label{
+    display:flex;
+    justify-content:space-between;
+    margin-top:15px;
+}
+
+#flowCanvas{
+    width:100%;
+    height:320px;
+    border-radius:12px;
+}
+
+.re{
+    font-size:42px;
+    font-weight:bold;
+    color:#123c7c;
+}
+
+.state{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.laminar{
+    color:#2e7d32;
+}
+
+.transition{
+    color:#ef6c00;
+}
+
+.turbulent{
+    color:#c62828;
+}
+
+.infoGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-top:15px;
+}
+
+@media(max-width:900px){
+    .container{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div>
+
+<div class="card">
+
+<h2>Fluid</h2>
+
+<select id="fluid">
+<option value="water">Water (20°C)</option>
+<option value="air">Air (20°C)</option>
+<option value="glycerin">Glycerin</option>
+<option value="ethanol">Ethanol</option>
+<option value="oil">Oil</option>
+</select>
+
+<div style="margin-top:15px; line-height:1.8;">
+ρ = <span id="rho"></span> kg/m³<br>
+μ = <span id="mu"></span> Pa·s<br>
+ν = <span id="nu"></span> m²/s
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="label">
+<span>Pipe Diameter</span>
+<span><span id="dVal"></span> cm</span>
+</div>
+
+<input
+id="diameter"
+type="range"
+min="0.5"
+max="10"
+step="0.1"
+value="5">
+
+<div class="label">
+<span>Mean Velocity</span>
+<span><span id="vVal"></span> m/s</span>
+</div>
+
+<input
+id="velocity"
+type="range"
+min="0.001"
+max="0.2"
+step="0.001"
+value="0.05">
+
+</div>
+
+</div>
+
+<div>
+
+<div class="card">
+<canvas
+id="flowCanvas"
+width="900"
+height="320">
+</canvas>
+</div>
+
+<div class="infoGrid">
+
+<div class="card">
+<div>Reynolds Number</div>
+<div id="reValue" class="re"></div>
+</div>
+
+<div class="card">
+<div id="stateBox" class="state"></div>
+<div id="description"></div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const fluids={
+    water:{rho:998,mu:0.001002},
+    air:{rho:1.204,mu:0.0000181},
+    glycerin:{rho:1260,mu:1.49},
+    ethanol:{rho:789,mu:0.0012},
+    oil:{rho:900,mu:0.08}
+};
+
+const fluid=document.getElementById("fluid");
+const diameter=document.getElementById("diameter");
+const velocity=document.getElementById("velocity");
+
+const rhoTxt=document.getElementById("rho");
+const muTxt=document.getElementById("mu");
+const nuTxt=document.getElementById("nu");
+
+const reTxt=document.getElementById("reValue");
+const stateBox=document.getElementById("stateBox");
+const desc=document.getElementById("description");
+
+const dVal=document.getElementById("dVal");
+const vVal=document.getElementById("vVal");
+
+const canvas=document.getElementById("flowCanvas");
+const ctx=canvas.getContext("2d");
+
+let mode="laminar";
+
+const particles=[];
+
+for(let i=0;i<260;i++){
+
+    particles.push({
+        x:Math.random()*canvas.width,
+        y:25+Math.random()*(canvas.height-50)
+    });
+
+}
+
+function update(){
+
+    const f=fluids[fluid.value];
+
+    rhoTxt.textContent=f.rho.toFixed(1);
+    muTxt.textContent=f.mu.toExponential(3);
+    nuTxt.textContent=(f.mu/f.rho).toExponential(3);
+
+    const D=parseFloat(diameter.value)/100;
+    const V=parseFloat(velocity.value);
+
+    const Re=f.rho*V*D/f.mu;
+
+    reTxt.textContent=Math.round(Re);
+
+    dVal.textContent=diameter.value;
+    vVal.textContent=velocity.value;
+
+    if(Re<2300){
+
+        mode="laminar";
+
+        stateBox.className="state laminar";
+        stateBox.textContent="LAMINAR";
+
+        desc.textContent=
+        "Parabolic velocity profile";
+
+    }
+    else if(Re<4000){
+
+        mode="transition";
+
+        stateBox.className="state transition";
+        stateBox.textContent="TRANSITION";
+
+        desc.textContent=
+        "Instability begins near wall";
+
+    }
+    else{
+
+        mode="turbulent";
+
+        stateBox.className="state turbulent";
+        stateBox.textContent="TURBULENT";
+
+        desc.textContent=
+        "Strong mixing throughout pipe";
+
+    }
+}
+
+fluid.onchange=update;
+diameter.oninput=update;
+velocity.oninput=update;
+
+function drawPipe(){
+
+    ctx.strokeStyle="#666";
+    ctx.lineWidth=6;
+
+    ctx.beginPath();
+    ctx.moveTo(0,20);
+    ctx.lineTo(canvas.width,20);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0,canvas.height-20);
+    ctx.lineTo(canvas.width,canvas.height-20);
+    ctx.stroke();
+}
+
+function animate(){
+
+    ctx.clearRect(
+        0,0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle="#eef1f5";
+    ctx.fillRect(
+        0,0,
+        canvas.width,
+        canvas.height
+    );
+
+    drawPipe();
+
+    const center=canvas.height/2;
+    const R=(canvas.height-40)/2;
+
+    const t=Date.now()*0.001;
+
+    particles.forEach(p=>{
+
+        const r=
+        Math.abs(p.y-center)/R;
+
+        let speed;
+        let len;
+        let angle;
+
+        if(mode==="laminar"){
+
+            const u=
+            Math.max(0,1-r*r);
+
+            speed=1+7*u;
+            len=4+28*u;
+            angle=0;
+
+            p.x+=speed;
+        }
+
+        else if(mode==="transition"){
+
+            const u=
+            Math.max(0,1-r*r);
+
+            speed=1+6*u;
+            len=4+28*u;
+
+            p.x+=speed;
+
+            if(r>0.7){
+
+                angle=
+                0.25*Math.sin(
+                    p.x*0.03+t*4
+                );
+
+                p.y+=
+                1.0*Math.sin(
+                    p.x*0.05+t*5
+                );
+
+            }else{
+
+                angle=
+                0.03*Math.sin(
+                    p.x*0.01+t
+                );
+            }
+
+        }
+
+        else{
+
+            const swirl=
+            Math.sin(
+                p.x*0.025+
+                p.y*0.04+
+                t*5
+            );
+
+            angle=
+            1.4*swirl;
+
+            speed=
+            3+
+            3*Math.abs(swirl);
+
+            len=
+            6+
+            18*Math.abs(swirl);
+
+            p.x+=speed;
+
+            p.y+=
+            2*Math.sin(
+                p.x*0.02+t*6
+            );
+        }
+
+        if(p.x>canvas.width){
+            p.x=0;
+        }
+
+        if(p.y<22){
+            p.y=22;
+        }
+
+        if(p.y>canvas.height-22){
+            p.y=canvas.height-22;
+        }
+
+        const hue=
+        220-180*(len/35);
+
+        ctx.strokeStyle=
+        `hsl(${hue},80%,50%)`;
+
+        ctx.lineWidth=2;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            p.x,
+            p.y
+        );
+
+        ctx.lineTo(
+            p.x+
+            len*Math.cos(angle),
+
+            p.y+
+            len*Math.sin(angle)
+        );
+
+        ctx.stroke();
+    });
+
+    requestAnimationFrame(
+        animate
+    );
+}
+
+update();
+animate();
+
+</script>
+
+</body>
+</html>
