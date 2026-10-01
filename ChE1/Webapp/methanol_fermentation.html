@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Fermentation & Distillation Material Balance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+    .slider-container {
+      display: flex;
+      gap: 50px;
+      margin-bottom: 20px;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 300px;
+    }
+    .slider-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .slider-title span {
+      font-weight: normal;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: #8b0000;
+    }
+    .slider-limits {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .diagram-board {
+      position: relative;
+      width: 900px;
+      height: 500px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .data-box {
+      position: absolute;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      line-height: 1.3;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      white-space: nowrap;
+    }
+    .data-box div.title {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .data-box div.total {
+      font-weight: bold;
+      margin-top: 2px;
+    }
+
+    .button-group {
+      position: absolute;
+      bottom: 20px;
+      left: 100px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      background-color: #8b0000;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn:hover {
+      background-color: #a00000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controls -->
+  <div class="slider-container">
+    <div class="slider-group">
+      <div class="slider-title">sucrose feed rate <span id="val-sucrose">1000</span> kg/h</div>
+      <input type="range" id="input-sucrose" min="500" max="6000" value="1000" step="50">
+      <div class="slider-limits">
+        <span>500</span>
+        <span>6000</span>
+      </div>
+    </div>
+    <div class="slider-group">
+      <div class="slider-title">water feed rate <span id="val-water">5000</span> kg/h</div>
+      <input type="range" id="input-water" min="200" max="12000" value="5000" step="50">
+      <div class="slider-limits">
+        <span>200</span>
+        <span>12000</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagram -->
+  <div class="diagram-board">
+    <svg>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#708090"/>
+        </marker>
+      </defs>
+
+      <!-- Connections -->
+      <!-- S1 to Mixer -->
+      <path d="M 215, 60 L 215, 230" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+      <!-- Lines to Mixer (Left side) -->
+      <path d="M 60, 260 L 160, 260" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+      <path d="M 60, 305 L 160, 305" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+      
+      <!-- Mixer to Reactor -->
+      <path d="M 260, 285 L 425, 285" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+      
+      <!-- S7 (CO2 vent) from Reactor -->
+      <path d="M 490, 210 L 490, 120" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+      
+      <!-- Reactor to Distillation -->
+      <path d="M 555, 285 L 675, 285" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+      <!-- S5 Outlet from Distillation (Top) -->
+      <path d="M 710, 205 L 710, 130 L 840, 130" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+      <!-- S6 Bottoms from Distillation (Bottom) -->
+      <path d="M 710, 365 L 710, 440" stroke="#708090" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+      <!-- Units SVG Elements -->
+      <!-- Mixer -->
+      <rect x="160" y="230" width="100" height="110" rx="8" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+      <line x1="160" y1="265" x2="260" y2="265" stroke="#475569" stroke-width="1.5"/>
+      <text x="210" y="252" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e293b">Mixer</text>
+
+      <!-- Reactor -->
+      <circle cx="490" cy="285" r="65" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+      <text x="490" y="290" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e293b">Reactor</text>
+
+      <!-- Distillation Column -->
+      <rect x="675" y="205" width="70" height="160" rx="8" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+      <line x1="675" y1="235" x2="745" y2="235" stroke="#475569" stroke-width="1.5"/>
+      <text x="710" y="223" font-size="13" font-weight="bold" text-anchor="middle" fill="#1e293b">Distillation</text>
+    </svg>
+
+    <!-- Data Overlay Boxes -->
+    <div class="data-box" style="top: 170px; left: 50px;" id="box-s1"></div>
+    <div class="data-box" style="top: 155px; left: 220px;" id="box-s2"></div>
+    <div class="data-box" style="top: 340px; left: 50px;" id="box-sy"></div>
+    <div class="data-box" style="top: 335px; left: 280px;" id="box-s3"></div>
+    <div class="data-box" style="top: 165px; left: 515px;" id="box-s7"></div>
+    <div class="data-box" style="top: 360px; left: 495px;" id="box-s4"></div>
+    <div class="data-box" style="top: 180px; left: 775px;" id="box-s5"></div>
+    <div class="data-box" style="top: 385px; left: 760px;" id="box-s6"></div>
+
+    <!-- UI Buttons -->
+    <div class="button-group">
+      <button class="btn">Directions</button>
+      <button class="btn">Details</button>
+      <button class="btn">Guided inquiry</button>
+      <button class="btn">About</button>
+    </div>
+  </div>
+
+  <script>
+    const inputSucrose = document.getElementById('input-sucrose');
+    const inputWater = document.getElementById('input-water');
+    
+    const valSucrose = document.getElementById('val-sucrose');
+    const valWater = document.getElementById('val-water');
+
+    function calculateMassBalance() {
+      const S1_sucrose = parseFloat(inputSucrose.value);
+      const S2_water = parseFloat(inputWater.value);
+      const SY_yeast = 435; // 固定値
+
+      // S3: Mixer outlet
+      const S3_sucrose = S1_sucrose;
+      const S3_water = S2_water;
+      const S3_yeast = SY_yeast;
+      const S3_total = S3_sucrose + S3_water + S3_yeast;
+
+      // Reactor calculations (95% sucrose conversion)
+      // C12H22O11 (342.3) + H2O (18.015) -> 4 C2H5OH (4*46.07=184.28) + 4 CO2 (4*44.01=176.04)
+      const convRatio = 0.95;
+      const sucroseReacted = S1_sucrose * convRatio;
+      const sucroseUnreacted = S1_sucrose * (1 - convRatio);
+
+      // Mass stoichiometric coefficients per kg of sucrose
+      const MW_sucrose = 342.3;
+      const MW_water = 18.015;
+      const MW_ethanol = 46.07;
+      const MW_co2 = 44.01;
+
+      const waterConsumed = sucroseReacted * (MW_water / MW_sucrose);
+      const ethanolProduced = sucroseReacted * (4 * MW_ethanol / MW_sucrose);
+      const co2Produced = sucroseReacted * (4 * MW_co2 / MW_sucrose);
+
+      // S7: Vent
+      const S7_co2 = co2Produced;
+
+      // S4: Reactor feed to Column
+      const S4_sucrose = sucroseUnreacted;
+      const S4_water = S3_water - waterConsumed;
+      const S4_ethanol = ethanolProduced;
+      const S4_yeast = S3_yeast;
+      const S4_total = S4_sucrose + S4_water + S4_ethanol + S4_yeast;
+
+      // Distillation Column (Distillation)
+      // Separation parameters matching diagram sample output:
+      const ethDistillRatio = 0.9902; // ~99% ethanol to distillate
+      const S5_ethanol = S4_ethanol * ethDistillRatio;
+      const S6_ethanol = S4_ethanol - S5_ethanol;
+
+      // Water entrainment to distillate (~4.6% of distillate ethanol mass)
+      const S5_water = S5_ethanol * (23.3 / 506);
+      const S6_water = S4_water - S5_water;
+
+      const S5_total = S5_ethanol + S5_water;
+      
+      const S6_sucrose = S4_sucrose;
+      const S6_yeast = S4_yeast;
+      const S6_total = S6_sucrose + S6_water + S6_ethanol + S6_yeast;
+
+      // Helper to format numbers cleanly
+      const fmt = (num) => {
+        if (num >= 100) return Math.round(num).toString();
+        if (num >= 10) return num.toFixed(1);
+        return num.toFixed(1);
+      };
+
+      // UI updates
+      valSucrose.textContent = Math.round(S1_sucrose);
+      valWater.textContent = Math.round(S2_water);
+
+      document.getElementById('box-s1').innerHTML = `
+        <div class="title">S1: sucrose feed (kg/h)</div>
+        <div>sucrose: ${fmt(S1_sucrose)}</div>
+      `;
+
+      document.getElementById('box-s2').innerHTML = `
+        <div class="title">S2: water feed (kg/h)</div>
+        <div>water: ${fmt(S2_water)}</div>
+      `;
+
+      document.getElementById('box-sy').innerHTML = `
+        <div class="title">SY: yeast feed (kg/h)</div>
+        <div>yeast: ${fmt(SY_yeast)}</div>
+      `;
+
+      document.getElementById('box-s3').innerHTML = `
+        <div class="title">S3: reactor feed (kg/h)</div>
+        <div>sucrose: ${fmt(S3_sucrose)}</div>
+        <div>water: ${fmt(S3_water)}</div>
+        <div>yeast: ${fmt(S3_yeast)}</div>
+        <div class="total">total: ${fmt(S3_total)}</div>
+      `;
+
+      document.getElementById('box-s7').innerHTML = `
+        <div class="title">S7: CO<sub>2</sub> vent (kg/h)</div>
+        <div>CO<sub>2</sub>: ${fmt(S7_co2)}</div>
+      `;
+
+      document.getElementById('box-s4').innerHTML = `
+        <div class="title">S4: column feed (kg/h)</div>
+        <div>sucrose: ${fmt(S4_sucrose)}</div>
+        <div>water: ${fmt(S4_water)}</div>
+        <div>ethanol: ${fmt(S4_ethanol)}</div>
+        <div>yeast: ${fmt(S4_yeast)}</div>
+        <div class="total">total: ${fmt(S4_total)}</div>
+      `;
+
+      document.getElementById('box-s5').innerHTML = `
+        <div class="title">S5: ethanol product (kg/h)</div>
+        <div>water: ${fmt(S5_water)}</div>
+        <div>ethanol: ${fmt(S5_ethanol)}</div>
+        <div class="total">total: ${fmt(S5_total)}</div>
+      `;
+
+      document.getElementById('box-s6').innerHTML = `
+        <div class="title">S6: bottoms (kg/h)</div>
+        <div>sucrose: ${fmt(S6_sucrose)}</div>
+        <div>water: ${fmt(S6_water)}</div>
+        <div>ethanol: ${fmt(S6_ethanol)}</div>
+        <div>yeast: ${fmt(S6_yeast)}</div>
+        <div class="total">total: ${fmt(S6_total)}</div>
+      `;
+    }
+
+    inputSucrose.addEventListener('input', calculateMassBalance);
+    inputWater.addEventListener('input', calculateMassBalance);
+
+    // Initial calculation
+    calculateMassBalance();
+  </script>
+</body>
+</html>
