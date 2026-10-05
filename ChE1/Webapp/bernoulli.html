@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Bernoulli Equation for Pipe Flow</title>
+
+<style>
+
+body{
+  margin:20px;
+  background:#e9e9e9;
+  font-family:Arial,sans-serif;
+}
+
+.container{
+  display:flex;
+  gap:20px;
+}
+
+.left{
+  flex:3;
+}
+
+.right{
+  flex:1;
+}
+
+.panel{
+  background:#f5f5f5;
+  border:1px solid #bbb;
+  border-radius:6px;
+  padding:15px;
+}
+
+svg{
+  width:100%;
+  height:650px;
+}
+
+.control{
+  margin-bottom:20px;
+}
+
+input[type=range]{
+  width:100%;
+}
+
+.value{
+  color:#1565c0;
+  font-weight:bold;
+}
+
+.pipe{
+  fill:#bdbdbd;
+  stroke:#333;
+  stroke-width:2;
+}
+
+.info{
+  font-size:24px;
+}
+
+sectionLine{
+  stroke:black;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Bernoulli Equation for Pipe Flow</h1>
+
+<div class="container">
+
+<div class="left panel">
+
+<svg viewBox="0 0 1200 700">
+
+<text x="40" y="70" class="info">
+D = pipe diameter
+</text>
+
+<text x="40" y="120" class="info">
+P = pressure
+</text>
+
+<text x="40" y="170" class="info">
+u = fluid velocity
+</text>
+
+<!-- 配管 -->
+
+<path
+id="pipe"
+class="pipe"/>
+
+<!-- 断面1 -->
+
+<line
+id="sec1"
+stroke="black"
+stroke-dasharray="8 5"/>
+
+<text
+x="280"
+y="420"
+font-size="26">
+断面1
+</text>
+
+<!-- 断面2 -->
+
+<line
+id="sec2"
+stroke="black"
+stroke-dasharray="8 5"/>
+
+<text
+id="sec2Label"
+font-size="26">
+断面2
+</text>
+
+<!-- Flow arrows -->
+
+<line
+x1="120"
+y1="500"
+x2="230"
+y2="500"
+stroke="black"
+stroke-width="3"/>
+
+<polygon
+points="230,500 210,490 210,510"
+fill="black"/>
+
+<line
+id="outArrow"
+stroke="black"
+stroke-width="3"/>
+
+<polygon
+id="outTip"
+fill="black"/>
+
+<!-- Δz -->
+
+<line
+id="dzLine"
+stroke="black"
+stroke-width="3"/>
+
+<polygon
+id="upArrow"
+fill="black"/>
+
+<polygon
+id="downArrow"
+fill="black"/>
+
+<text
+id="dzText"
+font-size="34">
+</text>
+
+<!-- 情報 -->
+
+<text
+id="leftText"
+x="60"
+y="380"
+font-size="28">
+</text>
+
+<text
+id="rightText"
+font-size="28">
+</text>
+
+</svg>
+
+</div>
+
+<div class="right panel">
+
+<div class="control">
+
+<label>出口径 D₂ (cm)</label>
+
+<input
+id="d2"
+type="range"
+min="2"
+max="15"
+step="0.1"
+value="5">
+
+<div id="d2v" class="value"></div>
+
+</div>
+
+<div class="control">
+
+<label>高低差 Δz (m)</label>
+
+<input
+id="dz"
+type="range"
+min="0"
+max="6"
+step="0.1"
+value="2.7">
+
+<div id="dzv" class="value"></div>
+
+</div>
+
+<div class="control">
+
+<label>入口圧力 P₁ (kPa)</label>
+
+<input
+id="p1"
+type="range"
+min="10"
+max="500"
+value="100">
+
+<div id="p1v" class="value"></div>
+
+</div>
+
+<div class="control">
+
+<label>入口流速 u₁ (m/s)</label>
+
+<input
+id="u1"
+type="range"
+min="0.1"
+max="10"
+step="0.1"
+value="1">
+
+<div id="u1v" class="value"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const rho=1000;
+const g=9.81;
+
+const D1=0.05;
+
+function update(){
+
+const D2=
+parseFloat(
+document.getElementById("d2").value
+)/100;
+
+const dz=
+parseFloat(
+document.getElementById("dz").value
+);
+
+const P1=
+parseFloat(
+document.getElementById("p1").value
+)*1000;
+
+const u1=
+parseFloat(
+document.getElementById("u1").value
+);
+
+const A1=
+Math.PI*D1*D1/4;
+
+const A2=
+Math.PI*D2*D2/4;
+
+const u2=
+A1*u1/A2;
+
+const P2=
+P1+
+0.5*rho*(u1*u1-u2*u2)
+-rho*g*dz;
+
+document.getElementById("d2v").innerHTML=
+(D2*100).toFixed(1)+" cm";
+
+document.getElementById("dzv").innerHTML=
+dz.toFixed(1)+" m";
+
+document.getElementById("p1v").innerHTML=
+(P1/1000).toFixed(0)+" kPa";
+
+document.getElementById("u1v").innerHTML=
+u1.toFixed(1)+" m/s";
+
+const inletDiameter=40;
+
+const outletDiameter=
+D2*800;
+
+const outletY=
+500-dz*60;
+
+const path=
+`
+M250 ${500-inletDiameter/2}
+L500 ${500-inletDiameter/2}
+L500 ${outletY-outletDiameter/2}
+L900 ${outletY-outletDiameter/2}
+L900 ${outletY+outletDiameter/2}
+L540 ${outletY+outletDiameter/2}
+L540 ${500+inletDiameter/2}
+L250 ${500+inletDiameter/2}
+Z
+`;
+
+document
+.getElementById("pipe")
+.setAttribute("d",path);
+
+document
+.getElementById("sec1")
+.setAttribute(
+"x1",380);
+
+document
+.getElementById("sec1")
+.setAttribute(
+"x2",380);
+
+document
+.getElementById("sec1")
+.setAttribute(
+"y1",440);
+
+document
+.getElementById("sec1")
+.setAttribute(
+"y2",560);
+
+document
+.getElementById("sec2")
+.setAttribute(
+"x1",760);
+
+document
+.getElementById("sec2")
+.setAttribute(
+"x2",760);
+
+document
+.getElementById("sec2")
+.setAttribute(
+"y1",
+outletY-outletDiameter);
+
+document
+.getElementById("sec2")
+.setAttribute(
+"y2",
+outletY+outletDiameter);
+
+document
+.getElementById("sec2Label")
+.setAttribute(
+"x",720);
+
+document
+.getElementById("sec2Label")
+.setAttribute(
+"y",
+outletY-50);
+
+const rightText=
+document.getElementById("rightText");
+
+rightText.setAttribute(
+"x",920);
+
+rightText.setAttribute(
+"y",outletY+20);
+
+document
+.getElementById("leftText")
+.innerHTML=
+`Din = 5.0 cm
+<tspan x="60" dy="40">
+Pin = ${(P1/1000).toFixed(0)} kPa
+</tspan>
+<tspan x="60" dy="40">
+uin = ${u1.toFixed(1)} m/s
+</tspan>`;
+
+rightText.innerHTML=
+`Dout = ${(D2*100).toFixed(1)} cm
+<tspan x="920" dy="40">
+Pout = ${(P2/1000).toFixed(0)} kPa
+</tspan>
+<tspan x="920" dy="40">
+uout = ${u2.toFixed(1)} m/s
+</tspan>`;
+
+document
+.getElementById("dzLine")
+.setAttribute(
+"x1",600);
+
+document
+.getElementById("dzLine")
+.setAttribute(
+"x2",600);
+
+document
+.getElementById("dzLine")
+.setAttribute(
+"y1",500);
+
+document
+.getElementById("dzLine")
+.setAttribute(
+"y2",outletY);
+
+document
+.getElementById("upArrow")
+.setAttribute(
+"points",
+`${600},${outletY}
+590,${outletY+20}
+610,${outletY+20}`
+);
+
+document
+.getElementById("downArrow")
+.setAttribute(
+"points",
+`${600},500
+590,480
+610,480`
+);
+
+document
+.getElementById("dzText")
+.setAttribute(
+"x",620);
+
+document
+.getElementById("dzText")
+.setAttribute(
+"y",(500+outletY)/2);
+
+document
+.getElementById("dzText")
+.textContent=
+`Δz = ${dz.toFixed(1)} m`;
+
+document
+.getElementById("outArrow")
+.setAttribute(
+"x1",930);
+
+document
+.getElementById("outArrow")
+.setAttribute(
+"x2",1030);
+
+document
+.getElementById("outArrow")
+.setAttribute(
+"y1",outletY);
+
+document
+.getElementById("outArrow")
+.setAttribute(
+"y2",outletY);
+
+document
+.getElementById("outTip")
+.setAttribute(
+"points",
+`1030,${outletY}
+1010,${outletY-10}
+1010,${outletY+10}`
+);
+
+}
+
+document
+.querySelectorAll("input")
+.forEach(x=>x.addEventListener("input",update));
+
+update();
+
+</script>
+
+</body>
+</html>
