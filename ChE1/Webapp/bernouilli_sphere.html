@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ベルヌーイのエネルギー球</title>
+
+<style>
+:root{
+ --blue:#2878c8;
+ --orange:#e58b28;
+ --green:#269879;
+ --ink:#183047;
+ --paper:#f4f7fa;
+}
+body{
+ margin:0;
+ font-family:sans-serif;
+ background:var(--paper);
+ color:var(--ink);
+}
+main{
+ max-width:1200px;
+ margin:auto;
+ padding:20px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:1.2fr 0.8fr;
+ gap:20px;
+}
+.card{
+ background:white;
+ border-radius:16px;
+ padding:18px;
+ box-shadow:0 3px 12px rgba(0,0,0,0.08);
+}
+canvas{
+ width:100%;
+ height:500px;
+ display:block;
+ border-radius:12px;
+ background:
+ radial-gradient(circle at center,
+ #ffffff 0%,
+ #eef5f9 70%,
+ #dde7ee 100%);
+}
+label{
+ display:block;
+ margin-top:16px;
+ font-weight:bold;
+}
+input[type=range]{
+ width:100%;
+}
+.value{
+ float:right;
+}
+.energy{
+ display:flex;
+ gap:10px;
+ margin-top:15px;
+}
+.box{
+ flex:1;
+ color:white;
+ border-radius:10px;
+ padding:10px;
+ text-align:center;
+}
+.blue{background:var(--blue);}
+.orange{background:var(--orange);}
+.green{background:var(--green);}
+.big{
+ font-size:1.4rem;
+ font-weight:bold;
+}
+select{
+ padding:8px;
+ width:100%;
+ margin-top:8px;
+}
+
+@media(max-width:900px){
+.grid{
+grid-template-columns:1fr;
+}
+}
+</style>
+</head>
+<body>
+
+<main>
+
+<h1>ベルヌーイのエネルギー球</h1>
+
+<p>
+球の3軸：
+青＝速度エネルギー　
+橙＝圧力エネルギー　
+緑＝位置エネルギー
+</p>
+
+<div class="grid">
+
+<div class="card">
+
+<canvas id="cv"></canvas>
+
+</div>
+
+<div class="card">
+
+<h2>流れのモード</h2>
+
+<select id="mode">
+<option value="horizontal">
+水平管（速度 ↔ 圧力）
+</option>
+
+<option value="vertical">
+鉛直管（位置 ↔ 圧力）
+</option>
+</select>
+
+<label>
+速度エネルギー
+<span class="value" id="vVal"></span>
+</label>
+
+<input id="velocity"
+type="range"
+min="0"
+max="8"
+step="0.1"
+value="4">
+
+<label>
+位置エネルギー
+<span class="value" id="zVal"></span>
+</label>
+
+<input id="height"
+type="range"
+min="0"
+max="8"
+step="0.1"
+value="4">
+
+<hr>
+
+<div class="energy">
+
+<div class="box blue">
+速度
+<div id="evBox"
+class="big">4.0</div>
+</div>
+
+<div class="box orange">
+圧力
+<div id="epBox"
+class="big">4.0</div>
+</div>
+
+<div class="box green">
+位置
+<div id="ezBox"
+class="big">4.0</div>
+</div>
+
+</div>
+
+<h3>
+全エネルギー H =
+<span id="totalBox">12.0</span>
+</h3>
+
+<p id="message"></p>
+
+</div>
+
+</div>
+
+</main>
+
+<script>
+
+const H = 12;
+
+const canvas =
+document.getElementById("cv");
+
+const ctx =
+canvas.getContext("2d");
+
+const mode =
+document.getElementById("mode");
+
+const vel =
+document.getElementById("velocity");
+
+const height =
+document.getElementById("height");
+
+function physics(){
+
+let Ev;
+let Ez;
+let Ep;
+
+if(mode.value==="horizontal"){
+
+Ev=parseFloat(vel.value);
+
+Ez=4;
+
+height.value=4;
+height.disabled=true;
+
+Ep=H-Ev-Ez;
+
+}else{
+
+Ez=parseFloat(height.value);
+
+Ev=4;
+
+vel.value=4;
+vel.disabled=true;
+
+Ep=H-Ev-Ez;
+
+}
+
+if(mode.value==="horizontal"){
+vel.disabled=false;
+}
+
+if(mode.value==="vertical"){
+height.disabled=false;
+}
+
+Ep=Math.max(0,Ep);
+
+return {Ev,Ep,Ez};
+
+}
+
+function draw(){
+
+const rect=
+canvas.getBoundingClientRect();
+
+const dpr=
+window.devicePixelRatio||1;
+
+canvas.width=
+rect.width*dpr;
+
+canvas.height=
+rect.height*dpr;
+
+ctx.setTransform(
+dpr,0,0,dpr,0,0
+);
+
+const w=rect.width;
+const h=rect.height;
+
+ctx.clearRect(0,0,w,h);
+
+const {Ev,Ep,Ez}=physics();
+
+document.getElementById("vVal")
+.textContent=
+Ev.toFixed(1)+" m";
+
+document.getElementById("zVal")
+.textContent=
+Ez.toFixed(1)+" m";
+
+document.getElementById("evBox")
+.textContent=
+Ev.toFixed(1);
+
+document.getElementById("epBox")
+.textContent=
+Ep.toFixed(1);
+
+document.getElementById("ezBox")
+.textContent=
+Ez.toFixed(1);
+
+document.getElementById("totalBox")
+.textContent=
+(Ev+Ep+Ez).toFixed(1);
+
+const cx=w/2;
+const cy=h/2;
+
+const base=90;
+
+const rv=Ev/H;
+const rp=Ep/H;
+const rz=Ez/H;
+
+const rx=
+base*(0.8+1.2*rv);
+
+const ry=
+base*(0.8+1.2*rp);
+
+const glow=
+0.5+0.8*rz;
+
+ctx.beginPath();
+ctx.ellipse(
+cx,
+cy+ry+25,
+rx*0.85,
+ry*0.22,
+0,
+0,
+Math.PI*2
+);
+
+ctx.fillStyle=
+"rgba(0,0,0,0.15)";
+
+ctx.fill();
+
+const grad=
+ctx.createRadialGradient(
+cx-rx*0.4,
+cy-ry*0.4,
+5,
+cx,
+cy,
+rx*1.2
+);
+
+grad.addColorStop(
+0,
+`rgba(255,255,255,${glow})`
+);
+
+grad.addColorStop(
+0.6,
+"#dce8f0"
+);
+
+grad.addColorStop(
+1,
+"#85a9c3"
+);
+
+ctx.beginPath();
+
+ctx.ellipse(
+cx,
+cy,
+rx,
+ry,
+0,
+0,
+Math.PI*2
+);
+
+ctx.fillStyle=grad;
+ctx.fill();
+
+ctx.strokeStyle="#50708a";
+ctx.lineWidth=2;
+ctx.stroke();
+
+const axes=[
+
+{
+label:"速度",
+color:"#2878c8",
+dx:1,
+dy:0,
+value:Ev
+},
+
+{
+label:"圧力",
+color:"#e58b28",
+dx:0,
+dy:-1,
+value:Ep
+},
+
+{
+label:"位置",
+color:"#269879",
+dx:-0.7,
+dy:0.7,
+value:Ez
+}
+
+];
+
+axes.forEach(a=>{
+
+const len=
+base*1.3*
+Math.sqrt(a.value/H);
+
+const x=
+cx+a.dx*len;
+
+const y=
+cy+a.dy*len;
+
+ctx.beginPath();
+ctx.moveTo(cx,cy);
+ctx.lineTo(x,y);
+
+ctx.strokeStyle=
+a.color;
+
+ctx.lineWidth=6;
+ctx.lineCap="round";
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(x,y,6,0,Math.PI*2);
+
+ctx.fillStyle=
+a.color;
+
+ctx.fill();
+
+ctx.fillStyle=
+a.color;
+
+ctx.font=
+"bold 14px sans-serif";
+
+ctx.fillText(
+a.label,
+x+10,
+y
+);
+
+});
+
+ctx.beginPath();
+ctx.arc(cx,cy,4,0,Math.PI*2);
+ctx.fillStyle="#183047";
+ctx.fill();
+
+const msg=
+document.getElementById("message");
+
+if(mode.value==="horizontal"){
+
+msg.innerHTML=
+`
+水平管なので位置エネルギーは一定です。<br>
+速度を増やすと圧力が下がります。
+`;
+
+}else{
+
+msg.innerHTML=
+`
+断面積一定の鉛直管です。<br>
+速度は一定で、高くなるほど圧力が下がります。
+`;
+
+}
+
+}
+
+mode.addEventListener("change",draw);
+vel.addEventListener("input",draw);
+height.addEventListener("input",draw);
+window.addEventListener("resize",draw);
+
+draw();
+
+</script>
+
+</body>
+</html>
