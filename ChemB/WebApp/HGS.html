@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>水のG=H−TSシミュレーター 完全版</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    background:#f4f7fb;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+h1{
+    text-align:center;
+}
+
+.equation{
+    text-align:center;
+    font-size:2rem;
+    font-weight:bold;
+    color:#2563eb;
+}
+
+.temp{
+    text-align:center;
+    font-size:2rem;
+    font-weight:bold;
+    margin:15px 0;
+}
+
+.slider{
+    width:100%;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+@media(max-width:800px){
+.grid{
+    grid-template-columns:1fr;
+}
+}
+
+.phase{
+    border-radius:14px;
+    padding:15px;
+}
+
+.water{
+    border:3px solid #0284c7;
+    background:#f0f9ff;
+}
+
+.vapor{
+    border:3px solid #e11d48;
+    background:#fff1f2;
+}
+
+canvas{
+    width:100%;
+    height:220px;
+    background:white;
+    border:1px solid #ddd;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+.value{
+    font-family:Consolas,monospace;
+}
+
+.status{
+    text-align:center;
+    padding:15px;
+    font-size:1.4rem;
+    border-radius:12px;
+    color:white;
+    font-weight:bold;
+}
+
+.liquid-status{
+    background:#0284c7;
+}
+
+.vapor-status{
+    background:#e11d48;
+}
+
+.eq-status{
+    background:#10b981;
+}
+
+.message{
+    margin-top:15px;
+    line-height:1.8;
+}
+
+.note{
+    background:#fffbeb;
+    border-left:5px solid #f59e0b;
+    padding:15px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>水の蒸発とギブス自由エネルギー</h1>
+
+<div class="equation">
+G = H − TS
+</div>
+
+<p style="text-align:center;">
+H：持っているエネルギー<br>
+S：取りうる状態の多さ<br>
+TS：ランダム運動に埋もれるエネルギー<br>
+G：仕事として使えるエネルギー
+</p>
+
+<div class="temp">
+<span id="tempC">25</span> ℃
+<span style="font-size:1rem;color:gray;">
+(<span id="tempK">298.15</span> K)
+</span>
+</div>
+
+<input
+type="range"
+id="slider"
+class="slider"
+min="0"
+max="150"
+value="25">
+
+</div>
+
+<div class="card">
+
+<div class="grid">
+
+<div class="phase water">
+
+<h2>液体の水</h2>
+
+<canvas id="liquidCanvas"></canvas>
+
+<table>
+<tr><th>物性</th><th>値</th></tr>
+<tr><td>H (kJ/mol)</td><td id="Hl" class="value"></td></tr>
+<tr><td>S (J/mol/K)</td><td id="Sl" class="value"></td></tr>
+<tr><td>G (kJ/mol)</td><td id="Gl" class="value"></td></tr>
+</table>
+
+</div>
+
+
+<div class="phase vapor">
+
+<h2>水蒸気</h2>
+
+<canvas id="vaporCanvas"></canvas>
+
+<table>
+<tr><th>物性</th><th>値</th></tr>
+<tr><td>H (kJ/mol)</td><td id="Hg" class="value"></td></tr>
+<tr><td>S (J/mol/K)</td><td id="Sg" class="value"></td></tr>
+<tr><td>G (kJ/mol)</td><td id="Gg" class="value"></td></tr>
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div id="status" class="status liquid-status">
+液体の水が安定
+</div>
+
+<div id="message" class="message"></div>
+
+</div>
+
+<div class="card">
+
+<h2>使用モデル</h2>
+
+<div class="note">
+
+H(T)=H₀+Cp(T−T₀)
+
+<br><br>
+
+S(T)=S₀+Cp ln(T/T₀)
+
+<br><br>
+
+G(T)=H(T)−TS(T)
+
+<br><br>
+
+基準温度 T₀=298.15 K
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const T0 = 298.15;
+
+//液体
+const Hl0 = -285.83;
+const Sl0 = 69.95;
+const CpL = 75.3;
+
+//蒸気
+const Hg0 = -241.83;
+const Sg0 = 188.83;
+const CpG = 33.6;
+
+const slider=document.getElementById("slider");
+
+const liquidCanvas=document.getElementById("liquidCanvas");
+const vaporCanvas=document.getElementById("vaporCanvas");
+
+const lctx=liquidCanvas.getContext("2d");
+const vctx=vaporCanvas.getContext("2d");
+
+function resizeCanvas(){
+
+liquidCanvas.width=liquidCanvas.clientWidth;
+liquidCanvas.height=220;
+
+vaporCanvas.width=vaporCanvas.clientWidth;
+vaporCanvas.height=220;
+
+}
+
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+
+//粒子
+
+let liquidParticles=[];
+let vaporParticles=[];
+
+function initParticles(){
+
+liquidParticles=[];
+vaporParticles=[];
+
+for(let i=0;i<35;i++){
+
+liquidParticles.push({
+
+x:40+Math.random()*320,
+y:150+Math.random()*40,
+
+vx:(Math.random()-0.5),
+vy:(Math.random()-0.5)
+
+});
+
+}
+
+for(let i=0;i<35;i++){
+
+vaporParticles.push({
+
+x:20+Math.random()*350,
+y:20+Math.random()*150,
+
+vx:(Math.random()-0.5)*3,
+vy:(Math.random()-0.5)*3
+
+});
+
+}
+
+}
+
+initParticles();
+
+function animate(){
+
+const temp=Number(slider.value);
+
+const speed=0.2+temp/40;
+
+lctx.clearRect(0,0,liquidCanvas.width,liquidCanvas.height);
+vctx.clearRect(0,0,vaporCanvas.width,vaporCanvas.height);
+
+lctx.fillStyle="#0284c7";
+
+liquidParticles.forEach(p=>{
+
+p.x+=p.vx*speed;
+p.y+=p.vy*speed;
+
+if(p.x<10||p.x>liquidCanvas.width-10)p.vx*=-1;
+if(p.y<130||p.y>210)p.vy*=-1;
+
+lctx.beginPath();
+lctx.arc(p.x,p.y,6,0,2*Math.PI);
+lctx.fill();
+
+});
+
+vctx.fillStyle="#e11d48";
+
+vaporParticles.forEach(p=>{
+
+p.x+=p.vx*speed;
+p.y+=p.vy*speed;
+
+if(p.x<10||p.x>vaporCanvas.width-10)p.vx*=-1;
+if(p.y<10||p.y>vaporCanvas.height-10)p.vy*=-1;
+
+vctx.beginPath();
+vctx.arc(p.x,p.y,5,0,2*Math.PI);
+vctx.fill();
+
+});
+
+requestAnimationFrame(animate);
+
+}
+
+animate();
+
+function update(){
+
+const Tc=Number(slider.value);
+const T=Tc+273.15;
+
+document.getElementById("tempC").textContent=Tc;
+document.getElementById("tempK").textContent=T.toFixed(2);
+
+const Hl=Hl0+CpL*(T-T0)/1000;
+const Hg=Hg0+CpG*(T-T0)/1000;
+
+const Sl=Sl0+CpL*Math.log(T/T0);
+const Sg=Sg0+CpG*Math.log(T/T0);
+
+const Gl=Hl-T*Sl/1000;
+const Gg=Hg-T*Sg/1000;
+
+document.getElementById("Hl").textContent=Hl.toFixed(2);
+document.getElementById("Hg").textContent=Hg.toFixed(2);
+
+document.getElementById("Sl").textContent=Sl.toFixed(2);
+document.getElementById("Sg").textContent=Sg.toFixed(2);
+
+document.getElementById("Gl").textContent=Gl.toFixed(2);
+document.getElementById("Gg").textContent=Gg.toFixed(2);
+
+const diff=Math.abs(Gl-Gg);
+
+const status=document.getElementById("status");
+const msg=document.getElementById("message");
+
+if(diff<1){
+
+status.className="status eq-status";
+status.innerHTML="液体と蒸気が平衡";
+
+msg.innerHTML=
+"液体と気体のギブス自由エネルギーがほぼ等しい状態です。";
+
+}
+else if(Gl<Gg){
+
+status.className="status liquid-status";
+status.innerHTML="液体の水が安定";
+
+msg.innerHTML=
+`G(水)=${Gl.toFixed(2)} kJ/mol<br>
+G(水蒸気)=${Gg.toFixed(2)} kJ/mol<br><br>
+液体の方が自由エネルギーが低いため安定です。`;
+
+}
+else{
+
+status.className="status vapor-status";
+status.innerHTML="水蒸気が安定";
+
+msg.innerHTML=
+`G(水)=${Gl.toFixed(2)} kJ/mol<br>
+G(水蒸気)=${Gg.toFixed(2)} kJ/mol<br><br>
+水蒸気の方が自由エネルギーが低いため安定です。`;
+
+}
+
+}
+
+slider.addEventListener("input",update);
+
+update();
+
+</script>
+
+</body>
+</html>
