@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1376" height="628" viewBox="0 0 1376 628">
+<defs>
+ <linearGradient id="blueHead" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3188cf"/><stop offset="1" stop-color="#2e79b8"/></linearGradient>
+ <linearGradient id="greenHead" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#289d7e"/><stop offset="1" stop-color="#218b70"/></linearGradient>
+ <linearGradient id="paleBlue" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#eaf7ff"/><stop offset="1" stop-color="#f7fcff"/></linearGradient>
+ <linearGradient id="palePurple" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fbf3ff"/><stop offset="1" stop-color="#f4e9ff"/></linearGradient>
+ <linearGradient id="paleOrange" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff9e9"/><stop offset="1" stop-color="#fff2d8"/></linearGradient>
+ <style>
+ .jp{font-family:'Noto Sans CJK JP','Noto Sans JP',sans-serif;fill:#101828}.bold{font-weight:700}.math{font-family:'STIX Two Text','Times New Roman',serif;font-style:italic;fill:#111827}.tick{font:16px 'Noto Sans CJK JP',sans-serif;fill:#202938}.axis{stroke:#263244;stroke-width:1.5;fill:none}.grid{stroke:#d7e0e8;stroke-width:1;fill:none}.blue{stroke:#1674ff;fill:none;stroke-width:2.8}.red{stroke:#ff2424;fill:none;stroke-width:2.7}.green{stroke:#00a765;fill:none;stroke-width:2.7}.purple{stroke:#9229e9;fill:none;stroke-width:2.5;stroke-dasharray:9 6}.orange{stroke:#ff9900;fill:none;stroke-width:2.8;stroke-dasharray:9 6}
+ </style>
+</defs>
+<rect width="1376" height="628" fill="#fff"/>
+<!-- left panel -->
+<rect x="7" y="5" width="680" height="618" rx="10" fill="#fff" stroke="#4ba7ed" stroke-width="2.5"/>
+<path d="M17 5 H337 Q346 5 346 15 V79 H17 Q7 79 7 69 V15 Q7 5 17 5Z" fill="url(#blueHead)"/>
+<rect x="346" y="5" width="341" height="74" rx="10" fill="url(#paleBlue)" stroke="#76bdf0" stroke-width="1.5"/>
+<text class="jp bold" x="31" y="51" font-size="31" fill="#fff" style="fill:#fff">瞬間選択率（参考）</text>
+<text class="math" x="380" y="45" font-size="31">S′</text><text class="math" x="407" y="55" font-size="19">B/C</text><text class="math" x="464" y="44" font-size="30">=</text><text class="math" x="510" y="29" font-size="27">r</text><text class="math" x="528" y="36" font-size="16">B</text><path d="M503 42 H548" stroke="#111" stroke-width="1.5"/><text class="math" x="510" y="67" font-size="27">r</text><text class="math" x="528" y="72" font-size="16">C</text>
+<rect x="21" y="91" width="651" height="90" rx="9" fill="url(#paleOrange)" stroke="#ffb51d" stroke-width="1.4"/>
+<text class="jp" x="43" y="119" font-size="21">ある瞬間に B と C のどちらが優先的に生成されているか</text><text class="jp" x="43" y="147" font-size="21">を表します。並列反応の反応器選定では、この瞬間選択率が</text><text class="jp" x="43" y="173" font-size="21">重要な役割を果たします。</text>
+<rect x="22" y="191" width="263" height="33" rx="8" fill="#e2f3ff"/><text class="jp bold" x="33" y="214" font-size="19" fill="#164b87" style="fill:#164b87">反応速度と瞬間選択率の例</text>
+<!-- left graph -->
+<rect x="112" y="235" width="473" height="216" fill="#fff"/>
+<path class="grid" d="M112 235 H585 M112 289 H585 M112 343 H585 M112 397 H585 M112 451 H585"/>
+<path class="axis" d="M112 235 V451 H585 V235"/>
+<g class="tick" text-anchor="end"><text x="98" y="241">0.20</text><text x="98" y="295">0.15</text><text x="98" y="349">0.10</text><text x="98" y="403">0.05</text><text x="98" y="457">0.00</text></g>
+<g class="tick" text-anchor="middle"><text x="112" y="475">0</text><text x="585" y="475" font-style="italic">L</text></g>
+<g class="tick"><text x="594" y="241">10</text><text x="594" y="284">8</text><text x="594" y="327">6</text><text x="594" y="370">4</text><text x="594" y="413">2</text><text x="594" y="457">0</text></g>
+<text class="jp" x="43" y="354" font-size="17" transform="rotate(-90 43 354)">反応速度 (mol/L·s)</text><text class="jp" x="646" y="362" font-size="17" transform="rotate(-90 646 362)">瞬間選択率</text><text class="math" x="653" y="275" font-size="16" transform="rotate(-90 653 275)">S′B/C</text><text class="jp" x="279" y="478" font-size="17">反応器長さ</text><text class="math" x="377" y="478" font-size="18">z</text><text class="jp" x="398" y="478" font-size="17">(m)</text>
+<path class="blue" d="M112 235 C132 258 150 288 178 315 C210 345 243 371 284 394 C333 421 390 439 448 446 C502 451 549 451 585 451"/>
+<path class="red" d="M112 451 C143 420 181 394 227 378 C280 359 342 344 406 338 C471 333 532 330 585 330"/>
+<path class="green" d="M112 451 C150 431 192 414 242 404 C300 392 362 386 426 386 C486 386 541 386 585 386"/>
+<path class="purple" d="M112 239 C120 301 130 329 153 344 C184 360 223 366 280 368 C371 369 475 370 585 371"/>
+<text x="151" y="264" font-size="20" fill="#1674ff" font-weight="700">r<tspan baseline-shift="sub" font-size="13">A</tspan> (消費)</text><text x="475" y="328" font-size="19" fill="#ff2424" font-weight="700">r<tspan baseline-shift="sub" font-size="13">B</tspan> (生成)</text><text x="477" y="410" font-size="19" fill="#00a765" font-weight="700">r<tspan baseline-shift="sub" font-size="13">C</tspan> (生成)</text><text x="263" y="315" font-size="19" fill="#9229e9" font-style="italic" font-weight="700">S′<tspan baseline-shift="sub" font-size="13">B/C</tspan></text>
+<!-- left explanatory box -->
+<rect x="22" y="496" width="650" height="120" rx="8" fill="url(#palePurple)" stroke="#ce72ff" stroke-width="1.5"/>
+<text x="39" y="524" font-size="20" fill="#7f19b5" font-weight="700">瞬間選択率　<tspan font-style="italic">S′</tspan><tspan baseline-shift="sub" font-size="14">B/C</tspan> の意味</text>
+<text class="jp" x="43" y="553" font-size="17">•　r<tspan baseline-shift="sub" font-size="12">B</tspan> と r<tspan baseline-shift="sub" font-size="12">C</tspan> の比で、ある瞬間に B と C のどちらが優先的に生成されるかを示す。</text>
+<text class="jp" x="43" y="580" font-size="16">•　並列反応では、反応条件（温度・圧力・触媒など）によってこの値を調整できるため、</text><text class="jp" x="61" y="603" font-size="16">反応器の選定や運転条件の最適化に重要。</text>
+<!-- right panel -->
+<rect x="700" y="5" width="675" height="618" rx="10" fill="#fff" stroke="#31a78b" stroke-width="2.5"/>
+<path d="M710 5 H944 V79 H700 V15 Q700 5 710 5Z" fill="url(#greenHead)"/>
+<rect x="944" y="5" width="431" height="74" rx="10" fill="url(#paleBlue)" stroke="#91d1c2" stroke-width="1.5"/>
+<text class="jp bold" x="730" y="51" font-size="31" style="fill:#fff">総括選択率</text>
+<text class="math" x="984" y="46" font-size="31">S</text><text class="math" x="1008" y="56" font-size="18">B/C</text><text class="math" x="1065" y="45" font-size="30">=</text><text class="math" x="1110" y="29" font-size="25">F</text><text class="math" x="1127" y="36" font-size="15">B</text><text class="math" x="1144" y="29" font-size="25">− F</text><text class="math" x="1197" y="36" font-size="15">B0</text><path d="M1105 42 H1226" stroke="#111" stroke-width="1.4"/><text class="math" x="1110" y="68" font-size="25">F</text><text class="math" x="1127" y="74" font-size="15">C</text><text class="math" x="1144" y="68" font-size="25">− F</text><text class="math" x="1197" y="74" font-size="15">C0</text>
+<rect x="714" y="91" width="647" height="80" rx="9" fill="url(#paleOrange)" stroke="#ffb51d" stroke-width="1.4"/>
+<text class="jp" x="737" y="122" font-size="21">反応器出口での生成物 B と副生成物 C の生成量の比で、</text><text class="jp" x="737" y="153" font-size="21">全体としてどちらが多く生成したかを表します。</text>
+<rect x="714" y="185" width="349" height="35" rx="8" fill="#e2f3ff"/><text class="jp bold" x="727" y="210" font-size="19" style="fill:#164b87">生成物のモル流量と総括選択率の例</text>
+<!-- right graph -->
+<rect x="799" y="235" width="477" height="219" fill="#fff"/>
+<path class="grid" d="M799 235 H1276 M799 279 H1276 M799 323 H1276 M799 367 H1276 M799 411 H1276 M799 454 H1276"/>
+<path class="axis" d="M799 235 V454 H1276 V235"/>
+<g class="tick" text-anchor="end"><text x="783" y="241">1.0</text><text x="783" y="285">0.8</text><text x="783" y="329">0.6</text><text x="783" y="373">0.4</text><text x="783" y="417">0.2</text><text x="783" y="460">0.0</text></g>
+<g class="tick" text-anchor="middle"><text x="799" y="480">0</text><text x="1276" y="480" font-style="italic">L</text></g>
+<g class="tick"><text x="1285" y="241">10</text><text x="1285" y="284">8</text><text x="1285" y="327">6</text><text x="1285" y="370">4</text><text x="1285" y="413">2</text><text x="1285" y="457">0</text></g>
+<text class="jp" x="741" y="369" font-size="17" transform="rotate(-90 741 369)">モル流量 (mol/s)</text><text class="jp" x="1342" y="364" font-size="17" transform="rotate(-90 1342 364)">総括選択率</text><text class="math" x="1350" y="284" font-size="16" transform="rotate(-90 1350 284)">S B/C</text><text class="jp" x="962" y="482" font-size="17">反応器長さ</text><text class="math" x="1060" y="482" font-size="18">z</text><text class="jp" x="1080" y="482" font-size="17">(m)</text>
+<path class="blue" d="M799 235 C832 272 866 308 909 341 C956 376 1004 407 1053 428 C1108 448 1190 453 1276 454"/>
+<path class="red" d="M799 454 C836 421 876 394 927 373 C982 351 1045 337 1110 328 C1170 321 1228 319 1276 320"/>
+<path class="green" d="M799 454 C841 434 883 415 930 402 C987 386 1048 379 1111 377 C1174 376 1229 376 1276 376"/>
+<path d="M799 454 C845 435 894 417 945 406 C1001 394 1061 387 1121 383 C1180 379 1230 379 1276 379" fill="none" stroke="#ff9900" stroke-width="2.8" stroke-dasharray="9 6"/>
+<text x="846" y="265" font-size="20" fill="#1674ff" font-weight="700">F<tspan baseline-shift="sub" font-size="13">A</tspan> (消費)</text><text x="1169" y="314" font-size="19" fill="#ff2424" font-weight="700">F<tspan baseline-shift="sub" font-size="13">B</tspan> (生成)</text><text x="1169" y="370" font-size="19" fill="#00a765" font-weight="700">F<tspan baseline-shift="sub" font-size="13">C</tspan> (生成)</text><text x="1190" y="401" font-size="19" fill="#ff9900" font-style="italic" font-weight="700">S<tspan baseline-shift="sub" font-size="13">B/C</tspan></text>
+<!-- right explanatory box -->
+<rect x="714" y="503" width="647" height="113" rx="8" fill="url(#paleOrange)" stroke="#ff9a40" stroke-width="1.5"/>
+<text x="736" y="532" font-size="20" fill="#e75b00" font-weight="700">総括選択率　<tspan font-style="italic">S</tspan><tspan baseline-shift="sub" font-size="14">B/C</tspan> の意味</text>
+<text class="jp" x="738" y="567" font-size="17">•　反応器出口での B と C の生成量の比を表す。</text><text class="jp" x="738" y="597" font-size="17">•　目的生成物 B の収率・純度の評価に用いられる。</text>
+</svg>
