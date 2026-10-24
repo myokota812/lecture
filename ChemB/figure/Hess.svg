@@ -43,7 +43,7 @@
   <polygon points="175,118 185,118 180,108" class="fill-blue" />
   <!-- 下向き矢印（先端） -->
   <polygon points="175,222 185,222 180,232" class="fill-blue" />
-  <text x="200" y="180" class="text-q1">Q₁J</text>
+  <text x="200" y="180" class="text-q1">ΔH₁J</text>
 
   <!-- Q2 (緑: 中段から下段への両方向矢印) -->
   <line x1="180" y1="252" x2="180" y2="388" class="line-green" />
@@ -51,7 +51,7 @@
   <polygon points="175,258 185,258 180,248" class="fill-green" />
   <!-- 下向き矢印（先端） -->
   <polygon points="175,382 185,382 180,392" class="fill-green" />
-  <text x="200" y="330" class="text-q2">Q₂J</text>
+  <text x="200" y="330" class="text-q2">ΔH₂J</text>
 
   <!-- Q3 (赤: 上段から下段への両方向矢印) -->
   <line x1="290" y1="112" x2="290" y2="388" class="line-red" />
@@ -59,6 +59,6 @@
   <polygon points="285,118 295,118 290,108" class="fill-red" />
   <!-- 下向き矢印（先端） -->
   <polygon points="285,382 295,382 290,392" class="fill-red" />
-  <text x="315" y="255" class="text-q3">Q₃J</text>
+  <text x="315" y="255" class="text-q3">ΔH₃J</text>
 
 </svg>
