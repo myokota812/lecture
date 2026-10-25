@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>熱qと仕事wの視覚化シミュレーター</title>
+    <style>
+        body { font-family: sans-serif; margin: 30px; background: #f4f6f9; color: #333; text-align: center; }
+        .container { max-width: 720px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.4rem; color: #2c3e50; }
+        canvas { background: #1e1e2f; border-radius: 8px; margin-top: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .control-group { margin: 15px 0; background: #f8f9fa; padding: 12px; border-radius: 8px; text-align: left; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        .dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .card { background: #e8f8f5; padding: 10px; border-radius: 8px; border-left: 5px solid #27ae60; font-size: 0.9rem; }
+        .card b { display: block; font-size: 1.1rem; color: #2c3e50; margin-top: 5px; }
+        .sub-info { font-size: 0.8rem; color: #555; margin-top: 4px; font-weight: normal; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔥 熱 (<i>q</i>) と 仕事 (<i>w</i>) の可視化シミュレーター ❄️</h1>
+    <h3><p><b>Δ<i>U</i> = <i>q</i> + <i>w</i></b></p></h3>
+    <p style="color: #666; font-size: 0.9rem;">スライダーを動かして、熱の出入りとピストンの仕事による変化を観察しよう。</p>
+
+    <!-- コントロール -->
+    <div class="control-group">
+        <label>環境・温度設定 (<i>T</i>): <span id="temp-val">300</span> K (<span id="temp-c-val">27</span> ℃)</label>
+        <input type="range" id="temp-slider" min="150" max="550" value="300">
+        <small>※ 300Kを基準として、上げると加熱（<i>q</i>>0）、下げると冷却（<i>q</i><0）します。</small>
+    </div>
+
+    <!-- キャンバス（視覚化エリア） -->
+    <canvas id="simCanvas" width="450" height="350"></canvas>
+
+    <!-- ダッシュボード -->
+    <div class="dashboard">
+        <div class="card" id="card-q" style="border-left-color: #e74c3c;">
+            熱量 (<i>q</i>) <br><b id="q-val">0 J</b>
+        </div>
+        <div class="card" id="card-w" style="border-left-color: #3498db;">
+            仕事 (<i>w</i>: された仕事) <br><b id="w-val">0 J</b>
+            <!-- PΔVの表示領域を追加 -->
+            <div class="sub-info">(<i>P</i>Δ<i>V</i> = <span id="pdv-val">0 J</span>)</div>
+        </div>
+        <div class="card" id="card-du" style="border-left-color: #27ae60;">
+            内部エネルギー (Δ <i>U</i>) <br><b id="du-val">0 J</b>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const tempSlider = document.getElementById('temp-slider');
+    const tempVal = document.getElementById('temp-val');
+    const tempCVal = document.getElementById('temp-c-val');
+    const qVal = document.getElementById('q-val');
+    const wVal = document.getElementById('w-val');
+    const pdvVal = document.getElementById('pdv-val'); // 追加
+    const duVal = document.getElementById('du-val');
+
+    const width = 450;
+    const maxHeight = 240;
+    const minHeight = 100;
+    const numParticles = 35;
+    let particles = [];
+
+    for (let i = 0; i < numParticles; i++) {
+        particles.push({
+            x: Math.random() * 340 + 55,
+            y: Math.random() * 150 + 120,
+            vx: (Math.random() - 0.5) * 4,
+            vy: (Math.random() - 0.5) * 4
+        });
+    }
+
+    let currentHeight = 170; // 基準の高さ
+
+    function update() {
+        const T = parseInt(tempSlider.value);
+        tempVal.textContent = T;
+        tempCVal.textContent = T - 273;
+
+        const targetHeight = 170 + (T - 300) / 250 * 70; 
+        currentHeight += (targetHeight - currentHeight) * 0.1; // 滑らかな追従
+
+        // 物理量の計算 (300Kを基準とする)
+        const deltaT = T - 300;
+        let q = deltaT * 2.5;                // 熱量 q
+        
+        let deltaV = currentHeight - 170;    
+        
+        // PΔV (外への膨張仕事) の計算
+        let pdv = deltaV * 2.0;
+        
+        // ΔU = q + w における「された仕事 w = -PΔV」
+        let work = -pdv;             
+        let deltaU = q + work;               // ΔU = q + w
+
+        // 300Kのときにきっちり「0 J」にするための微調整
+        if (Math.abs(q) < 0.5) q = 0;
+        if (Math.abs(pdv) < 0.5) pdv = 0;
+        if (Math.abs(work) < 0.5) work = 0;
+        if (Math.abs(deltaU) < 0.5) deltaU = 0;
+
+        // 表示の更新
+        qVal.textContent = (q > 0 ? "+" : "") + Math.round(q) + " J";
+        wVal.textContent = (work > 0 ? "+" : "") + Math.round(work) + " J";
+        pdvVal.textContent = (pdv > 0 ? "+" : "") + Math.round(pdv) + " J"; // PΔVの表示更新
+        duVal.textContent = (deltaU > 0 ? "+" : "") + Math.round(deltaU) + " J";
+
+        // --- 描画 ---
+        ctx.clearRect(0, 0, width, canvas.height);
+        const boxTop = canvas.height - currentHeight - 40;
+        const boxLeft = 50;
+        const boxWidth = width - 100;
+
+        // 1. 熱 q の流入・流出エフェクト
+        if (q > 5) {
+            ctx.fillStyle = "rgba(231, 76, 60, 0.6)";
+            for(let i=0; i<5; i++) {
+                let fx = boxLeft + 30 + Math.random() * (boxWidth - 60);
+                let fy = canvas.height - 10 - Math.random() * 20;
+                ctx.fillRect(fx, fy, 6, 12);
+            }
+            ctx.fillStyle = "#e74c3c";
+            ctx.font = "bold 12px sans-serif";
+            ctx.fillText("🔥 熱 (q) が流入中", boxLeft + boxWidth / 2 - 50, canvas.height - 15);
+        } else if (q < -5) {
+            ctx.fillStyle = "rgba(52, 152, 219, 0.6)";
+            ctx.fillText("❄️ 熱 (q) が放水中", boxLeft + boxWidth / 2 - 50, canvas.height - 15);
+        }
+
+        // 2. ピストン容器の描画
+        ctx.strokeStyle = "#bdc3c7";
+        ctx.lineWidth = 5;
+        ctx.strokeRect(boxLeft, boxTop, boxWidth, currentHeight);
+
+        ctx.fillStyle = "#7f8c8d";
+        ctx.fillRect(boxLeft - 3, boxTop - 8, boxWidth + 6, 12);
+
+        // 3. 仕事 w の矢印とテキスト表示
+        if (Math.abs(deltaV) > 2) {
+            ctx.strokeStyle = "#3498db";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            let arrowX = boxLeft + boxWidth + 20;
+            let centerY = boxTop + currentHeight / 2;
+            if (deltaV > 0) {
+                // 膨張（外に仕事をするため w < 0）
+                ctx.moveTo(arrowX, centerY + 20); ctx.lineTo(arrowX, centerY - 20);
+                ctx.lineTo(arrowX - 5, centerY - 10);
+                ctx.moveTo(arrowX, centerY - 20); ctx.lineTo(arrowX + 5, centerY - 10);
+                ctx.fillStyle = "#3498db";
+                ctx.fillText("膨張 (w < 0)", arrowX + 10, centerY);
+            } else {
+                // 圧縮（仕事をされるため w > 0）
+                ctx.moveTo(arrowX, centerY - 20); ctx.lineTo(arrowX, centerY + 20);
+                ctx.lineTo(arrowX - 5, centerY + 10);
+                ctx.moveTo(arrowX, centerY + 20); ctx.lineTo(arrowX + 5, centerY + 10);
+                ctx.fillStyle = "#3498db";
+                ctx.fillText("圧縮 (w > 0)", arrowX + 10, centerY);
+            }
+            ctx.stroke();
+        }
+
+        // 4. 分子の運動描画
+        const speedMultiplier = Math.sqrt(T / 300);
+        ctx.fillStyle = "#e74c3c";
+        particles.forEach(p => {
+            let currentSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+            let targetSpeed = 3 * speedMultiplier;
+            if (currentSpeed > 0) {
+                p.vx = (p.vx / currentSpeed) * targetSpeed;
+                p.vy = (p.vy / currentSpeed) * targetSpeed;
+            }
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < boxLeft + 10) { p.x = boxLeft + 10; p.vx *= -1; }
+            if (p.x > boxLeft + boxWidth - 10) { p.x = boxLeft + boxWidth - 10; p.vx *= -1; }
+            if (p.y < boxTop + 10) { p.y = boxTop + 10; p.vy *= -1; }
+            if (p.y > canvas.height - 45) { p.y = canvas.height - 45; p.vy *= -1; }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        requestAnimationFrame(update);
+    }
+
+    update();
+</script>
+</body>
+</html>
