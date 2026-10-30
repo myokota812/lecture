@@ -18,13 +18,13 @@
   <!-- 背景 -->
   <rect width="600" height="320" fill="#ffffff" rx="8" />
 
-  <!-- 上壁 (y = +h) [薄く修正] -->
+  <!-- 上壁 (y = +R) [薄く修正] -->
   <rect x="80" y="40" width="460" height="20" class="wall" />
-  <text x="310" y="32" class="text" fill="#475569" text-anchor="middle" font-weight="bold">静止壁 (y = +h)</text>
+  <text x="310" y="32" class="text" fill="#475569" text-anchor="middle" font-weight="bold">静止壁 (y = +R)</text>
 
-  <!-- 下壁 (y = -h) [薄く修正] -->
+  <!-- 下壁 (y = -R) [薄く修正] -->
   <rect x="80" y="260" width="460" height="20" class="wall" />
-  <text x="310" y="295" class="text" fill="#475569" text-anchor="middle" font-weight="bold">静止壁 (y = -h)</text>
+  <text x="310" y="295" class="text" fill="#475569" text-anchor="middle" font-weight="bold">静止壁 (y = -R)</text>
 
   <!-- 流体領域 [広く拡大] -->
   <rect x="80" y="60" width="460" height="200" class="fluid" />
@@ -43,10 +43,10 @@
 
   <!-- y位置の目盛り -->
   <line x1="135" y1="60" x2="145" y2="60" stroke="#334155" stroke-width="1.5" />
-  <text x="90" y="65" class="text">y = +h</text>
+  <text x="90" y="65" class="text">y = +R</text>
   
   <line x1="135" y1="260" x2="145" y2="260" stroke="#334155" stroke-width="1.5" />
-  <text x="90" y="265" class="text">y = -h</text>
+  <text x="90" y="265" class="text">y = -R</text>
 
   <!-- 速度プロファイル u(y) の基準線 -->
   <line x1="360" y1="60" x2="360" y2="260" stroke="#93c5fd" stroke-width="1" stroke-dasharray="2,2" />
