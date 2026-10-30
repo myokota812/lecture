@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>配管流れシミュレーション（マノメーター水頭表示）</title>
+<style>
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #f4f6f9;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+h1 {
+    margin-top: 10px;
+    font-size: 24px;
+    color: #1e293b;
+}
+p {
+    color: #64748b;
+    font-size: 14px;
+}
+.controls {
+    width: 720px;
+    margin: 20px auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    text-align: left;
+}
+.row {
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+label {
+    width: 210px;
+    text-align: right;
+    font-size: 15px;
+    font-weight: 600;
+    color: #475569;
+}
+input[type=range] {
+    width: 310px;
+    accent-color: #3b82f6;
+}
+.value {
+    width: 120px;
+    text-align: left;
+    color: #1d4ed8;
+    font-weight: bold;
+    font-size: 15px;
+    padding-left: 10px;
+}
+#infoBox {
+    margin: 15px auto;
+    width: 720px;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+#flowText {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e293b;
+}
+.red { color: #ef4444; }
+.blue { color: #3b82f6; }
+.laminar { color: #16a34a; font-weight: bold; }
+.turbulent { color: #d97706; font-weight: bold; }
+svg {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-top: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+</style>
+</head>
+<body>
+
+<h1>配管流れシミュレーション（マノメーター水頭表示）</h1>
+<p>ダルシー・ワイスバッハの式に基づく全領域（層流・乱流）シミュレーション</p>
+
+<div class="controls">
+    <div class="row">
+        <label>入口圧力 P₁ [kPa]</label>
+        <input type="range" id="P1" min="0" max="300" value="180">
+        <span id="P1v" class="value"></span>
+    </div>
+    <div class="row">
+        <label>出口圧力 P₂ [kPa]</label>
+        <input type="range" id="P2" min="0" max="300" value="60">
+        <span id="P2v" class="value"></span>
+    </div>
+    <div class="row">
+        <label>配管長 L [m]</label>
+        <input type="range" id="L" min="1" max="50" value="10">
+        <span id="Lv" class="value"></span>
+    </div>
+    <div class="row">
+        <label>管半径 R [cm]</label>
+        <input type="range" id="R" min="0.5" max="5.0" step="0.1" value="2.0">
+        <span id="Rv" class="value"></span>
+    </div>
+    <div class="row">
+        <label>管内面粗さ k [mm]</label>
+        <input type="range" id="roughness" min="0" max="0.5" step="0.01" value="0.01">
+        <span id="roughnessV" class="value"></span>
+    </div>
+    <div class="row">
+        <label>粘度 μ [mPa·s]</label>
+        <input type="range" id="mu" min="0.5" max="20" step="0.5" value="1.0">
+        <span id="muv" class="value"></span>
+    </div>
+</div>
+
+<div id="infoBox">
+    <div id="flowText"></div>
+    <div id="reStatus" style="margin-top: 8px; font-size: 14px;"></div>
+</div>
+
+<svg width="1200" height="460">
+    <defs>
+        <linearGradient id="pipeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#fca5a5"/>
+            <stop offset="50%" stop-color="#f87171"/>
+            <stop offset="100%" stop-color="#60a5fa"/>
+        </linearGradient>
+        
+        <marker id="cleanArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,1 L8,4 L0,7 Z" fill="#1e293b"/>
+        </marker>
+    </defs>
+
+    <text id="deltaPText" x="600" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b"></text>
+    <text id="velocityLabel" x="600" y="65" text-anchor="middle" font-size="16" fill="#475569"></text>
+
+    <!-- 立体配管グループ -->
+    <g id="pipeGroup">
+        <rect id="pipeRect" x="240" y="240" width="720" height="80" fill="url(#pipeGrad)" stroke="#cbd5e1" stroke-width="1.5"/>
+        <g id="pressureTicks"></g>
+        <ellipse id="leftEllipse" cx="240" cy="280" rx="12" ry="40" fill="#fee2e2" stroke="#94a3b8" stroke-width="1.5"/>
+        <ellipse id="rightEllipse" cx="960" cy="280" rx="12" ry="40" fill="#dbeafe" stroke="#94a3b8" stroke-width="1.5"/>
+    </g>
+
+    <!-- マノメーター（左：少し中央寄り） -->
+    <g id="leftManometer">
+        <rect id="leftGlass" x="392" y="100" width="16" height="140" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+        <rect id="leftLiquid" x="394" y="140" width="12" height="100" fill="#f87171" rx="2"/>
+        <text id="leftManometerText" x="400" y="90" text-anchor="middle" font-size="12" font-weight="bold" fill="#ef4444"></text>
+    </g>
+
+    <!-- マノメーター（右：少し中央寄り） -->
+    <g id="rightManometer">
+        <rect id="rightGlass" x="792" y="100" width="16" height="140" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+        <rect id="rightLiquid" x="794" y="180" width="12" height="60" fill="#60a5fa" rx="2"/>
+        <text id="rightManometerText" x="800" y="90" text-anchor="middle" font-size="12" font-weight="bold" fill="#3b82f6"></text>
+    </g>
+
+    <!-- 流速ベクトル（中央の矢印） -->
+    <line id="flowArrow" stroke="#1e293b" stroke-width="4" marker-end="url(#cleanArrow)" y1="280" y2="280"/>
+</svg>
+
+<script>
+const rho = 1000; // 水の密度 [kg/m^3]
+
+function update() {
+    const P1 = Number(document.getElementById("P1").value);
+    const P2 = Number(document.getElementById("P2").value);
+    const L = Number(document.getElementById("L").value);
+    const R_cm = Number(document.getElementById("R").value);
+    const R = R_cm / 100; // m
+    const D = 2 * R;
+    const eps_mm = Number(document.getElementById("roughness").value);
+    const eps = eps_mm * 1e-3; // m
+    const mu_mPa = Number(document.getElementById("mu").value);
+    const mu = mu_mPa * 1e-3; // Pa·s
+
+    const deltaP_Pa = (P1 - P2) * 1000; // Pa
+
+    let v = 0;
+    let Re = 0;
+    let f = 0.02;
+
+    if (deltaP_Pa > 0) {
+        v = 1.0; 
+        for (let iter = 0; iter < 15; iter++) {
+            Re = (rho * v * D) / mu;
+            if (Re < 1) Re = 1;
+
+            if (Re < 2300) {
+                f = 64 / Re;
+            } else {
+                const relRough = eps / D;
+                f = Math.pow(1.875 * Math.log10(relRough / 3.7 + 5.74 / Math.pow(Re, 0.9)), -2);
+            }
+
+            if (f > 0) {
+                v = Math.sqrt((2 * deltaP_Pa * D) / (rho * f * L));
+            }
+        }
+    } else if (deltaP_Pa < 0) {
+        let absDeltaP = Math.abs(deltaP_Pa);
+        v = -1.0;
+        let v_mag = 1.0;
+        for (let iter = 0; iter < 15; iter++) {
+            Re = (rho * v_mag * D) / mu;
+            if (Re < 1) Re = 1;
+
+            if (Re < 2300) {
+                f = 64 / Re;
+            } else {
+                const relRough = eps / D;
+                f = Math.pow(1.875 * Math.log10(relRough / 3.7 + 5.74 / Math.pow(Re, 0.9)), -2);
+            }
+
+            if (f > 0) {
+                v_mag = Math.sqrt((2 * absDeltaP * D) / (rho * f * L));
+            }
+        }
+        v = -v_mag;
+    }
+
+    const area = Math.PI * R * R;
+    const Q = area * v; // m^3/s
+    const Q_Lmin = Math.abs(Q) * 60000; // L/min
+    const absRe = (rho * Math.abs(v) * D) / mu;
+
+    // 数値の表示更新
+    document.getElementById("P1v").innerHTML = P1 + " kPa";
+    document.getElementById("P2v").innerHTML = P2 + " kPa";
+    document.getElementById("Lv").innerHTML = L + " m";
+    document.getElementById("Rv").innerHTML = R_cm.toFixed(1) + " cm";
+    document.getElementById("roughnessV").innerHTML = eps_mm.toFixed(2) + " mm";
+    document.getElementById("muv").innerHTML = mu_mPa.toFixed(1) + " mPa·s";
+
+    document.getElementById("deltaPText").innerHTML = `圧力差 ΔP = ${(deltaP_Pa / 1000).toFixed(1)} kPa`;
+    document.getElementById("velocityLabel").innerHTML = `平均流速 v = ${v.toFixed(3)} m/s`;
+
+    let stateStr = "流れなし";
+    if (deltaP_Pa > 0) stateStr = "正方向の流れ (左 → 右)";
+    else if (deltaP_Pa < 0) stateStr = "逆流 (右 → 左)";
+
+    document.getElementById("flowText").innerHTML = 
+        `体積流量 Q = <span class="red">${Q_Lmin.toFixed(2)}</span> L/min （${stateStr}）`;
+
+    let flowTypeHtml = "";
+    if (absRe < 2300) {
+        flowTypeHtml = `<span class="laminar">🟢 層流状態 (Re = ${absRe.toFixed(0)})</span>：粘性力が支配的なスムーズな流れ。`;
+    } else if (absRe < 4000) {
+        flowTypeHtml = `<span class="turbulent">🟡 遷移域 (Re = ${absRe.toFixed(0)})</span>：層流から乱流へ移行する不安定な領域。`;
+    } else {
+        flowTypeHtml = `<span class="turbulent">🔴 乱流状態 (Re = ${absRe.toFixed(0)})</span>：慣性力が強く、管壁の粗さも影響する激しい流れ。`;
+    }
+    document.getElementById("reStatus").innerHTML = flowTypeHtml;
+
+    // 形状計算
+    const centerY = 280;
+    const pipeHeight = Math.max(16, R_cm * 24); // 管の太さ (Dに比例)
+    const pipeY = centerY - pipeHeight / 2;     // 配管の上面
+    const pipeWidth = 720;
+    const pipeX = 240;
+    const pipeRightX = pipeX + pipeWidth;
+
+    const pipeRect = document.getElementById("pipeRect");
+    pipeRect.setAttribute("x", pipeX);
+    pipeRect.setAttribute("y", pipeY);
+    pipeRect.setAttribute("width", pipeWidth);
+    pipeRect.setAttribute("height", pipeHeight);
+
+    const ry = pipeHeight / 2;
+    const rx = Math.max(8, ry * 0.3);
+
+    const leftEllipse = document.getElementById("leftEllipse");
+    leftEllipse.setAttribute("cx", pipeX);
+    leftEllipse.setAttribute("cy", centerY);
+    leftEllipse.setAttribute("rx", rx);
+    leftEllipse.setAttribute("ry", ry);
+
+    const rightEllipse = document.getElementById("rightEllipse");
+    rightEllipse.setAttribute("cx", pipeRightX);
+    rightEllipse.setAttribute("cy", centerY);
+    rightEllipse.setAttribute("rx", rx);
+    rightEllipse.setAttribute("ry", ry);
+
+    // --- マノメーターの位置と接続の動的計算 ---
+    // 少し中央寄りに配置（端からそれぞれ 160px 内側）
+    const m1_x = pipeX + 160;
+    const m2_x = pipeRightX - 160;
+    const glassWidth = 16;
+    const liquidWidth = 12;
+
+    // ガラス管の下端を常に配管の上面 (pipeY) にピタッと合わせる
+    const glassHeight = 130;
+    const glassY = pipeY - glassHeight;
+
+    // 左マノメーター (P1)
+    const leftGlass = document.getElementById("leftGlass");
+    leftGlass.setAttribute("x", m1_x - glassWidth / 2);
+    leftGlass.setAttribute("y", glassY);
+    leftGlass.setAttribute("height", glassHeight);
+
+    const scaleFactor = 0.38;
+    const leftLiquidHeight = Math.max(10, Math.min(glassHeight - 5, P1 * scaleFactor));
+    const leftLiquid = document.getElementById("leftLiquid");
+    leftLiquid.setAttribute("x", m1_x - liquidWidth / 2);
+    leftLiquid.setAttribute("y", pipeY - leftLiquidHeight);
+    leftLiquid.setAttribute("height", leftLiquidHeight);
+
+    const leftText = document.getElementById("leftManometerText");
+    leftText.setAttribute("x", m1_x);
+    leftText.setAttribute("y", glassY - 10);
+    leftText.textContent = P1 + " kPa";
+
+    // 右マノメーター (P2)
+    const rightGlass = document.getElementById("rightGlass");
+    rightGlass.setAttribute("x", m2_x - glassWidth / 2);
+    rightGlass.setAttribute("y", glassY);
+    rightGlass.setAttribute("height", glassHeight);
+
+    const rightLiquidHeight = Math.max(10, Math.min(glassHeight - 5, P2 * scaleFactor));
+    const rightLiquid = document.getElementById("rightLiquid");
+    rightLiquid.setAttribute("x", m2_x - liquidWidth / 2);
+    rightLiquid.setAttribute("y", pipeY - rightLiquidHeight);
+    rightLiquid.setAttribute("height", rightLiquidHeight);
+
+    const rightText = document.getElementById("rightManometerText");
+    rightText.setAttribute("x", m2_x);
+    rightText.setAttribute("y", glassY - 10);
+    rightText.textContent = P2 + " kPa";
+
+    // 流速ベクトル（中央の矢印）の連動
+    const arrow = document.getElementById("flowArrow");
+    arrow.setAttribute("y1", centerY);
+    arrow.setAttribute("y2", centerY);
+
+    if (Math.abs(v) < 0.001) {
+        arrow.style.visibility = "hidden";
+    } else {
+        arrow.style.visibility = "visible";
+        const maxArrowLen = pipeWidth * 0.5;
+        const arrowLen = Math.min(maxArrowLen, Math.max(30, Math.abs(v) * 40));
+        const cx = 600;
+
+        if (v > 0) {
+            arrow.setAttribute("x1", cx - arrowLen / 2);
+            arrow.setAttribute("x2", cx + arrowLen / 2);
+        } else {
+            arrow.setAttribute("x1", cx + arrowLen / 2);
+            arrow.setAttribute("x2", cx - arrowLen / 2);
+        }
+        arrow.setAttribute("stroke-width", Math.min(8, Math.max(2, 2 + Math.abs(v) * 0.6)));
+    }
+
+    // 圧力勾配目盛り
+    const gTicks = document.getElementById("pressureTicks");
+    gTicks.innerHTML = "";
+    const numTicks = 5;
+    for (let i = 0; i <= numTicks; i++) {
+        const x = pipeX + (pipeWidth * i / numTicks);
+        const P = P1 + (P2 - P1) * (i / numTicks);
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x);
+        line.setAttribute("x2", x);
+        line.setAttribute("y1", pipeY);
+        line.setAttribute("y2", pipeY + pipeHeight);
+        line.setAttribute("stroke", "rgba(255,255,255,0.7)");
+        line.setAttribute("stroke-width", "1.5");
+        line.setAttribute("stroke-dasharray", "3 3");
+        gTicks.appendChild(line);
+
+        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txt.setAttribute("x", x);
+        txt.setAttribute("y", pipeY + pipeHeight + 22);
+        txt.setAttribute("text-anchor", "middle");
+        txt.setAttribute("font-size", "11");
+        txt.setAttribute("fill", "#64748b");
+        txt.textContent = P.toFixed(0) + " kPa";
+        gTicks.appendChild(txt);
+    }
+}
+
+document.querySelectorAll("input").forEach(s => s.addEventListener("input", update));
+update();
+</script>
+
+</body>
+</html>
