@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Couette-Poiseuille Flow Simulator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 40px;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .control-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        .control-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #4b5563;
+        }
+        .control-group input {
+            width: 100%;
+        }
+        canvas {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Couette-Poiseuille Flow</h1>
+
+    <div class="control-panel">
+        <div class="control-group">
+            <label id="u0-label">Upper plate velocity U₀ : 0.00 m/s</label>
+            <input type="range" id="u0-slider" min="-2.0" max="2.0" step="0.05" value="0.00">
+        </div>
+        <div class="control-group">
+            <label id="dp-label">Pressure gradient dP/dx : -1.00 Pa/m</label>
+            <input type="range" id="dp-slider" min="-0.7" max="0.5" step="0.1" value="-1.00">
+        </div>
+    </div>
+
+    <canvas id="simCanvas" width="650" height="450"></canvas>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const u0Slider = document.getElementById('u0-slider');
+        const dpSlider = document.getElementById('dp-slider');
+        const u0Label = document.getElementById('u0-label');
+        const dpLabel = document.getElementById('dp-label');
+
+        // 物理パラメータ
+        const h = 0.10;      // チャネル半幅 (m)
+        const mu = 0.001;    // 粘度 (Pa·s, 水の目安)
+
+        function draw() {
+            const U0 = parseFloat(u0Slider.value);
+            const dpdx = parseFloat(dpSlider.value); // dP/dx
+
+            // ラベルの更新
+            u0Label.innerText = `Upper plate velocity U₀ : ${U0.toFixed(2)} m/s`;
+            dpLabel.innerText = `Pressure gradient dP/dx : ${dpdx.toFixed(2)} Pa/m`;
+
+            // キャンバスのクリア
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 描画座標系の設定 (キャンバス中央を原点(0,0)にする)
+            const originX = 250;
+            const originY = 225;
+            const scaleY = 700; // y方向のスケール (m -> ピクセル)
+            const scaleU = 80;  // 速度 -> ピクセル
+
+            // 座標変換関数
+            function toCanvasY(y) { return originY - y * scaleY; }
+
+            // --- 1. 背景・グリッド・壁の描画 ---
+            // 中心線 (y = 0)
+            ctx.strokeStyle = '#d1d5db';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(50, toCanvasY(0));
+            ctx.lineTo(600, toCanvasY(0));
+            ctx.stroke();
+
+            ctx.fillStyle = '#4b5563';
+            ctx.font = '14px sans-serif';
+            ctx.fillText('0', originX - 25, toCanvasY(0) + 5);
+            ctx.fillText('y (m)', originX - 30, toCanvasY(h) - 30);
+            ctx.fillText('u (m/s)', 540, toCanvasY(0) - 20);
+
+            // 上下壁 (y = +h, y = -h)
+            const wallH = 10;
+            ctx.fillStyle = '#9ca3af';
+            ctx.fillRect(80, toCanvasY(h) - wallH/2, 480, wallH);
+            ctx.fillRect(80, toCanvasY(-h) - wallH/2, 480, wallH);
+
+            ctx.fillText('0.10', originX - 45, toCanvasY(h) + 5);
+            ctx.fillText('-0.10', originX - 50, toCanvasY(-h) + 5);
+
+            // 壁の境界条件テキスト
+            ctx.fillStyle = '#1d4ed8';
+            ctx.fillText(`u = U₀ (${U0.toFixed(2)})`, 450, toCanvasY(h) - 20);
+            ctx.fillText('u = 0', 470, toCanvasY(-h) + 30);
+
+            // --- 2. 速度分布曲線 (u(y)) の計算と描画 ---
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            const points = 100;
+            for (let i = 0; i <= points; i++) {
+                const y = -h + (2 * h * i) / points;
+                
+                // クエット・ポアズイユ流れの公式
+                // ポアズイユ成分: -(1 / 2μ) * (dp/dx) * (h^2 - y^2)
+                // クエット成分: U0 * (y + h) / (2h)
+                const u_poiseuille = (-dpdx / (2 * mu)) * (h * h - y * y);
+                const u_couette = U0 * (y + h) / (2 * h);
+                const u = u_poiseuille + u_couette;
+
+                const cx = originX + u * scaleU;
+                const cy = toCanvasY(y);
+
+                if (i === 0) ctx.moveTo(cx, cy);
+                else ctx.lineTo(cx, cy);
+            }
+            ctx.stroke();
+
+            // --- 3. 速度ベクトル（矢印）の描画 ---
+            const numArrows = 11;
+            for (let i = 0; i < numArrows; i++) {
+                const y = -h + (2 * h * i) / (numArrows - 1);
+                
+                const u_poiseuille = (-dpdx / (2 * mu)) * (h * h - y * y);
+                const u_couette = U0 * (y + h) / (2 * h);
+                const u = u_poiseuille + u_couette;
+
+                const startX = originX;
+                const endX = originX + u * scaleU;
+                const cy = toCanvasY(y);
+
+                // 矢印の線
+                ctx.strokeStyle = '#1e40af';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(startX, cy);
+                ctx.lineTo(endX, cy);
+                ctx.stroke();
+
+                // 矢印の先端（uが0でない場合のみ）
+                if (Math.abs(u) > 0.001) {
+                    const headLength = 6;
+                    const dir = Math.sign(u);
+                    ctx.fillStyle = '#1e40af';
+                    ctx.beginPath();
+                    ctx.moveTo(endX, cy);
+                    ctx.lineTo(endX - dir * headLength, cy - 4);
+                    ctx.lineTo(endX - dir * headLength, cy + 4);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // イベントリスナーの登録
+        u0Slider.addEventListener('input', draw);
+        dpSlider.addEventListener('input', draw);
+
+        // 初回描画
+        draw();
+    </script>
+</body>
+</html>
