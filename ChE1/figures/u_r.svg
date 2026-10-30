@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320" width="100%" height="100%">
+  <style>
+    .wall { fill: #cbd5e1; stroke: #475569; stroke-width: 2; }
+    .fluid { fill: #f8fafc; }
+    .text { font-family: sans-serif; font-size: 13px; fill: #1e293b; }
+    .text-bold { font-family: sans-serif; font-size: 14px; font-weight: bold; fill: #1e293b; }
+  </style>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb" />
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="600" height="320" fill="#ffffff" rx="8" />
+
+  <!-- 上壁 (y = +h) [薄く修正] -->
+  <rect x="80" y="40" width="460" height="20" class="wall" />
+  <text x="310" y="32" class="text" fill="#475569" text-anchor="middle" font-weight="bold">静止壁 (y = +h)</text>
+
+  <!-- 下壁 (y = -h) [薄く修正] -->
+  <rect x="80" y="260" width="460" height="20" class="wall" />
+  <text x="310" y="295" class="text" fill="#475569" text-anchor="middle" font-weight="bold">静止壁 (y = -h)</text>
+
+  <!-- 流体領域 [広く拡大] -->
+  <rect x="80" y="60" width="460" height="200" class="fluid" />
+
+  <!-- 中心線 (y = 0) -->
+  <line x1="60" y1="160" x2="560" y2="160" stroke="#94a3b8" stroke-width="1" stroke-dasharray="6,4" />
+  <text x="565" y="165" class="text" font-size="12">y = 0 (中心)</text>
+
+  <!-- y軸 -->
+  <line x1="140" y1="280" x2="140" y2="25" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="125" y="30" class="text-bold">y</text>
+
+  <!-- x軸 / 流れ方向インジケーター -->
+  <line x1="100" y1="300" x2="250" y2="300" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="260" y="305" class="text-bold">x (流れ方向)</text>
+
+  <!-- y位置の目盛り -->
+  <line x1="135" y1="60" x2="145" y2="60" stroke="#334155" stroke-width="1.5" />
+  <text x="90" y="65" class="text">y = +h</text>
+  
+  <line x1="135" y1="260" x2="145" y2="260" stroke="#334155" stroke-width="1.5" />
+  <text x="90" y="265" class="text">y = -h</text>
+
+  <!-- 速度プロファイル u(y) の基準線 -->
+  <line x1="360" y1="60" x2="360" y2="260" stroke="#93c5fd" stroke-width="1" stroke-dasharray="2,2" />
+  <text x="345" y="50" class="text" fill="#2563eb" font-size="12">u = 0</text>
+
+  <!-- 放物線プロファイル [大きく拡大] -->
+  <path d="M 360 60 Q 500 160 360 260" fill="none" stroke="#2563eb" stroke-width="2.5" />
+  <path d="M 360 60 Q 500 160 360 260 Z" fill="rgba(37, 99, 235, 0.08)" />
+
+  <!-- 内部の速度ベクトル [より大きく] -->
+  <line x1="360" y1="100" x2="440" y2="100" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-blue)" />
+  <line x1="360" y1="130" x2="480" y2="130" stroke="#2563eb" stroke-width="1.4" marker-end="url(#arrow-blue)" />
+  <line x1="360" y1="160" x2="498" y2="160" stroke="#2563eb" stroke-width="1.6" marker-end="url(#arrow-blue)" />
+  <line x1="360" y1="190" x2="480" y2="190" stroke="#2563eb" stroke-width="1.4" marker-end="url(#arrow-blue)" />
+  <line x1="360" y1="220" x2="440" y2="220" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-blue)" />
+
+  <!-- プロファイル・速度のラベル -->
+  <text x="430" y="140" class="text" fill="#2563eb" font-weight="bold">u(y)</text>
+  <text x="505" y="165" class="text" fill="#2563eb" font-size="12">最大速度</text>
+
+</svg>
