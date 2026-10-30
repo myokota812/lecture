@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="100%" height="100%">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#1e293b" />
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#ef4444" />
+    </marker>
+  </defs>
+
+  <style>
+    text { font-family: 'Helvetica Neue', Arial, sans-serif; }
+  </style>
+
+  <!-- 背景 -->
+  <rect width="800" height="400" fill="#f8fafc" rx="12" />
+
+  <!-- 配管の輪郭（上下の壁） -->
+  <line x1="80" y1="80" x2="720" y2="80" stroke="#64748b" stroke-width="3" />
+  <line x1="80" y1="320" x2="720" y2="320" stroke="#64748b" stroke-width="3" />
+
+  <!-- 中心軸 (z軸) -->
+  <line x1="60" y1="200" x2="740" y2="200" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 4" />
+  <text x="745" y="205" font-size="16" font-weight="bold" fill="#ef4444">z 軸</text>
+
+  <!-- 微小円筒流体要素 (半径 r, 長さ dz) -->
+  <rect x="300" y="140" width="200" height="120" fill="rgba(59, 130, 246, 0.15)" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4 2" />
+  <rect x="300" y="140" width="200" height="120" fill="none" stroke="#1d4ed8" stroke-width="2" />
+
+  <!-- 補助線：半径 r -->
+  <line x1="260" y1="200" x2="260" y2="140" stroke="#64748b" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <text x="235" y="175" font-size="16" font-weight="bold" fill="#334155">r</text>
+
+  <!-- 補助線：管半径 R -->
+  <line x1="120" y1="200" x2="120" y2="80" stroke="#64748b" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <text x="95" y="145" font-size="16" font-weight="bold" fill="#334155">R</text>
+
+  <!-- 補助線：長さ dz -->
+  <line x1="300" y1="285" x2="500" y2="285" stroke="#64748b" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <text x="390" y="310" font-size="16" font-weight="bold" fill="#334155">dz</text>
+
+  <!-- 1. 圧力による力 (左側面) -->
+  <line x1="220" y1="200" x2="295" y2="200" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" />
+  <text x="200" y="190" font-size="14" font-weight="bold" fill="#ef4444">p · πr²</text>
+
+  <!-- 1. 圧力による力 (右側面) -->
+  <line x1="505" y1="200" x2="580" y2="200" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" />
+  <text x="515" y="190" font-size="14" font-weight="bold" fill="#ef4444">(p + dp) · πr²</text>
+
+  <!-- 2. 粘性摩擦力 (上下の側面：せん断応力 τ) -->
+  <line x1="440" y1="140" x2="360" y2="140" stroke="#047857" stroke-width="3" marker-end="url(#arrow)" />
+  <text x="375" y="125" font-size="14" font-weight="bold" fill="#047857">τ · 2πr · dz</text>
+
+  <line x1="360" y1="260" x2="440" y2="260" stroke="#047857" stroke-width="3" marker-end="url(#arrow)" />
+  <text x="375" y="280" font-size="14" font-weight="bold" fill="#047857">τ · 2πr · dz</text>
+
+  <!-- タイトル -->
+  <text x="400" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#1e293b">微小円筒流体要素に働く力のつりあい</text>
+</svg>
