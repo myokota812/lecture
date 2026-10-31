@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アンモニア合成反応 熱力学シミュレーター</title>
+    <!-- Chart.js 読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a365d;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            font-size: 24px;
+        }
+        .reaction-eq {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .control-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .metric-card {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-card .title {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+        .metric-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
+        .info-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🧪 アンモニア合成反応 熱力学シミュレーター</h1>
+    <div class="reaction-eq">
+        N₂ + 3H₂ ⇄ 2NH₃ &nbsp;&nbsp;(ΔH°₂₉₈ = -92.2 kJ/mol)
+    </div>
+
+    <!-- パラメータコントロール -->
+    <div class="controls">
+        <div class="control-group">
+            <label for="tempRange">温度: <span id="tempValue">400</span> °C</label>
+            <input type="range" id="tempRange" min="100" max="600" value="400" step="10">
+        </div>
+        <div class="control-group">
+            <label for="pressRange">圧力: <span id="pressValue">100</span> atm</label>
+            <input type="range" id="pressRange" min="1" max="300" value="100" step="5">
+        </div>
+    </div>
+
+    <!-- 数値表示エリア -->
+    <div class="metrics">
+        <div class="metric-card">
+            <div class="title">標準ギブズ自由エネルギー変化 ΔG°</div>
+            <div class="value" id="valDG">-</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">平衡定数 Kp</div>
+            <div class="value" id="valKp">-</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">理論平衡転化率 Xeq</div>
+            <div class="value" id="valXeq" style="color: #2563eb;">-</div>
+        </div>
+    </div>
+
+    <!-- グラフエリア -->
+    <div class="charts">
+        <div>
+            <h3>📈 温度・圧力と平衡転化率 (トレードオフ曲線)</h3>
+            <div class="chart-container">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 解説 -->
+    <div class="info-box">
+        <strong>💡 化学工学的なポイント:</strong><br>
+        * <strong>温度の影響:</strong> 発熱反応のため、<b>低温にするほど熱力学的には収率（Xeq）が上がります</b>。しかし、現実のプラントでは速度論（触媒活性）とのバランスから 400〜500°C 付近で運転されます。<br>
+        * <strong>圧力の影響:</strong> 分子数が減少する反応（4 mol → 2 mol）のため、<b>高圧にするほど平衡は生成物（右）へシフトします</b>（ルシャトリエの原理）。
+    </div>
+</div>
+
+<script>
+    // 物理定数
+    const R = 8.314; // J/(mol K)
+    const deltaH0 = -92200.0; // J/mol
+    const deltaS0 = -198.7;  // J/(mol K)
+
+    // 平衡転化率 Xeq の計算関数
+    function calcXeq(TK, Pbar) {
+        const dG0 = deltaH0 - TK * deltaS0;
+        const kp = Math.exp(-dG0 / (R * TK));
+        
+        let bestX = 0;
+        let minDiff = Infinity;
+        
+        // 0.001 から 0.999 まで探索
+        for (let x = 0.001; x < 1.0; x += 0.001) {
+            const P_NH3 = (2 * x) / (4 - 2 * x);
+            const P_N2  = (1 - x) / (4 - 2 * x);
+            const P_H2  = (3 * (1 - x)) / (4 - 2 * x);
+            
+            const Kp_calc = (Math.pow(P_NH3, 2) / (P_N2 * Math.pow(P_H2, 3))) / Math.pow(Pbar, 2);
+            const diff = Math.abs(Kp_calc - kp);
+            
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestX = x;
+            }
+        }
+        return bestX;
+    }
+
+    // Chart.js インスタンス
+    let lineChart;
+
+    function initChart() {
+        const ctx = document.getElementById('lineChart').getContext('2d');
+        
+        // 100°C 〜 600°C のラベル作成
+        const temps = [];
+        for (let t = 100; t <= 600; t += 20) temps.push(t);
+
+        lineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: temps,
+                datasets: [
+                    { label: '1 atm', data: [], borderColor: '#cbd5e1', borderWidth: 1, pointRadius: 0 },
+                    { label: '50 atm', data: [], borderColor: '#94a3b8', borderWidth: 1, pointRadius: 0 },
+                    { label: '100 atm', data: [], borderColor: '#64748b', borderWidth: 1.5, pointRadius: 0 },
+                    { label: '200 atm', data: [], borderColor: '#334155', borderWidth: 1.5, pointRadius: 0 },
+                    { label: '300 atm', data: [], borderColor: '#0f172a', borderWidth: 1.5, pointRadius: 0 },
+                    {
+                        label: '現在の動作点',
+                        data: [],
+                        borderColor: '#ef4444',
+                        backgroundColor: '#ef4444',
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        showLine: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: '温度 (°C)' } },
+                    y: { title: { display: true, text: 'アンモニア平衡転化率 (%)' }, min: 0, max: 100 }
+                }
+            }
+        });
+    }
+
+    function updateApp() {
+        const TC = parseFloat(document.getElementById('tempRange').value);
+        const Patm = parseFloat(document.getElementById('pressRange').value);
+        
+        document.getElementById('tempValue').innerText = TC;
+        document.getElementById('pressValue').innerText = Patm;
+
+        const TK = TC + 273.15;
+        const Pbar = Patm * 1.01325;
+
+        // 熱力学計算
+        const dG0 = deltaH0 - TK * deltaS0;
+        const Kp = Math.exp(-dG0 / (R * TK));
+        const Xeq = calcXeq(TK, Pbar);
+
+        // 数値更新
+        document.getElementById('valDG').innerText = (dG0 / 1000).toFixed(2) + " kJ/mol";
+        document.getElementById('valKp').innerText = Kp < 1e-4 ? Kp.toExponential(2) : Kp.toFixed(3);
+        document.getElementById('valXeq').innerText = (Xeq * 100).toFixed(1) + " %";
+
+        // グラフ更新
+        const temps = lineChart.data.labels;
+        const pressList = [1, 50, 100, 200, 300];
+
+        pressList.forEach((p, idx) => {
+            const data = temps.map(t => (calcXeq(t + 273.15, p * 1.01325) * 100).toFixed(1));
+            lineChart.data.datasets[idx].data = data;
+        });
+
+        // 現在点の更新
+        const currentPoint = temps.map(t => t === TC ? (Xeq * 100).toFixed(1) : null);
+        lineChart.data.datasets[5].data = currentPoint;
+
+        lineChart.update();
+    }
+
+    // 初期化とイベント設定
+    window.onload = function() {
+        initChart();
+        updateApp();
+
+        document.getElementById('tempRange').addEventListener('input', updateApp);
+        document.getElementById('pressRange').addEventListener('input', updateApp);
+    };
+</script>
+
+</body>
+</html>
