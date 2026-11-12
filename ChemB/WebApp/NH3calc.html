@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アンモニア合成 熱力学 & 分子シミュレーター</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0fdf4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+        h1 {
+            color: #166534;
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .controls-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .control-label {
+            font-weight: bold;
+            color: #166534;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        input[type=range] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            outline: none;
+            accent-color: #22c55e;
+            cursor: pointer;
+        }
+        .cards-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .cards-wrapper { grid-template-columns: 1fr; }
+            .controls-card { grid-template-columns: 1fr; }
+        }
+        .state-card {
+            background: #fff;
+            border: 2px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .state-card.stable {
+            border-color: #22c55e;
+            background-color: #fdfefe;
+        }
+        .state-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #166534;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+        .canvas-box {
+            width: 100%;
+            height: 180px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 6px 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        td:nth-child(2) {
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .badge {
+            margin-top: 12px;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #e2e8f0;
+            color: #64748b;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .badge.active {
+            background: #22c55e;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🧪 アンモニア合成 (N₂ + 3H₂ ⇄ 2NH₃) 熱力学 & 分子シミュレーター</h1>
+
+    <div class="controls-card">
+        <div class="control-group">
+            <div class="control-label">温度: <span id="tempValue">400</span> °C (<span id="tempKValue">673 K</span>)</div>
+            <input type="range" id="tempSlider" min="0" max="700" value="400" step="10">
+        </div>
+        <div class="control-group">
+            <div class="control-label">全圧力: <span id="pressValue">100</span> atm</div>
+            <input type="range" id="pressSlider" min="1" max="300" value="100" step="5">
+        </div>
+    </div>
+
+    <div class="cards-wrapper">
+        <div class="state-card" id="cardReactants">
+            <div class="state-title">反応系 (N₂ + 3H₂)</div>
+            <div class="canvas-box">
+                <canvas id="canvasReactants"></canvas>
+            </div>
+            <table>
+                <tr><th>熱力学量</th><th>値</th></tr>
+                <tr><td>エンタルピー H</td><td id="hReactants">-</td></tr>
+                <tr><td>エントロピー S</td><td id="sReactants">-</td></tr>
+                <tr><td>ギブズエネルギー G</td><td id="gReactants">-</td></tr>
+            </table>
+            <div class="badge" id="badgeReactants">状態</div>
+        </div>
+
+        <div class="state-card" id="cardProducts">
+            <div class="state-title">生成系 (2NH₃)</div>
+            <div class="canvas-box">
+                <canvas id="canvasProducts"></canvas>
+            </div>
+            <table>
+                <tr><th>熱力学量</th><th>値</th></tr>
+                <tr><td>エンタルピー H</td><td id="hProducts">-</td></tr>
+                <tr><td>エントロピー S</td><td id="sProducts">-</td></tr>
+                <tr><td>ギブズエネルギー G</td><td id="gProducts">-</td></tr>
+            </table>
+            <div class="badge" id="badgeProducts">状態</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const R_gas = 8.314; // J/(mol·K)
+    const T_ref = 298.15;
+    const P_ref = 1.01325; // 1 atm = 1.01325 bar
+
+    const Cp_reactants = 115.0; // J/(mol·K)
+    const deltaCp = -35.0;        // J/(mol·K)
+
+    function calculateSystem(TK, P_atm) {
+        const P_bar = P_atm * P_ref;
+        const lnT_ratio = Math.log(TK / T_ref);
+        const dT = TK - T_ref;
+
+        const S_reactants_298 = 583.7; 
+        const S_products_298  = 385.6; 
+        const H_reactants_298 = 0.0;   // kJ/mol
+        const H_products_298  = -92.2; // kJ/mol
+
+        const H_reactants_std = H_reactants_298 + (Cp_reactants * dT) / 1000.0;
+        const H_products_std  = H_products_298  + ((Cp_reactants + deltaCp) * dT) / 1000.0;
+
+        const S_reactants_std = S_reactants_298 + Cp_reactants * lnT_ratio;
+        const S_products_std  = S_products_298  + (Cp_reactants + deltaCp) * lnT_ratio;
+
+        // 平衡転化率 x_eq の計算
+        const dG0 = (H_products_std - H_reactants_std) * 1000.0 - TK * (S_products_std - S_reactants_std);
+        const kp = Math.exp(-dG0 / (R_gas * TK));
+
+        let bestX = 0.001;
+        let minDiff = Infinity;
+        for (let x = 0.001; x < 0.999; x += 0.001) {
+            const P_NH3 = (2 * x) / (4 - 2 * x);
+            const P_N2  = (1 - x) / (4 - 2 * x);
+            const P_H2  = (3 * (1 - x)) / (4 - 2 * x);
+            
+            const Kp_calc = (Math.pow(P_NH3, 2) / (P_N2 * Math.pow(P_H2, 3))) / Math.pow(P_bar, 2);
+            const diff = Math.abs(Kp_calc - kp);
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestX = x;
+            }
+        }
+
+        const x = bestX;
+        const y_N2 = (1 - x) / (4 - 2 * x);
+        const y_NH3 = (2 * x) / (4 - 2 * x);
+
+        const S_reactants_actual = S_reactants_std - R_gas * Math.log(y_N2 * P_bar + 1e-9);
+        const S_products_actual  = S_products_std  - R_gas * Math.log(y_NH3 * P_bar + 1e-9);
+
+        const G_reactants_actual = H_reactants_std - (TK * S_reactants_actual) / 1000.0;
+        const G_products_actual  = H_products_std  - (TK * S_products_actual) / 1000.0;
+
+        return {
+            xEq: bestX,
+            H_reactants: H_reactants_std,
+            S_reactants: S_reactants_actual,
+            G_reactants: G_reactants_actual,
+            H_products: H_products_std,
+            S_products: S_products_actual,
+            G_products: G_products_actual
+        };
+    }
+
+    class ReactionSimulator {
+        constructor() {
+            this.canvasR = document.getElementById('canvasReactants');
+            this.ctxR = this.canvasR.getContext('2d');
+            this.canvasP = document.getElementById('canvasProducts');
+            this.ctxP = this.canvasP.getContext('2d');
+            
+            this.maxN = 12;
+            this.maxH = 36;
+            this.maxM = 24;
+            this.particlesR = [];
+            this.particlesP = [];
+            this.initParticles();
+        }
+
+        initParticles() {
+            this.particlesR = [];
+            for(let i=0; i<this.maxN; i++) {
+                this.particlesR.push({type: 'N2', x: Math.random()*280, y: Math.random()*160, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2});
+            }
+            for(let i=0; i<this.maxH; i++) {
+                this.particlesR.push({type: 'H2', x: Math.random()*280, y: Math.random()*160, vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*3});
+            }
+
+            this.particlesP = [];
+            for(let i=0; i<this.maxM; i++) {
+                this.particlesP.push({type: 'NH3', x: Math.random()*280, y: Math.random()*160, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2});
+            }
+        }
+
+        update(xEq, tempRatio, pressAtm) {
+            const targetNCount = Math.max(1, Math.round(this.maxN * (1 - xEq)));
+            const targetHCount = Math.max(3, Math.round(this.maxH * (1 - xEq)));
+            const targetMCount = Math.max(1, Math.round(this.maxM * xEq));
+
+            if(this.canvasR.width !== this.canvasR.clientWidth) {
+                this.canvasR.width = this.canvasR.clientWidth;
+                this.canvasR.height = this.canvasR.clientHeight;
+                this.canvasP.width = this.canvasP.clientWidth;
+                this.canvasP.height = this.canvasP.clientHeight;
+            }
+
+            const pressureFactor = Math.max(0.4, 1.2 - (pressAtm / 400));
+            const speed = tempRatio * pressureFactor;
+
+            // --- 反応系 (N2 + H2) ---
+            this.ctxR.clearRect(0, 0, this.canvasR.width, this.canvasR.height);
+            let n2Arr = this.particlesR.filter(p => p.type === 'N2');
+            let h2Arr = this.particlesR.filter(p => p.type === 'H2');
+            while(n2Arr.length < targetNCount) n2Arr.push({type: 'N2', x: Math.random()*280, y: Math.random()*160, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2});
+            while(n2Arr.length > targetNCount) n2Arr.pop();
+            while(h2Arr.length < targetHCount) h2Arr.push({type: 'H2', x: Math.random()*280, y: Math.random()*160, vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*3});
+            while(h2Arr.length > targetHCount) h2Arr.pop();
+            this.particlesR = [...n2Arr, ...h2Arr];
+
+            this.particlesR.forEach(p => {
+                p.x += p.vx * speed;
+                p.y += p.vy * speed;
+                if(p.x < 10 || p.x > this.canvasR.width-10) p.vx *= -1;
+                if(p.y < 10 || p.y > this.canvasR.height-10) p.vy *= -1;
+
+                this.ctxR.beginPath();
+                if(p.type === 'N2') {
+                    this.ctxR.arc(p.x, p.y, 7, 0, Math.PI*2);
+                    this.ctxR.fillStyle = '#2563eb';
+                    this.ctxR.fill();
+                    this.ctxR.beginPath();
+                    this.ctxR.arc(p.x+10, p.y, 7, 0, Math.PI*2);
+                    this.ctxR.fillStyle = '#2563eb';
+                    this.ctxR.fill();
+                } else {
+                    this.ctxR.arc(p.x, p.y, 4, 0, Math.PI*2);
+                    this.ctxR.fillStyle = '#38bdf8';
+                    this.ctxR.fill();
+                    this.ctxR.beginPath();
+                    this.ctxR.arc(p.x+7, p.y, 4, 0, Math.PI*2);
+                    this.ctxR.fillStyle = '#38bdf8';
+                    this.ctxR.fill();
+                }
+            });
+
+            // --- 生成系 (NH3) ---
+            this.ctxP.clearRect(0, 0, this.canvasP.width, this.canvasP.height);
+            let nh3Arr = this.particlesP.filter(p => p.type === 'NH3');
+            while(nh3Arr.length < targetMCount) nh3Arr.push({type: 'NH3', x: Math.random()*280, y: Math.random()*160, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2});
+            while(nh3Arr.length > targetMCount) nh3Arr.pop();
+            this.particlesP = nh3Arr;
+
+            this.particlesP.forEach(p => {
+                p.x += p.vx * speed;
+                p.y += p.vy * speed;
+                if(p.x < 10 || p.x > this.canvasP.width-10) p.vx *= -1;
+                if(p.y < 10 || p.y > this.canvasP.height-10) p.vy *= -1;
+
+                this.ctxP.beginPath();
+                this.ctxP.arc(p.x, p.y, 8, 0, Math.PI*2);
+                this.ctxP.fillStyle = '#eab308';
+                this.ctxP.fill();
+                [-8, 8].forEach(dx => {
+                    this.ctxP.beginPath();
+                    this.ctxP.arc(p.x + dx, p.y + 7, 4, 0, Math.PI*2);
+                    this.ctxP.fillStyle = '#38bdf8';
+                    this.ctxP.fill();
+                });
+            });
+        }
+    }
+
+    const sim = new ReactionSimulator();
+
+    function updateApp() {
+        const tempC = parseFloat(document.getElementById('tempSlider').value);
+        const pressAtm = parseFloat(document.getElementById('pressSlider').value);
+        const TK = tempC + 273.15;
+
+        document.getElementById('tempValue').innerText = tempC;
+        document.getElementById('tempKValue').innerText = Math.round(TK) + " K";
+        document.getElementById('pressValue').innerText = pressAtm;
+
+        const res = calculateSystem(TK, pressAtm);
+
+        document.getElementById('hReactants').innerText = res.H_reactants.toFixed(1) + " kJ/mol";
+        document.getElementById('sReactants').innerText = res.S_reactants.toFixed(1) + " J/(mol·K)";
+        document.getElementById('gReactants').innerText = res.G_reactants.toFixed(1) + " kJ/mol";
+
+        document.getElementById('hProducts').innerText = res.H_products.toFixed(1) + " kJ/mol";
+        document.getElementById('sProducts').innerText = res.S_products.toFixed(1) + " J/(mol·K)";
+        document.getElementById('gProducts').innerText = res.G_products.toFixed(1) + " kJ/mol";
+
+        const cardR = document.getElementById('cardReactants');
+        const cardP = document.getElementById('cardProducts');
+        const badgeR = document.getElementById('badgeReactants');
+        const badgeP = document.getElementById('badgeProducts');
+
+        if (res.G_products < res.G_reactants) {
+            cardP.classList.add('stable');
+            cardR.classList.remove('stable');
+            badgeP.innerText = `✨ 生成系が優勢 (平衡転化率 ${(res.xEq*100).toFixed(1)}%)`;
+            badgeP.classList.add('active');
+            badgeR.innerText = '未反応ガスが残存';
+            badgeR.classList.remove('active');
+        } else {
+            cardR.classList.add('stable');
+            cardP.classList.remove('stable');
+            badgeR.innerText = `✨ 反応系が優勢 (平衡転化率: ${(res.xEq*100).toFixed(1)}%)`;
+            badgeR.classList.add('active');
+            badgeP.innerText = `アンモニア生成わずか`;
+            badgeP.classList.remove('active');
+        }
+
+        const tempRatio = 0.5 + (TK / 300) * 0.8;
+        sim.update(res.xEq, tempRatio, pressAtm);
+    }
+
+    document.getElementById('tempSlider').addEventListener('input', updateApp);
+    document.getElementById('pressSlider').addEventListener('input', updateApp);
+
+    function loop() {
+        const tempC = parseFloat(document.getElementById('tempSlider').value);
+        const pressAtm = parseFloat(document.getElementById('pressSlider').value);
+        const TK = tempC + 273.15;
+        const res = calculateSystem(TK, pressAtm);
+        const tempRatio = 0.5 + (TK / 300) * 0.8;
+        
+        sim.update(res.xEq, tempRatio, pressAtm);
+        requestAnimationFrame(loop);
+    }
+
+    window.onload = function() {
+        updateApp();
+        loop();
+    };
+</script>
+
+</body>
+</html>
