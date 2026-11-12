@@ -198,8 +198,8 @@
         // 298.15K, 1bar での基準値
         const S_reactants_298 = 583.7; 
         const S_products_298  = 385.6; 
-        const H_reactants_298 = 0.0;   // kJ
-        const H_products_298  = -92.2; // kJ
+        const H_reactants_298 = 0.0;   // kJ/mol
+        const H_products_298  = -92.2; // kJ/mol
 
         // 温度依存するエンタルピー・エントロピー (標準状態)
         const H_reactants_std = H_reactants_298 + (Cp_reactants * dT) / 1000.0;
@@ -372,13 +372,13 @@
 
         const res = calculateSystem(TK, pressAtm);
 
-        document.getElementById('hReactants').innerText = res.H_reactants.toFixed(1) + " kJ";
+        document.getElementById('hReactants').innerText = res.H_reactants.toFixed(1) + " kJ/mol";
         document.getElementById('sReactants').innerText = res.S_reactants.toFixed(1) + " J/(mol·K)";
-        document.getElementById('gReactants').innerText = res.G_reactants.toFixed(1) + " kJ";
+        document.getElementById('gReactants').innerText = res.G_reactants.toFixed(1) + " kJ/mol";
 
-        document.getElementById('hProducts').innerText = res.H_products.toFixed(1) + " kJ";
+        document.getElementById('hProducts').innerText = res.H_products.toFixed(1) + " kJ/mol";
         document.getElementById('sProducts').innerText = res.S_products.toFixed(1) + " J/(mol·K)";
-        document.getElementById('gProducts').innerText = res.G_products.toFixed(1) + " kJ";
+        document.getElementById('gProducts').innerText = res.G_products.toFixed(1) + " kJ/mol";
 
         const cardR = document.getElementById('cardReactants');
         const cardP = document.getElementById('cardProducts');
