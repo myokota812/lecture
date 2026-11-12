@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>固気反応 (Ag(s) + ½Cl₂(g) ⇄ AgCl(s)) 低温・室温版シミュレーター</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fdf4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+        h1 {
+            color: #991b1b;
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .controls-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .control-label {
+            font-weight: bold;
+            color: #991b1b;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        input[type=range] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            outline: none;
+            accent-color: #ef4444;
+            cursor: pointer;
+        }
+        .cards-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .cards-wrapper { grid-template-columns: 1fr; }
+            .controls-card { grid-template-columns: 1fr; }
+        }
+        .state-card {
+            background: #fff;
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .state-card.stable {
+            border-color: #ef4444;
+            background-color: #fff5f5;
+        }
+        .state-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #991b1b;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+        .canvas-box {
+            width: 100%;
+            height: 180px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 6px 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        td:nth-child(2) {
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .badge {
+            margin-top: 12px;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #e2e8f0;
+            color: #64748b;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .badge.active {
+            background: #ef4444;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔥 固気反応 (Ag(s) + ½Cl₂(g) ⇄ AgCl(s)) 室温〜200℃版</h1>
+
+    <div class="controls-card">
+        <div class="control-group">
+            <div class="control-label">温度: <span id="tempValue">25</span> °C (<span id="tempKValue">298 K</span>)</div>
+            <input type="range" id="tempSlider" min="0" max="200" value="25" step="5">
+        </div>
+        <div class="control-group">
+            <div class="control-label">塩素圧力: <span id="pressValue">10</span> atm</div>
+            <input type="range" id="pressSlider" min="1" max="50" value="10" step="1">
+        </div>
+    </div>
+
+    <div class="cards-wrapper">
+        <div class="state-card" id="cardReactants">
+            <div class="state-title">反応物 (金属銀ブロック Ag & 塩素ガス Cl₂)</div>
+            <div class="canvas-box">
+                <canvas id="canvasReactants"></canvas>
+            </div>
+            <table>
+                <tr><th>熱力学量</th><th>値 (モル基準)</th></tr>
+                <tr><td>エンタルピー $H$</td><td id="hReactants">-</td></tr>
+                <tr><td>エントロピー $S$</td><td id="sReactants">-</td></tr>
+                <tr><td>ギブズエネルギー $G$</td><td id="gReactants">-</td></tr>
+            </table>
+            <div class="badge" id="badgeReactants">状態</div>
+        </div>
+
+        <div class="state-card" id="cardProducts">
+            <div class="state-title">生成物 (塩化銀ブロック AgCl)</div>
+            <div class="canvas-box">
+                <canvas id="canvasProducts"></canvas>
+            </div>
+            <table>
+                <tr><th>熱力学量</th><th>値 (モル基準)</th></tr>
+                <tr><td>エンタルピー $H$</td><td id="hProducts">-</td></tr>
+                <tr><td>エントロピー $S$</td><td id="sProducts">-</td></tr>
+                <tr><td>ギブズエネルギー $G$</td><td id="gProducts">-</td></tr>
+            </table>
+            <div class="badge" id="badgeProducts">状態</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const R_gas = 8.314;
+    const T_ref = 298.15;
+    
+    // 0〜200℃の範囲で平衡がちょうど逆転するように調整したパラメータ
+    const deltaH_ref = -32000.0; // J/mol
+    const deltaS_ref = -80.0;     // J/(mol K)
+    
+    const Cp_reactants = 50.0;
+
+    function getThermodynamicValues(TK, P_atm) {
+        const deltaH = deltaH_ref;
+        const deltaS = deltaS_ref;
+        
+        const H_reactants = Cp_reactants * (TK - T_ref) / 1000.0;
+        const S_reactants = 150.0 + Cp_reactants * Math.log(TK / T_ref);
+        
+        const H_products = H_reactants + (deltaH / 1000.0);
+        const S_products = S_reactants + deltaS;
+        
+        const G_press_effect = 0.5 * (R_gas * TK * Math.log(P_atm)) / 1000.0;
+
+        const G_reactants = H_reactants - (TK * S_reactants) / 1000.0 + G_press_effect;
+        const G_products = H_products - (TK * S_products) / 1000.0;
+
+        return {
+            deltaH: deltaH,
+            deltaS: deltaS,
+            H_reactants: H_reactants,
+            S_reactants: S_reactants / 1000.0,
+            G_reactants: G_reactants,
+            H_products: H_products,
+            S_products: S_products / 1000.0,
+            G_products: G_products
+        };
+    }
+
+    function calcConversion(TK, P_atm) {
+        const thermo = getThermodynamicValues(TK, P_atm);
+        const dG = thermo.G_products - thermo.G_reactants; // kJ/mol
+        const K = Math.exp(- (dG * 1000.0) / (R_gas * TK));
+        const conversion = K / (1 + K);
+        return Math.max(0, Math.min(1, conversion));
+    }
+
+    class SolidGasBlockSimulator {
+        constructor() {
+            this.canvasR = document.getElementById('canvasReactants');
+            this.ctxR = this.canvasR.getContext('2d');
+            this.canvasP = document.getElementById('canvasProducts');
+            this.ctxP = this.canvasP.getContext('2d');
+            
+            this.clParticles = [];
+            this.maxUnits = 20;
+            this.initParticles();
+        }
+
+        initParticles() {
+            for(let i=0; i<15; i++) {
+                this.clParticles.push({
+                    x: Math.random() * 280,
+                    y: Math.random() * 80,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3
+                });
+            }
+        }
+
+        update(conversion, tempRatio, pressAtm) {
+            if(this.canvasR.width !== this.canvasR.clientWidth) {
+                this.canvasR.width = this.canvasR.clientWidth;
+                this.canvasR.height = this.canvasR.clientHeight;
+                this.canvasP.width = this.canvasP.clientWidth;
+                this.canvasP.height = this.canvasP.clientHeight;
+            }
+
+            // 1. 反応物側（金属銀ブロックの増減）
+            this.ctxR.clearRect(0, 0, this.canvasR.width, this.canvasR.height);
+
+            let agBlockCount = Math.round(this.maxUnits * (1.0 - conversion));
+            
+            for(let i = 0; i < agBlockCount; i++) {
+                let col = i % 10;
+                let row = Math.floor(i / 10);
+                let bx = 25 + col * 24;
+                let by = 135 - row * 22;
+
+                this.ctxR.beginPath();
+                this.ctxR.rect(bx, by, 20, 18);
+                this.ctxR.fillStyle = '#94a3b8';
+                this.ctxR.fill();
+                this.ctxR.strokeStyle = '#475569';
+                this.ctxR.stroke();
+
+                this.ctxR.fillStyle = '#0f172a';
+                this.ctxR.font = '10px sans-serif';
+                this.ctxR.fillText('Ag', bx + 4, by + 13);
+            }
+
+            let targetClCount = Math.max(2, Math.round(15 * (1.0 - conversion) * (pressAtm / 20)));
+            while(this.clParticles.length < targetClCount) {
+                this.clParticles.push({
+                    x: Math.random() * this.canvasR.width,
+                    y: Math.random() * 80,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3
+                });
+            }
+            while(this.clParticles.length > targetClCount) {
+                this.clParticles.pop();
+            }
+
+            this.clParticles.forEach(p => {
+                p.x += p.vx * tempRatio;
+                p.y += p.vy * tempRatio;
+                if(p.x < 10 || p.x > this.canvasR.width-10) p.vx *= -1;
+                if(p.y < 10 || p.y > 90) p.vy *= -1;
+
+                this.ctxR.beginPath();
+                this.ctxR.arc(p.x, p.y, 4, 0, Math.PI*2);
+                this.ctxR.fillStyle = '#22c55e';
+                this.ctxR.fill();
+                this.ctxR.beginPath();
+                this.ctxR.arc(p.x + 6, p.y, 4, 0, Math.PI*2);
+                this.ctxR.fillStyle = '#22c55e';
+                this.ctxR.fill();
+            });
+
+            // 2. 生成物側（塩化銀ブロックの増減）
+            this.ctxP.clearRect(0, 0, this.canvasP.width, this.canvasP.height);
+
+            let agClBlockCount = Math.round(this.maxUnits * conversion);
+
+            for(let i = 0; i < agClBlockCount; i++) {
+                let col = i % 10;
+                let row = Math.floor(i / 10);
+                let bx = 25 + col * 24;
+                let by = 135 - row * 22;
+
+                this.ctxP.beginPath();
+                this.ctxP.rect(bx, by, 20, 18);
+                this.ctxP.fillStyle = '#f8fafc';
+                this.ctxP.fill();
+                this.ctxP.strokeStyle = '#cbd5e1';
+                this.ctxP.stroke();
+
+                this.ctxP.fillStyle = '#334155';
+                this.ctxP.font = '9px sans-serif';
+                this.ctxP.fillText('AgCl', bx + 1, by + 13);
+            }
+        }
+    }
+
+    const sim = new SolidGasBlockSimulator();
+
+    function updateApp() {
+        const tempC = parseFloat(document.getElementById('tempSlider').value);
+        const pressAtm = parseFloat(document.getElementById('pressSlider').value);
+        const TK = tempC + 273.15;
+
+        document.getElementById('tempValue').innerText = tempC;
+        document.getElementById('tempKValue').innerText = TK + " K";
+        document.getElementById('pressValue').innerText = pressAtm;
+
+        const thermo = getThermodynamicValues(TK, pressAtm);
+        const conversion = calcConversion(TK, pressAtm);
+
+        document.getElementById('hReactants').innerText = thermo.H_reactants.toFixed(1) + " kJ";
+        document.getElementById('sReactants').innerText = (thermo.S_reactants * 1000).toFixed(1) + " J/K";
+        document.getElementById('gReactants').innerText = thermo.G_reactants.toFixed(1) + " kJ";
+
+        document.getElementById('hProducts').innerText = thermo.H_products.toFixed(1) + " kJ";
+        document.getElementById('sProducts').innerText = (thermo.S_products * 1000).toFixed(1) + " J/K";
+        document.getElementById('gProducts').innerText = thermo.G_products.toFixed(1) + " kJ";
+
+        const cardR = document.getElementById('cardReactants');
+        const cardP = document.getElementById('cardProducts');
+        const badgeR = document.getElementById('badgeReactants');
+        const badgeP = document.getElementById('badgeProducts');
+
+        if (thermo.G_products < thermo.G_reactants) {
+            cardP.classList.add('stable');
+            cardR.classList.remove('stable');
+            badgeP.innerText = `✨ 生成系有利 (転化率 ${(conversion*100).toFixed(1)}%)`;
+            badgeP.classList.add('active');
+            badgeR.innerText = '金属銀が消費されています';
+            badgeR.classList.remove('active');
+        } else {
+            cardR.classList.add('stable');
+            cardP.classList.remove('stable');
+            badgeR.innerText = '✨ 金属銀・分解系有利';
+            badgeR.classList.add('active');
+            badgeP.innerText = `生成ブロックなし (${(conversion*100).toFixed(1)}%)`;
+            badgeP.classList.remove('active');
+        }
+
+        const tempRatio = 0.5 + (TK / 400) * 0.5;
+        sim.update(conversion, tempRatio, pressAtm);
+    }
+
+    document.getElementById('tempSlider').addEventListener('input', updateApp);
+    document.getElementById('pressSlider').addEventListener('input', updateApp);
+
+    function loop() {
+        const tempC = parseFloat(document.getElementById('tempSlider').value);
+        const pressAtm = parseFloat(document.getElementById('pressSlider').value);
+        const TK = tempC + 273.15;
+        const conversion = calcConversion(TK, pressAtm);
+        const tempRatio = 0.5 + (TK / 400) * 0.5;
+        
+        sim.update(conversion, tempRatio, pressAtm);
+        requestAnimationFrame(loop);
+    }
+
+    window.onload = function() {
+        updateApp();
+        loop();
+    };
+</script>
+
+</body>
+</html>
