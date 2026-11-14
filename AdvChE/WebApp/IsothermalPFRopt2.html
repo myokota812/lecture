@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script id="lumi-canvas-guard">
+(function() {
+  if (window.__lumiCanvasGuard) return;
+  window.__lumiCanvasGuard = true;
+  var MAX_PX = 4096, MIN_FONT_PX = 12;
+  try {
+    var CP = HTMLCanvasElement.prototype;
+    var BOX = {width: 'clientWidth', height: 'clientHeight'}, D = {};
+    Object.keys(BOX).forEach(function(p) {
+      D[p] = Object.getOwnPropertyDescriptor(CP, p);
+    });
+    var tracking = function(el, p) {
+      var box = el[BOX[p]];
+      return !el.style[p] && box > 0 && box === D[p].get.call(el) &&
+          box === el['__lumiLast' + p];
+    };
+    var MAX = {width: 'maxWidth', height: 'maxHeight'};
+    var PAD = {width: ['paddingLeft', 'paddingRight'],
+               height: ['paddingTop', 'paddingBottom']};
+    var avail = function(el, p) {
+      var pe = el.parentElement;
+      if (!pe) return 0;
+      var cs = getComputedStyle(pe);
+      return pe[BOX[p]] - parseFloat(cs[PAD[p][0]]) -
+          parseFloat(cs[PAD[p][1]]);
+    };
+    Object.keys(BOX).forEach(function(p) {
+      var d = D[p];
+      if (!d || !d.set || !d.get) return;
+      Object.defineProperty(CP, p, {
+        configurable: true, enumerable: d.enumerable, get: d.get,
+        set: function(v) {
+          var n = +v, box = this[BOX[p]];
+          if (n > MAX_PX) n = MAX_PX;
+          if (n > box && tracking(this, p)) {
+            var el = this, pins = {};
+            Object.keys(BOX).forEach(function(q) {
+              if (tracking(el, q)) pins[q] = avail(el, q) ||
+                  el['__lumiBox' + q];
+            });
+            Object.keys(pins).forEach(function(q) {
+              el.style[q] = '100%';
+              el.style[MAX[q]] = pins[q] + 'px';
+            });
+            n = box;
+          }
+          this['__lumiBox' + p] = box;
+          this['__lumiLast' + p] = n;
+          d.set.call(this, isNaN(n) ? v : n);
+        }
+      });
+    });
+  } catch (e) {}
+  try {
+    var XP = CanvasRenderingContext2D.prototype;
+    var px = /(\d*\.?\d+)px/;
+    var floorFont = function(ctx) {
+      var f = ctx.font, m = px.exec(f);
+      if (m && +m[1] >= 4 && +m[1] < MIN_FONT_PX) ctx.font = f.replace(px, MIN_FONT_PX + 'px');
+    };
+    ['fillText', 'strokeText', 'measureText'].forEach(function(k) {
+      var o = XP[k];
+      if (typeof o !== 'function') return;
+      XP[k] = function() { floorFont(this); return o.apply(this, arguments); };
+    });
+  } catch (e) {}
+})();
+</script>
+
+<style id="lumi-runtime">
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:ital,wght@0,300..700;1,300..700&family=Google+Sans+Code:ital,wght,MONO@0,300..700,0..1;1,300..700,0..1&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+.lumi-icon, .material-icon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+:root {
+  --body-bg: transparent;
+  --ff-sans: 'Google Sans Flex', sans-serif;
+  --ff-mono: 'Google Sans Code', monospace;
+  --surface: #fdfcfc;
+  --surface-dim: #f2f0f0;
+  --surface-bright: #ffffff;
+  --on-surface: #000000;
+  --on-surface-variant: rgba(0, 0, 0, 0.62);
+  --on-surface-low: rgba(0, 0, 0, 0.08);
+  --primary: #3186ff;
+  --accent: #9dd2ff;
+  --accent-container: #dcf1ff;
+  --stroke-default: #e3e3e3;
+  --chart-1: #2575fc;
+  --chart-3: #228a49;
+  --chart-8: #997112;
+  --r-container: 40px;
+  --r-xl: 28px;
+  --r-l: 24px;
+  --r-m: 16px;
+  --r-full: 999px;
+  --spacing-xs: 4px;
+  --spacing-s: 8px;
+  --spacing-m: 12px;
+  --spacing-l: 16px;
+  --spacing-xl: 20px;
+}
+
+:root[data-theme="dark"], body.dark-mode {
+  --body-bg: #0f0f0f;
+  --surface: #0f0f0f;
+  --surface-dim: #141414;
+  --surface-bright: #1c1c1c;
+  --on-surface: #e0e0e0;
+  --on-surface-variant: rgba(255, 255, 255, 0.55);
+  --on-surface-low: rgba(255, 255, 255, 0.12);
+  --primary: #9dd2ff;
+  --accent: #1f3b9b;
+  --accent-container: #192967;
+  --stroke-default: #2d2f38;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  background: var(--body-bg, transparent) !important;
+  color: var(--on-surface) !important;
+  overflow-y: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+.widget-container {
+  width: 100% !important;
+  max-width: 708px;
+  margin-inline: auto;
+  min-height: 280px;
+  padding-inline: 0;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l, 16px);
+  box-sizing: border-box;
+}
+
+.pfr-card {
+  background-color: var(--surface-bright);
+  border-radius: var(--r-container, 40px);
+  padding: var(--spacing-xl, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l, 16px);
+}
+
+.pfr-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-m, 12px);
+}
+
+.pfr-title-group h2 { margin: 0; }
+.pfr-subtitle { margin: 0; color: var(--on-surface-variant); }
+
+.pfr-hero-deck {
+  background-color: var(--surface-dim);
+  border-radius: var(--r-l, 24px);
+  padding: var(--spacing-m, 12px) var(--spacing-l, 16px);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-l, 16px);
+}
+
+.pfr-metric-item { display: flex; flex-direction: column; gap: 2px; }
+.pfr-metric-label { color: var(--on-surface-variant); }
+.pfr-metric-value { color: var(--on-surface); font-variant-numeric: tabular-nums; margin: 0; }
+.pfr-metric-divider { width: 1px; height: 32px; background-color: var(--on-surface-low); }
+
+.widget-viewport {
+  position: relative;
+  width: 100%;
+  height: 310px;
+}
+
+.widget-viewport-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pfr-legend-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--spacing-xs, 4px);
+}
+
+.lumi-chart-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.lumi-legend-item { display: inline-flex; align-items: center; gap: 8px; }
+.lumi-legend-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-block; }
+.lumi-legend-label { font-family: var(--ff-mono); font-style: italic; font-size: 13px; color: var(--on-surface); }
+
+.control-deck {
+  background-color: var(--surface-bright);
+  border-radius: var(--r-container, 40px);
+  padding: var(--spacing-xl, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l, 16px);
+}
+
+.control-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s, 8px);
+}
+
+.control-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.control-label { color: var(--on-surface); }
+.control-meta { color: var(--on-surface-variant); }
+
+.lumi-slider {
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--stroke-default);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+
+.lumi-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  cursor: pointer;
+}
+
+.lumi-slider-value {
+  min-width: 74px;
+  padding: 4px 10px;
+  background-color: var(--surface-dim);
+  border-radius: var(--r-m, 12px);
+  font-family: var(--ff-mono);
+  font-size: 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-surface);
+}
+</style>
+</head>
+<body>
+  <div class="widget-container">
+    <section class="pfr-card">
+      <div class="pfr-header">
+        <div class="pfr-title-group">
+          <h2>Isothermal PFR Series Reaction</h2>
+          <p class="pfr-subtitle"><i>A</i> &rarr; <i>B</i> &rarr; <i>C</i> &middot; Space-time profile at fixed temperature</p>
+        </div>
+        <div class="pfr-hero-deck">
+          <div class="pfr-metric-item">
+            <span class="pfr-metric-label">Max Yield <i>Y</i><sub><i>B</i>,max</sub></span>
+            <span id="max-yield-val" class="pfr-metric-value">0.000</span>
+          </div>
+          <div class="pfr-metric-divider"></div>
+          <div class="pfr-metric-item">
+            <span class="pfr-metric-label">Optimal &tau;<sub>opt</sub></span>
+            <span id="opt-tau-val" class="pfr-metric-value">0 s</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="chart-zone">
+        <div class="widget-viewport">
+          <div class="widget-viewport-inner">
+            <canvas id="pfrCanvas"></canvas>
+          </div>
+        </div>
+        <div class="pfr-legend-wrap">
+          <div class="lumi-chart-legend">
+            <div class="lumi-legend-item">
+              <span class="lumi-legend-dot" style="background-color: var(--chart-1);"></span>
+              <span class="lumi-legend-label">Conversion (<i>X</i><sub><i>A</i></sub>)</span>
+            </div>
+            <div class="lumi-legend-item">
+              <span class="lumi-legend-dot" style="background-color: var(--chart-3);"></span>
+              <span class="lumi-legend-label">Yield (<i>Y</i><sub><i>B</i></sub>)</span>
+            </div>
+            <div class="lumi-legend-item">
+              <span class="lumi-legend-dot" style="background-color: var(--chart-8);"></span>
+              <span class="lumi-legend-label">Selectivity (<i>S</i><sub><i>B</i></sub>)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="control-deck">
+      <div class="control-row">
+        <div class="control-row-header">
+          <label class="control-label" for="slider-temp">Reaction Temperature <i>T</i></label>
+          <div id="slider-temp-val" class="lumi-slider-value">400 K</div>
+        </div>
+        <input type="range" id="slider-temp" class="lumi-slider" min="300" max="600" step="1" value="400">
+      </div>
+
+      <div class="control-row">
+        <div class="control-row-header">
+          <label class="control-label" for="slider-e1">Activation Energy <i>E</i><sub>1</sub> <span class="control-meta">(<i>A</i> &rarr; <i>B</i>)</span></label>
+          <div id="slider-e1-val" class="lumi-slider-value">50 kJ/mol</div>
+        </div>
+        <input type="range" id="slider-e1" class="lumi-slider" min="30" max="90" step="1" value="50">
+      </div>
+
+      <div class="control-row">
+        <div class="control-row-header">
+          <label class="control-label" for="slider-e2">Activation Energy <i>E</i><sub>2</sub> <span class="control-meta">(<i>B</i> &rarr; <i>C</i>)</span></label>
+          <div id="slider-e2-val" class="lumi-slider-value">70 kJ/mol</div>
+        </div>
+        <input type="range" id="slider-e2" class="lumi-slider" min="30" max="90" step="1" value="70">
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const A1 = 1.0e6;
+    const A2 = 1.0e8;
+    const R_GAS = 8.314;
+    
+    const TAUS = [];
+    for (let t = 0; t <= 60; t += 0.5) {
+      TAUS.push(t);
+    }
+
+    const state = {
+      T: 400,
+      E1: 50,
+      E2: 70
+    };
+
+    let pfrChart = null;
+    let latestMetrics = [];
+
+    function formatRateConstant(k) {
+      if (k === 0) return '0.00 s⁻¹';
+      if (k >= 0.01 && k < 1000) return k.toFixed(3) + ' s⁻¹';
+      return k.toExponential(2) + ' s⁻¹';
+    }
+
+    function computeKinetics(T_K, E1_kJ, E2_kJ) {
+      const E1 = E1_kJ * 1000;
+      const E2 = E2_kJ * 1000;
+      
+      const k1 = A1 * Math.exp(-E1 / (R_GAS * T_K));
+      const k2 = A2 * Math.exp(-E2 / (R_GAS * T_K));
+
+      const xaArr = [];
+      const ybArr = [];
+      const sbArr = [];
+      const metrics = [];
+      
+      let maxYB = -1;
+      let optTau = 0;
+
+      for (let i = 0; i < TAUS.length; i++) {
+        const tau = TAUS[i];
+        const k1Tau = k1 * tau;
+        const k2Tau = k2 * tau;
+
+        const exp1 = Math.exp(-k1Tau);
+        const exp2 = Math.exp(-k2Tau);
+        const xa = 1 - exp1;
+
+        let yb;
+        const relDiff = Math.abs(k2 - k1) / Math.max(k1, k2, 1e-30);
+        if (relDiff < 1e-6) {
+          yb = k1Tau * exp1;
+        } else {
+          yb = (k1 / (k2 - k1)) * (exp1 - exp2);
+        }
+        yb = Math.max(0, Math.min(1, yb));
+
+        let sb = xa < 1e-8 ? 1.0 : Math.max(0, Math.min(1, yb / xa));
+
+        xaArr.push(xa);
+        ybArr.push(yb);
+        sbArr.push(sb);
+        metrics.push({ tau, xa, yb, sb, k1, k2 });
+
+        if (yb > maxYB) {
+          maxYB = yb;
+          optTau = tau;
+        }
+      }
+
+      return { xaArr, ybArr, sbArr, metrics, maxYB, optTau };
+    }
+
+    function updateReadouts(maxYB, optTau) {
+      document.getElementById('max-yield-val').textContent = maxYB.toFixed(3);
+      document.getElementById('opt-tau-val').textContent = optTau.toFixed(1) + ' s';
+    }
+
+    function initCharts() {
+      const canvas = document.getElementById('pfrCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const initial = computeKinetics(state.T, state.E1, state.E2);
+      latestMetrics = initial.metrics;
+      updateReadouts(initial.maxYB, initial.optTau);
+
+      pfrChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: TAUS,
+          datasets: [
+            {
+              label: 'Conversion (XA)',
+              data: initial.xaArr,
+              borderColor: '#2575fc',
+              backgroundColor: '#2575fc',
+              borderWidth: 2.5,
+              tension: 0.25,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              pointHoverBorderWidth: 2.5,
+              pointHoverBorderColor: '#2575fc',
+              pointHoverBackgroundColor: '#ffffff',
+              clip: false
+            },
+            {
+              label: 'Yield (YB)',
+              data: initial.ybArr,
+              borderColor: '#228a49',
+              backgroundColor: '#228a49',
+              borderWidth: 2.5,
+              tension: 0.25,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              pointHoverBorderWidth: 2.5,
+              pointHoverBorderColor: '#228a49',
+              pointHoverBackgroundColor: '#ffffff',
+              clip: false
+            },
+            {
+              label: 'Selectivity (SB)',
+              data: initial.sbArr,
+              borderColor: '#997112',
+              backgroundColor: '#997112',
+              borderWidth: 2.5,
+              tension: 0.25,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              pointHoverBorderWidth: 2.5,
+              pointHoverBorderColor: '#997112',
+              pointHoverBackgroundColor: '#ffffff',
+              clip: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#ffffff',
+              titleColor: '#000000',
+              bodyColor: 'rgba(0,0,0,0.62)',
+              footerColor: 'rgba(0,0,0,0.62)',
+              borderColor: '#e3e3e3',
+              borderWidth: 1,
+              cornerRadius: 12,
+              padding: 12,
+              titleFont: { family: "'Google Sans Code', monospace", size: 13, weight: '500' },
+              bodyFont: { family: "'Google Sans Code', monospace", size: 12, weight: '400' },
+              footerFont: { family: "'Google Sans Code', monospace", size: 12, weight: '400', style: 'italic' },
+              callbacks: {
+                title: function(items) {
+                  if (!items || !items.length) return '';
+                  const idx = items[0].dataIndex;
+                  return `Space Time \u03c4 = ${TAUS[idx]} s`;
+                },
+                label: function(ctx) {
+                  const val = ctx.parsed.y;
+                  return ` ${ctx.dataset.label}: ${val.toFixed(4)}`;
+                },
+                footer: function(items) {
+                  if (!items || !items.length) return '';
+                  const m = latestMetrics[items[0].dataIndex];
+                  if (!m) return '';
+                  return `k₁ = ${formatRateConstant(m.k1)}   k₂ = ${formatRateConstant(m.k2)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              title: {
+                display: true,
+                text: 'Space Time \u03c4 [s]'
+              }
+            },
+            y: {
+              min: 0,
+              max: 1.0,
+              grid: {
+                color: 'rgba(0,0,0,0.08)',
+                drawBorder: false
+              },
+              title: {
+                display: true,
+                text: 'Dimensionless Fraction'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateViz() {
+      const res = computeKinetics(state.T, state.E1, state.E2);
+      latestMetrics = res.metrics;
+      updateReadouts(res.maxYB, res.optTau);
+
+      if (!pfrChart) return;
+      pfrChart.data.datasets[0].data = res.xaArr;
+      pfrChart.data.datasets[1].data = res.ybArr;
+      pfrChart.data.datasets[2].data = res.sbArr;
+      pfrChart.update('none');
+    }
+
+    function bindSlider(sliderId, stateKey, unit) {
+      const slider = document.getElementById(sliderId);
+      const valEl = document.getElementById(`${sliderId}-val`);
+      if (!slider) return;
+      slider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        state[stateKey] = val;
+        if (valEl) valEl.textContent = `${val} ${unit}`;
+        updateViz();
+      });
+    }
+
+    bindSlider('slider-temp', 'T', 'K');
+    bindSlider('slider-e1', 'E1', 'kJ/mol');
+    bindSlider('slider-e2', 'E2', 'kJ/mol');
+
+    window.addEventListener('load', () => {
+      setTimeout(initCharts, 100);
+    });
+  </script>
+</body>
+</html>
