@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maximum Yield Y_B,max vs Temperature T</title>
+<style>
+  :root {
+    --bg-color: #f8f9fa;
+    --surface: #ffffff;
+    --on-surface: #1f1f1f;
+    --on-surface-variant: #5f6368;
+    --primary: #2575fc;
+    --border-color: #e3e3e3;
+    --radius: 20px;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--on-surface);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 720px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header h1 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    color: var(--on-surface);
+  }
+  .header p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--on-surface-variant);
+  }
+
+  .chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 380px;
+  }
+
+  .control-panel {
+    background: #f1f3f4;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .control-label {
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .value-badge {
+    background: var(--surface);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="header">
+      <h1>連続反応における最大収率 $Y_{B,\text{max}}$ シミュレータ</h1>
+      <p>温度 $T$ と活性化エネルギーの差 $\Delta E = E_1 - E_2$ ($A_1 = A_2$) の関係</p>
+    </div>
+
+    <div class="chart-wrapper">
+      <canvas id="ybChart"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div class="control-row">
+        <span class="control-label">活性化エネルギーの差 $\Delta E = E_1 - E_2$</span>
+        <span id="delta-val" class="value-badge">10.0 kJ/mol</span>
+      </div>
+      <input type="range" id="delta-slider" min="-30" max="30" step="0.5" value="10">
+    </div>
+  </div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const R = 8.314; // 気体定数
+    const T_min = 300;
+    const T_max = 800;
+    const steps = 100;
+    
+    // 温度配列の生成
+    const temperatures = [];
+    for (let i = 0; i <= steps; i++) {
+      temperatures.push(T_min + (T_max - T_min) * (i / steps));
+    }
+
+    // 最大収率を計算する関数
+    function computeYbMax(T_arr, deltaE_kJ) {
+      const deltaE = deltaE_kJ * 1000.0; // J/mol
+      return T_arr.map(T => {
+        if (Math.abs(deltaE) < 1e-3) {
+          return 1.0 / Math.E;
+        }
+        const arg = -deltaE / (R * T);
+        if (arg > 80 || arg < -80) return 0.0;
+        
+        const ratio = Math.exp(arg);
+        if (Math.abs(ratio - 1.0) < 1e-6) {
+          return 1.0 / Math.E;
+        }
+        try {
+          const val = Math.pow(ratio, 1.0 / (1.0 - ratio));
+          return isNaN(val) ? 0.0 : Math.max(0, Math.min(1, val));
+        } catch {
+          return 0.0;
+        }
+      });
+    }
+
+    // 初期データ作成
+    let currentDeltaE = 10.0;
+    let ybData = computeYbMax(temperatures, currentDeltaE);
+
+    // Chart.js 初期化
+    const ctx = document.getElementById('ybChart').getContext('2d');
+    const ybChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: temperatures,
+        datasets: [{
+          label: 'Maximum Yield (YB,max)',
+          data: ybData,
+          borderColor: '#2575fc',
+          backgroundColor: 'rgba(37, 117, 252, 0.1)',
+          borderWidth: 2.5,
+          tension: 0.2,
+          fill: true,
+          pointRadius: 0,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (items) => `Temperature T = ${Number(items[0].label).toFixed(1)} K`,
+              label: (ctx) => ` Y_B,max = ${ctx.parsed.y.toFixed(4)}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Temperature T [K]' },
+            grid: { display: false }
+          },
+          y: {
+            min: 0,
+            max: 1.05,
+            title: { display: true, text: 'Maximum Yield Y_B,max' },
+            grid: { color: 'rgba(0,0,0,0.06)' }
+          }
+        }
+      }
+    });
+
+    // スライダー操作時のイベント処理
+    const slider = document.getElementById('delta-slider');
+    const valBadge = document.getElementById('delta-val');
+
+    slider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      currentDeltaE = val;
+      valBadge.textContent = `${val >= 0 ? '+' : ''}${val.toFixed(1)} kJ/mol`;
+      
+      // グラフのデータを更新
+      ybChart.data.datasets[0].data = computeYbMax(temperatures, currentDeltaE);
+      ybChart.update('none'); // 高速更新
+    });
+  </script>
+</body>
+</html>
