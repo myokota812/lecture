@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>非等温PFR 連立微分方程式シミュレーター</title>
+    <!-- Chart.js と グラフ描画プラグインのCDN読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .charts {
+            flex: 2;
+            min-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .chart-box {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .slider-group {
+            margin-bottom: 15px;
+        }
+        .slider-group label {
+            display: block;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .slider-group input[type="range"] {
+            width: 100%;
+        }
+        .slider-group span {
+            float: right;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .status-box {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .safe { background-color: #d4edda; color: #155724; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .danger { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+    <h1>🧪 非等温PFR（管型反応器）熱暴走シミュレーター ($A \to B \to C$)</h1>
+
+    <div class="container">
+        <!-- 操作パネル（スライダー） -->
+        <div class="controls">
+            <h3>🎛️ パラメータ調整</h3>
+            
+            <div class="slider-group">
+                <label>活性化エネルギー $E_1$ [J/mol]: <span id="val_E1">45000</span></label>
+                <input type="range" id="E1" min="30000" max="70000" step="500" value="45000">
+            </div>
+
+            <div class="slider-group">
+                <label>活性化エネルギー $E_2$ [J/mol]: <span id="val_E2">55000</span></label>
+                <input type="range" id="E2" min="30000" max="70000" step="500" value="55000">
+            </div>
+
+            <div class="slider-group">
+                <label>冷却・熱交換 $Ua$ [W/(m³K)]: <span id="val_Ua">200</span></label>
+                <input type="range" id="Ua" min="0" max="500" step="10" value="200">
+            </div>
+
+            <div class="slider-group">
+                <label>ジャケット温度 $T_a$ [K]: <span id="val_Ta">400</span></label>
+                <input type="range" id="Ta" min="300" max="500" step="5" value="400">
+            </div>
+
+            <div class="slider-group">
+                <label>入口温度 $T_0$ [K]: <span id="val_T0">400</span></label>
+                <input type="range" id="T0" min="300" max="500" step="5" value="400">
+            </div>
+
+            <div class="slider-group">
+                <label>初期濃度 $C_{A0}$ [mol/m³]: <span id="val_CA0">10</span></label>
+                <input type="range" id="CA0" min="1" max="20" step="1" value="10">
+            </div>
+
+            <div id="statusBox" class="status-box safe">状態: 計算中...</div>
+        </div>
+
+        <!-- グラフ描画エリア -->
+        <div class="charts">
+            <div class="chart-box">
+                <canvas id="concentrationChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 4次ルンゲ・クッタ法（RK4）による常微分方程式ソルバー ---
+        function rungeKutta4(params, tauMax, steps) {
+            let dt = tauMax / steps;
+            let tauArr = [];
+            let caArr = [], cbArr = [], ccArr = [], tArr = [];
+
+            let CA = params.C_A0;
+            let CB = 0.0;
+            let CC = 0.0;
+            let T = params.T0;
+
+            function derivatives(ca, cb, cc, t) {
+                // 安全装置：濃度がマイナスにならないようにガード
+                ca = Math.max(0, ca);
+                cb = Math.max(0, cb);
+                cc = Math.max(0, cc);
+
+                let k1 = params.A1 * Math.exp(-params.E1 / (params.R * t));
+                let k2 = params.A2 * Math.exp(-params.E2 / (params.R * t));
+
+                let dCA = -k1 * ca;
+                let dCB = k1 * ca - k2 * cb;
+                let dCC = k2 * cb;
+
+                let sumCp = Math.max(ca * params.Cp_A + cb * params.Cp_B + cc * params.Cp_C, 1.0);
+                let heatReac1 = (-params.H1) * k1 * ca;
+                let heatReac2 = (-params.H2) * k2 * cb;
+                let heatEx = -params.Ua * (t - params.Ta);
+
+                let dT = (heatReac1 + heatReac2 + heatEx) / sumCp;
+
+                return [dCA, dCB, dCC, dT];
+            }
+
+            for (let i = 0; i <= steps; i++) {
+                let tau = i * dt;
+                tauArr.push(tau.toFixed(2));
+                caArr.push(Math.max(0, CA));
+                cbArr.push(Math.max(0, CB));
+                ccArr.push(Math.max(0, CC));
+                tArr.push(T);
+
+                if (i === steps) break;
+
+                // RK4 の計算ステップ
+                let [k1_CA, k1_CB, k1_CC, k1_T] = derivatives(CA, CB, CC, T);
+
+                let [k2_CA, k2_CB, k2_CC, k2_T] = derivatives(
+                    CA + 0.5 * dt * k1_CA, 
+                    CB + 0.5 * dt * k1_CB, 
+                    CC + 0.5 * dt * k1_CC, 
+                    T + 0.5 * dt * k1_T
+                );
+
+                let [k3_CA, k3_CB, k3_CC, k3_T] = derivatives(
+                    CA + 0.5 * dt * k2_CA, 
+                    CB + 0.5 * dt * k2_CB, 
+                    CC + 0.5 * dt * k2_CC, 
+                    T + 0.5 * dt * k2_T
+                );
+
+                let [k4_CA, k4_CB, k4_CC, k4_T] = derivatives(
+                    CA + dt * k3_CA, 
+                    CB + dt * k3_CB, 
+                    CC + dt * k3_CC, 
+                    T + dt * k3_T
+                );
+
+                CA += (dt / 6) * (k1_CA + 2 * k2_CA + 2 * k3_CA + k4_CA);
+                CB += (dt / 6) * (k1_CB + 2 * k2_CB + 2 * k3_CB + k4_CB);
+                CC += (dt / 6) * (k1_CC + 2 * k2_CC + 2 * k3_CC + k4_CC);
+                T  += (dt / 6) * (k1_T  + 2 * k2_T  + 2 * k3_T  + k4_T);
+            }
+
+            return { tau: tauArr, CA: caArr, CB: cbArr, CC: ccArr, T: tArr };
+        }
+
+        // --- 2. Chart.js の初期化 ---
+        const ctxCA = document.getElementById('concentrationChart').getContext('2d');
+        const concentrationChart = new Chart(ctxCA, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'C_A (Reactant)', borderColor: 'blue', data: [], borderWidth: 2, pointRadius: 0 },
+                    { label: 'C_B (Intermediate)', borderColor: 'green', data: [], borderWidth: 2, pointRadius: 0 },
+                    { label: 'C_C (Product)', borderColor: 'red', data: [], borderWidth: 2, pointRadius: 0 }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Residence Time τ' } },
+                    y: { title: { display: true, text: 'Concentration [mol/m³]' }, min: 0 }
+                }
+            }
+        });
+
+        const ctxT = document.getElementById('temperatureChart').getContext('2d');
+        const temperatureChart = new Chart(ctxT, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'Reactor Temp T [K]', borderColor: 'purple', data: [], borderWidth: 2, pointRadius: 0 },
+                    { label: 'Jacket Temp Ta [K]', borderColor: 'gray', borderDash: [5, 5], data: [], borderWidth: 1.5, pointRadius: 0 }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Residence Time τ' } },
+                    y: { title: { display: true, text: 'Temperature [K]' } }
+                }
+            }
+        });
+
+        // --- 3. シミュレーション更新関数 ---
+        function updateSimulation() {
+            // スライダーの値を取得
+            let params = {
+                E1: parseFloat(document.getElementById('E1').value),
+                E2: parseFloat(document.getElementById('E2').value),
+                Ua: parseFloat(document.getElementById('Ua').value),
+                Ta: parseFloat(document.getElementById('Ta').value),
+                T0: parseFloat(document.getElementById('T0').value),
+                C_A0: parseFloat(document.getElementById('CA0').value),
+                // 固定パラメータ
+                A1: 1.0e4, A2: 2.0e4,
+                R: 8.314,
+                Cp_A: 150.0, Cp_B: 150.0, Cp_C: 150.0,
+                H1: -80000.0, H2: -50000.0
+            };
+
+            // HTML側の数値表示を更新
+            document.getElementById('val_E1').innerText = params.E1;
+            document.getElementById('val_E2').innerText = params.E2;
+            document.getElementById('val_Ua').innerText = params.Ua;
+            document.getElementById('val_Ta').innerText = params.Ta;
+            document.getElementById('val_T0').innerText = params.T0;
+            document.getElementById('val_CA0').innerText = params.C_A0;
+
+            // シミュレーション実行（滞留時間 0 〜 10、分割数 300）
+            let result = rungeKutta4(params, 10.0, 300);
+
+            // グラフデータの更新
+            concentrationChart.data.labels = result.tau;
+            concentrationChart.data.datasets[0].data = result.CA;
+            concentrationChart.data.datasets[1].data = result.CB;
+            concentrationChart.data.datasets[2].data = result.CC;
+            concentrationChart.update('none'); // アニメーションなしで即時更新
+
+            temperatureChart.data.labels = result.tau;
+            temperatureChart.data.datasets[0].data = result.T;
+            temperatureChart.data.datasets[1].data = new Array(result.tau.length).fill(params.Ta);
+            temperatureChart.update('none');
+
+            // 安全・危険ステータスの判定
+            let maxTemp = Math.max(...result.T);
+            let statusBox = document.getElementById('statusBox');
+            if (maxTemp > 900) {
+                statusBox.className = "status-box danger";
+                statusBox.innerText = `⚠️ 【危険】熱暴走が発生しています！ (最高温度: ${maxTemp.toFixed(1)} K)`;
+            } else if (maxTemp > 500) {
+                statusBox.className = "status-box warning";
+                statusBox.innerText = `⚡ 【注意】温度が大きく上昇しています (最高温度: ${maxTemp.toFixed(1)} K)`;
+            } else {
+                statusBox.className = "status-box safe";
+                statusBox.innerText = `✅ 【安全運転】安定した温度制御中 (最高温度: ${maxTemp.toFixed(1)} K)`;
+            }
+        }
+
+        // --- 4. イベントリスナーの設定（スライダーを動かすたびにリアルタイム計算） ---
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', updateSimulation);
+        });
+
+        // 初回実行
+        updateSimulation();
+    </script>
+</body>
+</html>
